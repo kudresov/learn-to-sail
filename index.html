@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Learn to Sail</title>
+<meta name="description" content="Interactive drills for the RYA Day Skipper and Coastal Skipper syllabus. Learn by doing, keep it by repeating.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="shared/site.css">
+<style>
+.hero{padding-block:56px 40px;border-bottom:1.5px solid var(--ink);display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
+@media (max-width:700px){.hero{grid-template-columns:1fr}}
+.hero small{display:block;font:600 11px/1.4 "Source Sans 3",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:clamp(34px,5vw,52px);margin:0 0 14px;line-height:1.1;text-wrap:balance}
+.hero p{margin:0;max-width:34em;font-size:18px;color:var(--ink-2)}
+.hero svg{width:150px;height:150px}
+h2{font:italic 400 22px "Libre Caslon Text",Georgia,serif;margin:36px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tut{display:grid;grid-template-rows:auto 1fr auto;gap:8px;padding:18px 20px;background:var(--paper);border:1px solid var(--rule);text-decoration:none;color:var(--ink);position:relative}
+.tut:hover{border-color:var(--ink-2)}
+.tut h3{margin:0;font:400 22px "Libre Caslon Text",Georgia,serif}
+.tut p{margin:0;font-size:15px;color:var(--ink-2)}
+.tut .meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.tag{padding:2px 8px;border-radius:12px;border:1px solid var(--rule)}
+.tag.live{border-color:var(--good);color:var(--good);background:var(--good-soft)}
+.tut.soon{opacity:.72;cursor:default}
+.tut.soon h3::after{content:" ·";color:var(--rule)}
+.tut .n{position:absolute;top:14px;right:16px;font:500 12px "IBM Plex Mono",monospace;color:var(--ink-3)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px 32px;font-size:15px;color:var(--ink-2)}
+.how h4{margin:0 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.how p{margin:0;max-width:36em}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="site-nav"><div class="crumb"><a href="./" aria-current="page">Learn to Sail</a></div><a href="#tutorials">Tutorials</a></nav>
+
+<section class="hero">
+  <div>
+    <small>Skipper theory, learned by doing</small>
+    <h1>Learn to Sail</h1>
+    <p>Short interactive drills for the RYA Day Skipper and Coastal Skipper shorebased syllabus. Each one teaches a single skill, tests it until it sticks, and then puts it under pressure on a chart.</p>
+  </div>
+  <svg viewBox="-50 -50 100 100" aria-hidden="true">
+    <circle r="46" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.2"/>
+    <g stroke="var(--ink-2)" stroke-width=".8">
+      <line x1="0" y1="-46" x2="0" y2="-40"/><line x1="46" y1="0" x2="40" y2="0"/><line x1="0" y1="46" x2="0" y2="40"/><line x1="-46" y1="0" x2="-40" y2="0"/>
+    </g>
+    <line x1="0" y1="0" x2="0" y2="-32" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="-8" y2="-30" stroke="var(--magenta)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="-14" y2="-26" stroke="var(--brass)" stroke-width="2" stroke-dasharray="3 2" stroke-linecap="round"/>
+    <circle r="2.5" fill="var(--ink)"/>
+  </svg>
+</section>
+
+<h2 id="tutorials">Tutorials</h2>
+<div class="grid">
+  <a class="tut" href="tutorials/compass/">
+    <span class="n">01</span>
+    <h3>Three Norths</h3>
+    <p>True, magnetic and compass. Variation, deviation and the deviation card, both ways up the ladder, then a coastal passage where a wrong course puts you on the putty.</p>
+    <span class="meta"><span class="tag live">Live</span> 9 stages · ~2 h</span>
+  </a>
+  <div class="tut soon">
+    <span class="n">02</span>
+    <h3>Course to Steer</h3>
+    <p>Tidal vectors on the chart: ground track, water track, leeway, then down the compass ladder. The full Day Skipper chartwork chain.</p>
+    <span class="meta"><span class="tag">Next</span></span>
+  </div>
+  <div class="tut soon">
+    <span class="n">03</span>
+    <h3>Secondary Ports</h3>
+    <p>Tide tables, differences, the rule of twelfths and the tidal curve. Height of tide at a time, time for a height.</p>
+    <span class="meta"><span class="tag">Planned</span></span>
+  </div>
+  <div class="tut soon">
+    <span class="n">04</span>
+    <h3>Buoys and Lights</h3>
+    <p>IALA A marks by day and by light rhythm. Cardinals, laterals, isolated danger, safe water, special. Read the light, name the mark.</p>
+    <span class="meta"><span class="tag">Planned</span></span>
+  </div>
+  <div class="tut soon">
+    <span class="n">05</span>
+    <h3>Rules of the Road</h3>
+    <p>Who gives way, and what you do about it. Sail on sail, sail on power, narrow channels, night lights and what vessel they belong to.</p>
+    <span class="meta"><span class="tag">Planned</span></span>
+  </div>
+  <div class="tut soon">
+    <span class="n">06</span>
+    <h3>Weather</h3>
+    <p>Shipping forecast vocabulary, Beaufort scale, synoptic charts and what a falling glass means for tomorrow's plan.</p>
+    <span class="meta"><span class="tag">Planned</span></span>
+  </div>
+</div>
+
+<h2>How the drills work</h2>
+<div class="how">
+  <div><h4>One skill at a time</h4><p>Each tutorial is a ladder of stages. A stage adds one idea, and you clear it by getting 8 of your last 10 right, not by reading about it.</p></div>
+  <div><h4>Consequences, not scores</h4><p>Where it makes sense the drill shows what the mistake does on the water: how far off track, which bank you hit, which vessel you cut across.</p></div>
+  <div><h4>Say the rule first</h4><p>Before the number you call the rule. Recall of the reason is what survives to exam day and to the cockpit.</p></div>
+  <div><h4>Yours, in your browser</h4><p>Progress, streaks and the ship's log live in this browser. No accounts. Clear site data and you start as a Deckhand again.</p></div>
+</div>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="https://github.com/kudresov/learn-to-sail">Source on GitHub</a></footer>
+</div>
+</body>
+</html>

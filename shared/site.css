@@ -1,0 +1,29 @@
+:root{
+  --ground:#F1F4F2; --paper:#FAFBF9; --shallow:#D6E6EC; --deep:#C4DAE3; --land:#E9E2C6; --ink:#13263A; --ink-2:#3E5266; --ink-3:#7A8A98;
+  --rule:#C8D3D8; --magenta:#B8175C; --magenta-soft:#F6DDE8; --brass:#8A6A1F; --brass-soft:#F0E6C8;
+  --good:#1E7A4C; --good-soft:#D9EEDF; --bad:#A93226; --bad-soft:#F6DCD8; --focus:#1F6FB2;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0B1620; --paper:#12212E; --shallow:#16303F; --deep:#12283A; --land:#3A3624; --ink:#DCE6EC; --ink-2:#A9BAC6; --ink-3:#6F8290;
+  --rule:#2A3F4E; --magenta:#F0669B; --magenta-soft:#3A1A2A; --brass:#D6B25A; --brass-soft:#33301E;
+  --good:#5FD39A; --good-soft:#153826; --bad:#F08A7E; --bad-soft:#3E1A18; --focus:#6FB4F0;
+}}
+:root[data-theme="dark"]{
+  --ground:#0B1620; --paper:#12212E; --shallow:#16303F; --deep:#12283A; --land:#3A3624; --ink:#DCE6EC; --ink-2:#A9BAC6; --ink-3:#6F8290;
+  --rule:#2A3F4E; --magenta:#F0669B; --magenta-soft:#3A1A2A; --brass:#D6B25A; --brass-soft:#33301E;
+  --good:#5FD39A; --good-soft:#153826; --bad:#F08A7E; --bad-soft:#3E1A18; --focus:#6FB4F0;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.5 "Source Sans 3",system-ui,sans-serif;padding-block:0 48px;padding-inline:16px;
+  background-image:radial-gradient(circle at 1px 1px,var(--rule) 0.6px,transparent 0.7px);background-size:22px 22px;}
+.wrap{max-width:1080px;margin:0 auto}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.serif{font-family:"Libre Caslon Text",Georgia,serif}
+
+.site-nav{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:14px;font-size:13px;color:var(--ink-3)}
+.site-nav a{color:var(--ink-2);text-decoration:none;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:11px}
+.site-nav a:hover{color:var(--magenta)}
+.site-nav .crumb{display:flex;gap:8px;align-items:center}
+.site-nav .crumb span{color:var(--rule)}
+.site-foot{margin-top:56px;padding-block:18px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.site-foot a{color:var(--ink-2)}
