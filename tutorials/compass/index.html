@@ -553,7 +553,7 @@ function renderStatus(){
   const next = RANKS[ri+1];
   $('rankName').textContent = RANKS[ri][1];
   $('rankLab').textContent = next ? `${store.points} / ${next[0]} pts to ${next[1]}` : `${store.points} pts · top rank`;
-  $('rankBar').querySelector('i').style.width = next ? `${100*(store.points-RANKS[ri][0])/(next[0]-RANKS[ri][0])}%` : '100%';
+  $('rankBar').style.width = next ? `${100*(store.points-RANKS[ri][0])/(next[0]-RANKS[ri][0])}%` : '100%';
   $('skills').innerHTML = Object.entries(SKILLS).map(([k,n]) => { const s = store.skills[k];
     return `<div class="skill"><span>${n}</span><span class="n mono">${s.right}/${s.seen}</span><div class="bar"><i style="width:${s.box*20}%"></i></div></div>`; }).join('');
   $('badges').innerHTML = Object.entries(BADGES).map(([k,n]) => `<span class="badge ${store.badges[k]?'won':''}" title="${store.badges[k]||'not yet'}">${store.badges[k]?'★ ':''}${n}</span>`).join('');
