@@ -16,7 +16,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.5 "Source Sans 3",system-ui,sans-serif;padding-block:0 48px;padding-inline:16px;
   background-image:radial-gradient(circle at 1px 1px,var(--rule) 0.6px,transparent 0.7px);background-size:22px 22px;}
-.wrap{max-width:1080px;margin:0 auto}
+.wrap{max-width:880px;margin:0 auto}
 .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
 .serif{font-family:"Libre Caslon Text",Georgia,serif}
 

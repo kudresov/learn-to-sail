@@ -9,53 +9,52 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="../../shared/site.css">
 <style>
-header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding-block:28px 18px;border-bottom:1.5px solid var(--ink)}
-h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:clamp(28px,4vw,38px);margin:0;letter-spacing:.01em;text-wrap:balance}
-h1 small{display:block;font:600 11px/1.4 "Source Sans 3",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
-.rank{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-.rank .tile{display:flex;flex-direction:column;align-items:flex-end}
-.rank .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
-.rank .val{font-size:20px;font-weight:500}
-.rankbar{width:160px;height:6px;background:var(--rule);border-radius:3px;overflow:hidden;margin-top:6px}
-.rankbar i{display:block;height:100%;background:var(--magenta);width:0;transition:width .4s}
-.iconbtn{font:600 12px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:6px 10px;cursor:pointer;border-radius:2px}
-main{display:grid;grid-template-columns:minmax(280px,440px) 1fr;gap:28px;padding-top:24px;align-items:start}
-@media (max-width:820px){main{grid-template-columns:1fr}}
-.rose{background:var(--paper);border:1px solid var(--rule);padding:16px;position:relative}
-.rose svg{width:100%;height:auto;display:block}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin-top:8px;color:var(--ink-2)}
+.col{max-width:640px;margin:0 auto}
+.tut-head{padding-block:22px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tut-head h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:24px;margin:0}
+.tut-head .streak{font-size:13px;color:var(--ink-3)}
+.tut-head .streak b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:10px;padding-block:16px 4px;flex-wrap:wrap}
+.stepper .dots{display:flex;gap:6px;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;padding:0;cursor:pointer}
+.stepper .dot.done{background:var(--good);border-color:var(--good)}
+.stepper .dot.now{background:var(--magenta);border-color:var(--magenta);transform:scale(1.3)}
+.stepper .dot.locked{border-color:var(--rule);cursor:not-allowed}
+.stepper .name{font:italic 400 17px "Libre Caslon Text",Georgia,serif}
+.stepper .name small{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:8px;font-style:normal}
+.stepper .nav{margin-left:auto;display:flex;gap:4px}
+.stepper .nav button{font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:4px 9px;cursor:pointer;border-radius:2px}
+.stepper .nav button:disabled{opacity:.35;cursor:default}
+.concept{border:1px solid var(--rule);border-left:4px solid var(--magenta);background:var(--paper);margin-top:14px}
+.concept summary{list-style:none;cursor:pointer;padding:12px 16px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);display:flex;justify-content:space-between}
+.concept summary::after{content:"show";font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.concept[open] summary::after{content:"hide"}
+.concept .body{padding:0 16px 16px;display:grid;grid-template-columns:1fr 150px;gap:14px;align-items:start;font-size:15px}
+.concept .body.nofig{grid-template-columns:1fr}
+@media (max-width:520px){.concept .body{grid-template-columns:1fr}}
+.concept p{margin:0 0 8px;max-width:40em}
+.concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.concept svg{width:100%;height:auto}
+.chartbox{margin-top:16px;background:var(--paper);border:1px solid var(--rule);padding:12px;position:relative}
+.chartbox svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin-top:6px;color:var(--ink-2)}
 .legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle;border-radius:2px}
 .legend .t::before{background:var(--ink)}.legend .m::before{background:var(--magenta)}.legend .c::before{background:var(--brass)}.legend .x::before{background:var(--bad)}
-.note{font-size:12px;color:var(--ink-3);margin-top:4px}
-.card{background:var(--paper);border:1px solid var(--rule);padding:22px 24px}
-.stages{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;scrollbar-width:thin}
-.stage{flex:0 0 auto;display:grid;grid-template-columns:auto 1fr;gap:2px 8px;align-items:center;font:600 12px "Source Sans 3",sans-serif;padding:6px 10px 6px 8px;border:1px solid var(--rule);background:transparent;color:var(--ink-2);cursor:pointer;border-radius:2px;text-align:left;min-width:120px}
-.stage .n{grid-row:1/3;font:500 15px "IBM Plex Mono",monospace;color:var(--ink-3)}
-.stage .t{white-space:nowrap}
-.stage .p{height:3px;background:var(--rule);border-radius:2px;overflow:hidden;min-width:70px}
-.stage .p i{display:block;height:100%;width:0;background:var(--good)}
-.stage.done .n{color:var(--good)}
-.stage.done .n::after{content:" ✓"}
-.stage.locked{opacity:.45;cursor:not-allowed}
-.stage[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.stage[aria-selected="true"] .n{color:var(--paper)}
-.stage[aria-selected="true"] .p{background:color-mix(in srgb,var(--paper) 30%,transparent)}
-.intro{border:1px solid var(--magenta);border-left-width:4px;background:var(--magenta-soft);padding:14px 16px;margin-bottom:18px;font-size:15px}
-.intro h3{margin:0 0 6px;font:italic 400 18px "Libre Caslon Text",Georgia,serif}
-.intro p{margin:0 0 6px;max-width:44em}
-.intro .ex{font-family:"IBM Plex Mono",monospace;font-size:14px;margin-top:6px}
-.gate{font-size:13px;color:var(--ink-3)}
-.tabs{display:none}
-.tabs button{font:600 13px "Source Sans 3",sans-serif;letter-spacing:.04em;padding:7px 12px;border:1px solid var(--rule);background:transparent;color:var(--ink-2);cursor:pointer;border-radius:2px}
-.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.tabs button.passage[aria-selected="true"]{background:var(--magenta);border-color:var(--magenta)}
-.tabs button:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.note{font-size:12px;color:var(--ink-3);margin-top:2px}
+.legs{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.leg{width:26px;height:8px;background:var(--rule);border-radius:2px}
+.leg.done{background:var(--good)}.leg.bad{background:var(--bad)}.leg.now{background:var(--magenta);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.strikes{font-size:13px;color:var(--ink-3);margin-left:auto}
+.strikes b{color:var(--bad);letter-spacing:.15em}
+.q{margin-top:22px}
 .qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
 .qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
-.timer{font-size:13px;color:var(--ink-3)}
-.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(19px,2.4vw,23px);line-height:1.35;margin:10px 0 16px;text-wrap:balance}
-.givens{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px}
-.given{border:1px solid var(--rule);padding:10px 12px;background:var(--ground)}
+.timer{font-size:13px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(20px,3vw,24px);line-height:1.35;margin:8px 0 16px;text-wrap:balance}
+.givens{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
+.given{border:1px solid var(--rule);padding:9px 12px;background:var(--paper)}
 .given .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .given .v{font-size:22px;font-weight:500}
 .given.t .v{color:var(--ink)}.given.m .v{color:var(--magenta)}.given.c .v{color:var(--brass)}
@@ -73,8 +72,8 @@ main{display:grid;grid-template-columns:minmax(280px,440px) 1fr;gap:28px;padding
 .answer .unit{align-self:center;font-size:20px;color:var(--ink-3)}
 .btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
 .btn.ghost{background:transparent;color:var(--ink)}
-.btn:disabled{opacity:.45;cursor:default}
-.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--ground);display:none}
+button:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
 .feedback.show{display:block}
 .feedback.ok{border-color:var(--good);background:var(--good-soft)}
 .feedback.no{border-color:var(--bad);background:var(--bad-soft)}
@@ -84,138 +83,106 @@ main{display:grid;grid-template-columns:minmax(280px,440px) 1fr;gap:28px;padding
 .steps li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:3px 0}
 .steps li .s{font-weight:500}
 .rule{font-size:13px;color:var(--ink-2);margin-top:8px;font-style:italic}
-.devcard{margin-top:18px;border:1px solid var(--rule);overflow-x:auto}
+.devcard{margin-top:16px;border:1px solid var(--rule);overflow-x:auto;background:var(--paper)}
 .devcard table{border-collapse:collapse;width:100%;font-size:14px}
 .devcard th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--ground)}
-.devcard td{padding:6px 10px;border-bottom:1px solid var(--rule)}
+.devcard td{padding:5px 10px;border-bottom:1px solid var(--rule)}
 .devcard tr.hi td{background:var(--brass-soft)}
 .devcard caption{caption-side:top;text-align:left;font:italic 13px "Libre Caslon Text",serif;padding:8px 10px;color:var(--ink-2)}
-.mastery{margin-top:24px}
-.mastery h2,.cheat h2,.log h2{font:italic 400 18px "Libre Caslon Text",Georgia,serif;margin:0 0 10px}
-.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 20px}
-.skill{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px;align-items:center}
-.skill .bar{grid-column:1/-1;height:5px;background:var(--rule);border-radius:3px;overflow:hidden}
-.skill .bar i{display:block;height:100%;width:0;background:var(--good);transition:width .4s}
-.skill .n{color:var(--ink-3);font-size:12px}
-.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.badge{font-size:12px;border:1px solid var(--rule);padding:4px 10px;border-radius:20px;color:var(--ink-3);background:var(--ground)}
-.badge.won{border-color:var(--brass);color:var(--brass);background:var(--brass-soft)}
-.legs{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}
-.leg{width:26px;height:8px;background:var(--rule);border-radius:2px}
-.leg.done{background:var(--good)}.leg.bad{background:var(--bad)}.leg.now{background:var(--magenta);animation:pulse 1.2s infinite}
-@keyframes pulse{50%{opacity:.4}}
-.strikes{font-size:13px;color:var(--ink-3);margin-left:auto}
-.strikes b{color:var(--bad);letter-spacing:.15em}
-.cheat,.log{margin-top:28px;background:var(--paper);border:1px solid var(--rule);padding:0}
-.cheat summary,.log summary{cursor:pointer;padding:16px 24px;font:italic 400 18px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
-.cheat summary::after,.log summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
-.cheat[open] summary::after,.log[open] summary::after{content:"−"}
-.cheat .body{padding:0 24px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px 32px;font-size:15px}
-.cheat h4{margin:0 0 6px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
-.cheat p{margin:0 0 8px;max-width:38em}
-.ladder{font-size:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
-.ladder b{font-weight:600}
-.ladder .arrow{color:var(--ink-3);font-size:14px}
-.log .body{padding:0 24px 20px}
-.log table{border-collapse:collapse;width:100%;font-size:14px}
-.log td,.log th{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:left}
-.log th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
-.log .empty{font-style:italic;color:var(--ink-3);font-family:"Libre Caslon Text",serif}
+.progress{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);flex-wrap:wrap}
+.progress .last{display:flex;gap:5px}
+.progress .last i{width:14px;height:14px;border-radius:3px;background:var(--rule);display:block}
+.progress .last i.y{background:var(--good)}.progress .last i.n{background:var(--bad)}
+.progress .cleared{color:var(--good);font-weight:600}
+.more{margin-top:28px;background:var(--paper);border:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 18px;font:italic 400 17px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
+.more[open] summary::after{content:"−"}
+.more .body{padding:0 18px 18px;font-size:15px}
+.more h4{margin:14px 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.more p{margin:0 0 6px;max-width:40em}
+.more .mono{font-family:"IBM Plex Mono",monospace;font-size:14px}
+.more table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+.more td,.more th{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:left}
+.more th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.empty{font-style:italic;color:var(--ink-3);font-family:"Libre Caslon Text",serif}
 kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
-.streak-pop{position:absolute;right:16px;top:12px;font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--magenta);font-size:15px;opacity:0;transform:translateY(6px);transition:all .4s;pointer-events:none;background:var(--paper);padding:2px 8px}
-.streak-pop.show{opacity:1;transform:none}
+.pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
+.pop.show{opacity:1;transform:translate(-50%,0)}
+.iconbtn{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-3);padding:4px 8px;cursor:pointer;border-radius:2px}
 .boat{transition:transform 1.1s cubic-bezier(.4,0,.2,1)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Three Norths</a></div><a href="../../#tutorials">All tutorials</a></nav>
+<div class="pop" id="pop"></div>
+<div class="col">
+<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Three Norths</a></div><button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button></nav>
 
-<header>
-  <h1><small>Chartwork drill · RYA Day Skipper</small>Three Norths</h1>
-  <div class="rank">
-    <div class="tile"><span class="lab">Streak</span><span class="val mono" id="streak">0</span></div>
-    <div class="tile"><span class="lab">Best</span><span class="val mono" id="best">0</span></div>
-    <div class="tile"><span class="lab" id="rankLab">Rank</span><span class="val serif" id="rankName">Deckhand</span><div class="rankbar"><i id="rankBar"></i></div></div>
-    <button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button>
-  </div>
+<header class="tut-head">
+  <h1>Three Norths</h1>
+  <span class="streak">streak <b id="streak">0</b> · best <b id="best">0</b></span>
 </header>
 
-<main>
-  <section class="rose" aria-label="Chart">
-    <div class="streak-pop" id="pop"></div>
-    <svg viewBox="-160 -160 320 320" id="roseSvg" aria-hidden="true"></svg>
-    <div class="legend" id="legend"><span class="t">True north</span><span class="m">Magnetic north</span><span class="c">Compass north</span></div>
-    <div class="note" id="roseNote">Angles between the norths are drawn ×4 so small errors stay visible.</div>
-  </section>
+<div class="stepper" id="stepper"></div>
 
-  <section class="card" aria-label="Question">
-    <div class="stages" role="tablist" id="stages"></div>
-    <div class="intro" id="intro" hidden></div>
-    <div class="legs" id="legs" hidden></div>
-    <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer mono" id="timer"></span></div>
-    <p class="prompt" id="prompt"></p>
-    <div class="givens" id="givens"></div>
-    <div class="rulepick" id="rulepick">
-      <span class="lbl">Call the rule to the helm:</span>
-      <button class="chip" type="button" data-dir="down">Down the ladder · West is best</button>
-      <button class="chip" type="button" data-dir="up">Up the ladder · CADET, add East</button>
-    </div>
-    <form class="answer" id="form" autocomplete="off">
-      <input class="mono" id="ans" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="000" aria-label="Your answer in degrees">
-      <span class="unit" id="unit">°C</span>
-      <button class="btn" type="submit" id="check">Check</button>
-      <button class="btn ghost" type="button" id="skip">Show me</button>
-    </form>
-    <div class="feedback" id="fb" aria-live="polite"></div>
-    <div class="devcard" id="devcard" hidden></div>
-    <div class="mastery"><h2>Where you stand</h2><div class="skills" id="skills"></div><div class="badges" id="badges"></div></div>
-  </section>
-</main>
+<details class="concept" id="concept">
+  <summary>The idea</summary>
+  <div class="body" id="conceptBody"></div>
+</details>
 
-<details class="log" id="logbox">
+<section class="chartbox" id="chartbox" hidden>
+  <svg viewBox="-160 -160 320 320" id="roseSvg" aria-hidden="true"></svg>
+  <div class="legend" id="legend"></div>
+  <div class="note" id="roseNote"></div>
+  <div class="legs" id="legs"></div>
+</section>
+
+<section class="q" aria-label="Question">
+  <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
+  <p class="prompt" id="prompt"></p>
+  <div class="givens" id="givens"></div>
+  <div class="rulepick" id="rulepick">
+    <span class="lbl">Call the rule to the helm:</span>
+    <button class="chip" type="button" data-dir="down">Down the ladder · West is best</button>
+    <button class="chip" type="button" data-dir="up">Up the ladder · CADET, add East</button>
+  </div>
+  <form class="answer" id="form" autocomplete="off">
+    <input id="ans" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="000" aria-label="Your answer in degrees">
+    <span class="unit" id="unit">°C</span>
+    <button class="btn" type="submit" id="check">Check</button>
+    <button class="btn ghost" type="button" id="skip">Show me</button>
+  </form>
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="devcard" id="devcard" hidden></div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<details class="more" id="logbox">
   <summary>Ship's log</summary>
   <div class="body" id="logbody"></div>
 </details>
 
-<details class="cheat" id="cheat">
+<details class="more">
   <summary>The rules, in one breath</summary>
   <div class="body">
-    <div>
-      <h4>The ladder</h4>
-      <div class="ladder serif"><b>T</b><span class="arrow">variation</span><b>M</b><span class="arrow">deviation</span><b>C</b></div>
-      <p><em>True Virgins Make Dull Company.</em> True → Variation → Magnetic → Deviation → Compass. Every question is one or two steps on this ladder, in one direction or the other.</p>
-    </div>
-    <div>
-      <h4>Going down (chart → compass)</h4>
-      <p><strong>West is best, East is least.</strong> Add a westerly error, subtract an easterly one. <em>…add Whisky</em>: True Virgins Make Dull Company Add Whisky (West).</p>
-      <p class="mono">045°T + 4°W = 049°M + 2°W = 051°C</p>
-    </div>
-    <div>
-      <h4>Going up (compass → chart)</h4>
-      <p><strong>CADET</strong>: Compass, ADd East, True. Add an easterly error, subtract a westerly one, the exact mirror of going down.</p>
-      <p class="mono">051°C − 2°W = 049°M − 4°W = 045°T</p>
-    </div>
-    <div>
-      <h4>Which compass?</h4>
-      <p><strong>Steering compass</strong>: variation <em>and</em> deviation. It lives next to the engine and the speakers.</p>
-      <p><strong>Hand-bearing compass</strong>: variation only. You take it away from the boat's iron, so no deviation card. Examiners love this trap.</p>
-    </div>
-    <div>
-      <h4>Why one degree matters</h4>
-      <p>Off by 1° over 6 nm and you are 0.1 nm (a cable) off track. Off by 6° and you are over half a mile out. On the passage you will see exactly where that puts you.</p>
-    </div>
-    <div>
-      <h4>Habits examiners like</h4>
-      <p>Always three figures: <span class="mono">007°</span>, not 7. Always a suffix: T, M or C. Wrap through 360: <span class="mono">358 + 5 = 003</span>. Look up deviation by the ship's heading, never by the bearing of an object.</p>
-    </div>
-    <div>
-      <h4>Keys</h4>
-      <p><kbd>Enter</kbd> checks, <kbd>Enter</kbd> again moves on. <kbd>Alt</kbd>+<kbd>1</kbd>–<kbd>9</kbd> jump to an unlocked stage. Progress and log are saved in this browser.</p>
-    </div>
+    <h4>The ladder</h4>
+    <p><strong>T</strong> → variation → <strong>M</strong> → deviation → <strong>C</strong>. <em>True Virgins Make Dull Company.</em> Every question is one or two steps on this ladder, in one direction or the other.</p>
+    <h4>Going down (chart → compass)</h4>
+    <p><strong>West is best, East is least.</strong> Add a westerly error, subtract an easterly one. <em>…add Whisky.</em></p>
+    <p class="mono">045°T + 4°W = 049°M + 2°W = 051°C</p>
+    <h4>Going up (compass → chart)</h4>
+    <p><strong>CADET</strong>: Compass, ADd East, True. Add an easterly error, subtract a westerly one.</p>
+    <p class="mono">051°C − 2°W = 049°M − 4°W = 045°T</p>
+    <h4>Which compass?</h4>
+    <p>Steering compass: variation <em>and</em> deviation. Hand-bearing compass: variation only, no deviation card.</p>
+    <h4>Habits examiners like</h4>
+    <p>Three figures always: <span class="mono">007°</span>. A suffix always: T, M or C. Wrap through 360: <span class="mono">358 + 5 = 003</span>. Look deviation up by the ship's heading, never by the bearing of an object.</p>
+    <h4>Keys</h4>
+    <p><kbd>Enter</kbd> checks, <kbd>Enter</kbd> again moves on. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
   </div>
 </details>
+
 <footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="../../">More tutorials</a></footer>
 </div>
 
@@ -230,53 +197,39 @@ const fmtErr = e => `${Math.abs(e)}°${e === 0 ? '' : e > 0 ? 'W' : 'E'}`; // + 
 const sgnDeg = (a,b) => { let d = norm(a) - norm(b); if (d > 180) d -= 360; if (d < -180) d += 360; return d; };
 
 // ---- persistence
-const KEY = 'lts:compass:v2';
-let store = { streak:0, best:0, points:0, skills:{}, badges:{}, log:[], muted:false };
+const KEY = 'lts:compass:v3';
+let store = { streak:0, best:0, stages:{}, log:[], muted:false, seenConcept:{} };
 try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
 
-const SKILLS = {
-  't2m':'True → Magnetic', 'm2t':'Magnetic → True',
-  't2c':'True → Compass', 'c2t':'Compass → True',
-  'rule':'Calling the right rule', 'hand':'Hand-bearing: no deviation',
-  'wrap':'Wrapping through 360', 'lookup':'Deviation card lookup',
-  'mixed':'Opposite-sign errors'
-};
-for (const k in SKILLS) store.skills[k] ??= { seen:0, right:0, box:0 };
-
-const BADGES = {
-  first:'First passage', clean:'Clean passage', three:'Three passages', wrap:'Wrap master (5 wraps right)',
-  hand:'Hand-bearing hawk', watch:'Exam pace (12+ in a watch)', streak10:'Ten in a row', card:'Card reader (10 lookups)'
-};
 const STAGES = [
-  { id:'s1', kind:'drill', title:'Two norths', cfg:{dev:'none', varMin:1, varMax:6, wrap:'avoid'},
-    intro:'Only variation. The chart is drawn to true north; the compass needle points to magnetic north. The angle between them is printed on the chart rose.',
-    ex:'Chart → compass: 100°T + 4°W = 104°M (West is best, add it).\nCompass → chart: 104°M − 4°W = 100°T (CADET: going up, subtract West).' },
-  { id:'s2', kind:'drill', title:'Round the clock', cfg:{dev:'none', varMin:5, varMax:22, wrap:'force'},
-    intro:'Same rule, bigger numbers, and now the answer crosses 360. Add past 359 and start again from 000; subtract below 000 and come back from 359.',
-    ex:'356°T + 9°W = 365 → 005°M.   003°M − 9°W = −6 → 354°T.' },
-  { id:'s3', kind:'drill', title:'Three norths', cfg:{dev:'given', varMin:1, varMax:12, opposite:'never'},
-    intro:'Deviation joins in: the boat\u2019s own iron bends the needle a little more. Two steps now, same rule both times. T → M → C going down, C → M → T going up.',
-    ex:'045°T + 4°W = 049°M + 2°W = 051°C.' },
-  { id:'s4', kind:'drill', title:'Opposite signs', cfg:{dev:'given', varMin:1, varMax:12, opposite:'always'},
-    intro:'Variation west, deviation east (or the other way round). Do them one at a time, never net them off in your head until you are fluent.',
-    ex:'120°T + 5°W = 125°M − 3°E = 122°C.' },
-  { id:'s5', kind:'drill', title:'Read the card', cfg:{dev:'card', varMin:1, varMax:12},
-    intro:'Deviation depends on which way the boat points, so it lives on a card. Going down, you know the magnetic heading: read the °M column. Going up, you know the compass heading: read the °C column.',
-    ex:'Heading 049°M, card row 049°M says 2°W → 051°C.' },
-  { id:'s6', kind:'drill', title:'Which compass?', cfg:{dev:'given', varMin:1, varMax:12, hand:true},
-    intro:'The steering compass sits among the boat\u2019s iron: variation and deviation. A hand-bearing compass you hold away from all that: variation only. The question will tell you which one you used. Read it.',
-    ex:'Hand-bearing 214°M − 3°W = 211°T. Ignore the deviation card entirely.' },
+  { id:'s1', kind:'drill', title:'Two norths', cfg:{dev:'none', varMin:1, varMax:6, wrap:'avoid'}, rose:[4,0],
+    intro:'Only variation. The chart is drawn to true north; the needle points to magnetic north. The angle between them is printed on the chart rose. West is best going down to the compass; CADET (add East) coming back up.',
+    ex:'100°T + 4°W = 104°M\n104°M − 4°W = 100°T' },
+  { id:'s2', kind:'drill', title:'Round the clock', cfg:{dev:'none', varMin:5, varMax:22, wrap:'force'}, rose:[9,0],
+    intro:'Same rule, bigger numbers, and every answer crosses 360. Add past 359 and start again at 000; subtract below 000 and come back from 359.',
+    ex:'356°T + 9°W = 365 → 005°M\n003°M − 9°W = −6 → 354°T' },
+  { id:'s3', kind:'drill', title:'Three norths', cfg:{dev:'given', varMin:1, varMax:12, opposite:'never'}, rose:[4,2],
+    intro:'Deviation joins in: the boat’s own iron bends the needle a little more. Two steps now, same rule both times. T → M → C going down, C → M → T going up.',
+    ex:'045°T + 4°W = 049°M + 2°W = 051°C' },
+  { id:'s4', kind:'drill', title:'Opposite signs', cfg:{dev:'given', varMin:1, varMax:12, opposite:'always'}, rose:[5,-3],
+    intro:'Variation west, deviation east, or the other way round. Take them one at a time. Do not net them off in your head until you are fluent.',
+    ex:'120°T + 5°W = 125°M − 3°E = 122°C' },
+  { id:'s5', kind:'drill', title:'Read the card', cfg:{dev:'card', varMin:1, varMax:12}, rose:[4,2],
+    intro:'Deviation depends on which way the boat points, so it lives on a card. Going down you know the magnetic heading: read the °M column. Going up you know the compass heading: read the °C column.',
+    ex:'049°M, card row 049°M says 2°W → 051°C' },
+  { id:'s6', kind:'drill', title:'Which compass?', cfg:{dev:'given', varMin:1, varMax:12, hand:true}, rose:[3,4],
+    intro:'The steering compass sits among the boat’s iron: variation and deviation. A hand-bearing compass you hold away from all that: variation only. The question tells you which one you used. Read it.',
+    ex:'Hand-bearing 214°M − 3°W = 211°T\n(the deviation card is a decoy)' },
   { id:'s7', kind:'passage', title:'First passage', cfg:{card:false},
-    intro:'Put it together on a chart. Course to steer on each leg, a hand-bearing fix halfway. Three wrong courses and the boat is aground. Pass: arrive with at most one correction.' },
+    intro:'Everything so far, on a chart. Course to steer on each leg, a hand-bearing fix halfway. A wrong course shows you where you actually end up. Three wrong and you are aground.' },
   { id:'s8', kind:'passage', title:'Passage with card', cfg:{card:true},
-    intro:'Same passage discipline, but deviation now comes from the card. Look it up by the magnetic heading you have just worked out.' },
-  { id:'s9', kind:'watch', title:'Exam pace', cfg:{},
-    intro:'Ninety seconds, everything mixed. The exam gives you about a minute per conversion. Pass: twelve right with at most one wrong.' },
+    intro:'Same passage, but deviation now comes from the card. Look it up by the magnetic heading you have just worked out.' },
+  { id:'s9', kind:'watch', title:'Quick convert', cfg:{},
+    intro:'Ninety seconds, everything mixed, no chart. The exam gives you about a minute per conversion.' },
 ];
-store.stages ??= {};
+const GATE = { drill:'8 of your last 10', passage:'arrive with at most one correction', watch:'12 right, at most 1 wrong' };
 for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
-const RANKS = [[0,'Deckhand'],[60,'Competent Crew'],[180,'Day Skipper'],[380,'Coastal Skipper'],[650,'Yachtmaster']];
 
 // ---- sound (WebAudio, tiny)
 let actx = null;
@@ -325,60 +278,10 @@ const PASSAGES = [
     wps:[ [120,-40],[100,20],[30,20],[-40,10],[-100,20],[-140,60] ] },
 ];
 
-// ---- state
-let mode = 'var', stage = null, q = null, card = null, answered = false, watch = null, pas = null, rulePicked = null;
-
-function genVariation(cfg = {}){ const lo = cfg.varMin ?? 1, hi = cfg.varMax ?? 12; return rnd(lo,hi) * (Math.random() < .5 ? 1 : -1); }
-function genDeviation(v, cfg = {}){ let d = rnd(1,7); const opp = cfg.opposite ?? 'mix';
-  if (opp === 'always') d = -Math.sign(v) * d; else if (opp === 'never') d = Math.sign(v) * d; else if (Math.random() < .5) d = -d; return d; }
-
-function bearingBetween(a,b){ return norm(Math.round(Math.atan2(b[0]-a[0], -(b[1]-a[1])) * 180/Math.PI)); }
-function distNm(a,b){ return Math.hypot(b[0]-a[0], b[1]-a[1]) * NM_PER_UNIT; }
-
-// ---- drill question
-function genDrill(){
-  const cfg = stage && stage.kind === 'drill' ? stage.cfg : {dev: pick(['none','given','given','card']), varMin:1, varMax:16};
-  const m = cfg.dev === 'none' ? 'var' : cfg.dev === 'card' ? 'card' : 'dev';
-  let tries = 0, T, M, C, V, D, rows = null, skills, down, hand = false, wraps;
-  do {
-    tries++; skills = []; down = Math.random() < .5; V = genVariation(cfg); D = 0; rows = null;
-    if (m === 'var') { T = rnd(0,359); }
-    else if (m === 'card') { rows = card; const row = pick(rows); D = row.dev; T = down ? norm(row.m - V) : norm(row.c - D - V); }
-    else { D = genDeviation(V, cfg); T = rnd(0,359); }
-    M = norm(T + V); C = norm(T + V + D);
-    hand = !!cfg.hand && Math.random() < .5;
-    if (hand) { down = false; D = 0; C = M; }
-    wraps = Math.abs(sgnDeg(T,M)) !== Math.abs(norm(T)-norm(M)) || Math.abs(sgnDeg(M,C)) !== Math.abs(norm(M)-norm(C));
-  } while (tries < 40 && ((cfg.wrap === 'avoid' && wraps) || (cfg.wrap === 'force' && !wraps)));
-  const twoStep = m !== 'var' && !hand;
-  if (!twoStep) skills.push(down ? 't2m' : 'm2t'); else { skills.push(down ? 't2c' : 'c2t'); if (m === 'card') skills.push('lookup'); if (Math.sign(V) !== Math.sign(D) && D !== 0) skills.push('mixed'); }
-  if (cfg.hand) skills.push('hand');
-  if (wraps) skills.push('wrap');
-  const unitFrom = down ? 'T' : (twoStep ? 'C' : 'M'), unitTo = down ? (twoStep ? 'C' : 'M') : 'T';
-  const from = down ? T : (twoStep ? C : M);
-  const mark = pick(['the lighthouse','the headland','the church spire','the port-hand buoy','the water tower']);
-  let prompt, givens = [['Variation', fmtErr(V)]];
-  if (cfg.hand) {
-    const trapDev = genDeviation(V, {opposite:'mix'});
-    if (hand) { prompt = `You step onto the side deck with the hand-bearing compass. ${mark[0].toUpperCase()+mark.slice(1)} bears ${pad(from)}°M. What do you plot on the chart?`; givens.push(['Steering compass dev.', fmtErr(trapDev)]); }
-    else { givens.push(['Steering compass dev.', fmtErr(D)]); prompt = down ? `The plotted course is ${pad(from)}°T. What do you give the helm on the steering compass?` : `The helm reports steering ${pad(from)}°C. What heading do you plot on the chart?`; }
-  } else {
-    const ctx = pick(['course to steer','course to steer','heading']);
-    const isBearing = Math.random() < .35;
-    prompt = down
-      ? (isBearing ? `The chart gives the bearing of ${mark} as ${pad(from)}°T. What will you read on the ${twoStep?'steering':'hand-bearing'} compass?` : `You plot a ${ctx} of ${pad(from)}°T on the chart. What do you give the helm?`)
-      : (isBearing ? `You take a bearing of ${mark}: ${pad(from)}°${unitFrom}. What do you plot on the chart?` : `The helm is steering ${pad(from)}°${unitFrom}. What ${ctx} do you plot on the chart?`);
-    if (m === 'dev') givens.push(['Deviation', fmtErr(D)]); if (m === 'card') givens.push(['Deviation','see card',true]);
-  }
-  q = { m, down, T, M, C, V, D, rows, skills, unitFrom, unitTo, from, target: down ? (twoStep ? C : M) : T, needRule:false, hand, prompt, givens,
-    qtype: down ? `Chart → ${twoStep?'compass':'magnetic'}` : `${twoStep?'Compass':hand?'Hand-bearing':'Magnetic'} → chart` };
-  render();
-}
-
 // ---- passage
 function startPassage(){
   const p = pick(PASSAGES);
-  const useCard = stage ? !!stage.cfg.card : store.points >= 180;
+  const useCard = !!stage.cfg.card;
   pas = { p, leg:0, strikes:0, errors:0, results:[], V: p.var + rnd(0,3) * (Math.random()<.5?1:-1), card: makeCard(), useCard, tracks:[], start: Date.now() };
   if (pas.V === 0) pas.V = -3;
   card = pas.card;
@@ -451,120 +354,10 @@ function renderCard(hiRow){
 $('rulepick').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b || answered || rulePicked) return;
   const want = q.down ? 'down' : 'up';
-  if (b.dataset.dir === want) { b.classList.add('picked'); rulePicked = true; $('ans').disabled = false; $('ans').focus(); bump('rule', true); }
-  else { b.classList.add('wrong'); bump('rule', false); const fb = $('fb'); fb.className = 'feedback show no';
+  if (b.dataset.dir === want) { b.classList.add('picked'); rulePicked = true; $('ans').disabled = false; $('ans').focus();  }
+  else { b.classList.add('wrong');  const fb = $('fb'); fb.className = 'feedback show no';
     fb.innerHTML = `<h3>Other way.</h3><p>${q.down ? 'Chart → compass is <em>down</em> the ladder (T→M→C): West is best, add westerly errors.' : 'Compass → chart is <em>up</em> the ladder (C→M→T): CADET, add easterly errors.'}</p>`; }
 });
-function bump(k, ok){ const s = store.skills[k]; s.seen++; if (ok) { s.right++; s.box = Math.min(5, s.box+1); } else s.box = Math.max(0, s.box-1); }
-
-// ---- checking
-function check(){
-  const raw = $('ans').value.trim();
-  if (!/^\d{1,3}$/.test(raw)) { $('ans').focus(); return; }
-  finish(norm(parseInt(raw,10)), raw.length < 3, false);
-}
-function finish(a, shortForm, revealed){
-  answered = true;
-  const ok = a === q.target;
-  const fb = $('fb');
-  fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
-  const steps = [];
-  const sgn = (x, down) => { const w = x > 0; const add = down ? w : !w; return `${add ? '+' : '−'} ${Math.abs(x)}°${w?'W':'E'}`; };
-  if (q.down) { steps.push([`${pad(q.T)}°T`, `${sgn(q.V,true)} variation`, `${pad(q.M)}°M`]); if (q.m !== 'var') steps.push([`${pad(q.M)}°M`, `${sgn(q.D,true)} deviation`, `${pad(q.C)}°C`]); }
-  else { if (q.m !== 'var' && !q.hand) steps.push([`${pad(q.C)}°C`, `${sgn(q.D,false)} deviation`, `${pad(q.M)}°M`]); steps.push([`${pad(q.M)}°M`, `${sgn(q.V,false)} variation`, `${pad(q.T)}°T`]); }
-  let rule = q.down ? 'Going down the ladder (chart → compass): West is best, East is least. Add W, subtract E.' : 'Going up the ladder (compass → chart): CADET, Compass ADd East to get True. Add E, subtract W.';
-  if (q.hand) rule += ' Hand-bearing compass: variation only. The steering-compass deviation was a decoy.';
-  const err = revealed ? 0 : sgnDeg(a, q.target);
-  const title = revealed ? `Worked answer: ${pad(q.target)}°`
-    : ok ? pick(['Spot on.','Aye, correct.','Clean.','That would pass.','Steady as she goes.','Helm answers.']) + (shortForm ? ' Write it as three figures next time.' : '')
-    : `Not quite. It's ${pad(q.target)}°, you were ${Math.abs(err)}° ${err > 0 ? 'high' : 'low'}.`;
-  let extra = '';
-  if (q.m === 'passage' && !ok && !revealed && q.down) {
-    const nm = distNm(q.a, q.b), off = Math.abs(nm * Math.sin(err * Math.PI/180));
-    const hit = hazardHit(err);
-    extra = `<p>Steering ${pad(a)}°C instead of ${pad(q.target)}°C puts you <strong>${off.toFixed(2)} nm off track</strong> after ${nm.toFixed(1)} nm${hit ? `, straight onto <strong>${hit.name}</strong>` : ''}.</p>`;
-  }
-  if (q.m === 'passage' && !ok && !revealed && !q.down) {
-    if (Math.abs(sgnDeg(a, norm(q.target - genDevGuess()))) <= 7) extra = `<p>You applied deviation to a hand-bearing compass. It has no deviation card, that number belonged to the steering compass.</p>`;
-    extra += `<p>A fix ${Math.abs(err)}° out puts your position ${(distNm(q.mid,[q.mark.x,q.mark.y]) * Math.abs(Math.sin(err*Math.PI/180))).toFixed(2)} nm from where you really are.</p>`;
-  }
-  fb.innerHTML = `<h3>${title}</h3><ul class="steps">` + steps.map(s => `<li><span class="mono s">${s[0]}</span><span>${s[1]} → <span class="mono s">${s[2]}</span></span></li>`).join('') + `</ul>${extra}<div class="rule">${rule}</div>`;
-  if (q.rows) renderCard(q.rows.find(r => r.dev === q.D && (q.down ? r.m === q.M : r.c === q.C)));
-  $('check').textContent = 'Next ›';
-
-  const credit = ok && !revealed;
-  for (const k of q.skills) if (k !== 'rule') bump(k, credit);
-  if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); store.points += ({var:2,dev:4,card:6,passage:5})[q.m] + (store.streak >= 5 ? 2 : 0); if (watch) watch.score++; }
-  else { store.streak = 0; if (watch && !revealed) watch.miss++; }
-  if (credit && store.streak % 5 === 0) popStreak(`${store.streak} in a row`);
-  if (store.streak >= 10) award('streak10');
-  if (store.skills.wrap.right >= 5) award('wrap');
-  if (store.skills.lookup.right >= 10) award('card');
-  if (store.skills.hand.right >= 5) award('hand');
-  if (stage && stage.kind === 'drill' && !watch) recordStage(credit);
-
-  if (q.m === 'passage') {
-    pas.results[q.leg] = credit;
-    if (!credit) { pas.strikes++; pas.errors++; }
-    pas.tracks[q.leg] = credit ? null : err;
-    drawChart(ok ? true : false);
-    if (credit) bell(); else thud();
-    if (pas.strikes >= 3) { setTimeout(passageOver, 700, false); }
-    else if (q.leg === pas.p.wps.length - 2) { setTimeout(passageOver, 900, true); }
-  } else { if (credit) bell(); else thud(); drawRose(q.T, q.V, q.D, ok); }
-  save(); renderStatus();
-}
-function genDevGuess(){ const g = q.givens.find(x => x[0].startsWith('Steering')); if (!g) return 0; const m = /(\d+)°([EW])/.exec(g[1]); return m ? (m[2]==='W'?1:-1)*+m[1] : 0; }
-function hazardHit(err){
-  const nm = distNm(q.a, q.b), ang = q.T + err, len = nm / NM_PER_UNIT;
-  const end = [q.a[0] + len*Math.sin(ang*Math.PI/180), q.a[1] - len*Math.cos(ang*Math.PI/180)];
-  for (const s of pas.p.shoals) { // distance from segment a→end to shoal centre
-    const dx = end[0]-q.a[0], dy = end[1]-q.a[1], t = Math.max(0, Math.min(1, ((s.x-q.a[0])*dx + (s.y-q.a[1])*dy) / (dx*dx+dy*dy)));
-    if (Math.hypot(q.a[0]+t*dx - s.x, q.a[1]+t*dy - s.y) < s.r + 4) return s;
-  }
-  return null;
-}
-function passageOver(made){
-  const fb = $('fb'); const mins = Math.round((Date.now() - pas.start)/60000);
-  const legs = pas.p.wps.length - 1, right = pas.results.filter(Boolean).length;
-  if (made) {
-    fanfare(); award('first'); if (pas.errors === 0) award('clean');
-    store.log.unshift({ when: new Date().toISOString().slice(0,10), name: pas.p.name, legs, right, strikes: pas.strikes, clean: pas.errors === 0 });
-    if (store.log.length >= 3) award('three');
-    store.points += pas.errors === 0 ? 30 : 15;
-    if (stage && stage.kind === 'passage' && pas.errors <= 1) completeStage();
-    fb.className = 'feedback show ok';
-    fb.innerHTML = `<h3>Alongside in ${pas.p.name.split(' to ')[1]}.</h3><p>${right} of ${legs} legs clean${pas.errors===0 ? '. Not a single degree wrong. That is a skipper’s passage.' : `, ${pas.errors} corrected on the way. Logged.`}</p>`;
-  } else {
-    aground();
-    fb.className = 'feedback show no';
-    fb.innerHTML = `<h3>Aground.</h3><p>Three courses wrong on one passage and the boat is on the putty. Say the rule out loud before every answer: <em>${q.down ? 'West is best going down' : 'CADET going up'}</em>. Try the passage again.</p>`;
-    store.log.unshift({ when: new Date().toISOString().slice(0,10), name: pas.p.name, legs, right, strikes: 3, clean:false, aground:true });
-  }
-  $('check').textContent = 'New passage ›';
-  pas.done = true; save(); renderStatus(); renderLog();
-}
-function award(k){ if (store.badges[k]) return; store.badges[k] = new Date().toISOString().slice(0,10); popStreak(`Badge · ${BADGES[k]}`); }
-function popStreak(t){ const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 1800); }
-
-function renderStatus(){
-  $('streak').textContent = store.streak; $('best').textContent = store.best;
-  let ri = 0; for (let i = 0; i < RANKS.length; i++) if (store.points >= RANKS[i][0]) ri = i;
-  const next = RANKS[ri+1];
-  $('rankName').textContent = RANKS[ri][1];
-  $('rankLab').textContent = next ? `${store.points} / ${next[0]} pts to ${next[1]}` : `${store.points} pts · top rank`;
-  $('rankBar').style.width = next ? `${100*(store.points-RANKS[ri][0])/(next[0]-RANKS[ri][0])}%` : '100%';
-  $('skills').innerHTML = Object.entries(SKILLS).map(([k,n]) => { const s = store.skills[k];
-    return `<div class="skill"><span>${n}</span><span class="n mono">${s.right}/${s.seen}</span><div class="bar"><i style="width:${s.box*20}%"></i></div></div>`; }).join('');
-  $('badges').innerHTML = Object.entries(BADGES).map(([k,n]) => `<span class="badge ${store.badges[k]?'won':''}" title="${store.badges[k]||'not yet'}">${store.badges[k]?'★ ':''}${n}</span>`).join('');
-  $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted));
-}
-function renderLog(){
-  const b = $('logbody');
-  if (!store.log.length) { b.innerHTML = `<p class="empty">No passages yet. Slip the lines.</p>`; return; }
-  b.innerHTML = `<table><thead><tr><th>Date</th><th>Passage</th><th>Legs</th><th>Remarks</th></tr></thead><tbody>` +
-    store.log.slice(0,12).map(e => `<tr><td class="mono">${e.when}</td><td>${e.name}</td><td class="mono">${e.right}/${e.legs}</td><td>${e.aground ? 'Aground. Passage abandoned.' : e.clean ? 'Clean passage.' : `${e.strikes} course${e.strikes>1?'s':''} corrected.`}</td></tr>`).join('') + `</tbody></table>`;
-}
 
 // ---- drawing: chart (passage)
 const svg = $('roseSvg');
@@ -600,9 +393,7 @@ function drawChart(ok){
 }
 
 // ---- drawing: rose (drills)
-function drawRose(T, V, D, ok){
-  $('legend').innerHTML = `<span class="t">True north</span><span class="m">Magnetic north</span><span class="c">Compass north</span>`;
-  $('roseNote').textContent = 'Angles between the norths are drawn ×4 so small errors stay visible.';
+function drawRose(T, V, D, ok, target = svg){
   const X = 4, R = 130, r = a => a * Math.PI/180;
   const P = (ang, rad) => [(rad*Math.sin(r(ang))).toFixed(1), (-rad*Math.cos(r(ang))).toFixed(1)];
   let s = `<circle r="${R}" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.2"/><circle r="${R-14}" fill="none" stroke="var(--rule)" stroke-width="0.8"/><circle r="${R-42}" fill="var(--shallow)" fill-opacity=".45" stroke="none"/>`;
@@ -621,8 +412,170 @@ function drawRose(T, V, D, ok){
   const [bx,by] = P(T, R+6);
   s += `<g transform="translate(${bx},${by}) rotate(${T})"><path d="M0,-11 L6,4 L0,1 L-6,4 Z" fill="${ok===null?'var(--ink-2)':ok?'var(--good)':'var(--bad)'}"/></g>`;
   s += `<text x="0" y="${R-50}" font-size="9" fill="var(--ink-3)" text-anchor="middle" font-family="Libre Caslon Text,serif" font-style="italic">Var ${fmtErr(V)}${D?` · Dev ${fmtErr(D)}`:''}</text>`;
-  svg.innerHTML = s;
+  target.innerHTML = s;
 }
+const drawRoseInto = (el, V, D) => drawRose(45, V, D, null, el);
+
+
+// ---- state
+let stage = null, q = null, card = null, answered = false, watch = null, pas = null, rulePicked = null;
+const mode = () => stage.kind === 'drill' ? 'drill' : stage.kind;
+
+function genVariation(cfg = {}){ const lo = cfg.varMin ?? 1, hi = cfg.varMax ?? 12; return rnd(lo,hi) * (Math.random() < .5 ? 1 : -1); }
+function genDeviation(v, cfg = {}){ let d = rnd(1,7); const opp = cfg.opposite ?? 'mix';
+  if (opp === 'always') d = -Math.sign(v) * d; else if (opp === 'never') d = Math.sign(v) * d; else if (Math.random() < .5) d = -d; return d; }
+function bearingBetween(a,b){ return norm(Math.round(Math.atan2(b[0]-a[0], -(b[1]-a[1])) * 180/Math.PI)); }
+function distNm(a,b){ return Math.hypot(b[0]-a[0], b[1]-a[1]) * NM_PER_UNIT; }
+
+// ---- drill question
+function genDrill(){
+  const cfg = stage.kind === 'drill' ? stage.cfg : {dev: pick(['none','given','given','card']), varMin:1, varMax:16};
+  const m = cfg.dev === 'none' ? 'var' : cfg.dev === 'card' ? 'card' : 'dev';
+  let tries = 0, T, M, C, V, D, rows = null, down, hand = false, wraps;
+  do {
+    tries++; down = Math.random() < .5; V = genVariation(cfg); D = 0; rows = null;
+    if (m === 'var') { T = rnd(0,359); }
+    else if (m === 'card') { rows = card; const row = pick(rows); D = row.dev; T = down ? norm(row.m - V) : norm(row.c - D - V); }
+    else { D = genDeviation(V, cfg); T = rnd(0,359); }
+    M = norm(T + V); C = norm(T + V + D);
+    hand = !!cfg.hand && Math.random() < .5;
+    if (hand) { down = false; D = 0; C = M; }
+    wraps = Math.abs(sgnDeg(T,M)) !== Math.abs(norm(T)-norm(M)) || Math.abs(sgnDeg(M,C)) !== Math.abs(norm(M)-norm(C));
+  } while (tries < 40 && ((cfg.wrap === 'avoid' && wraps) || (cfg.wrap === 'force' && !wraps)));
+  const twoStep = m !== 'var' && !hand;
+  const unitFrom = down ? 'T' : (twoStep ? 'C' : 'M'), unitTo = down ? (twoStep ? 'C' : 'M') : 'T';
+  const from = down ? T : (twoStep ? C : M);
+  const mark = pick(['the lighthouse','the headland','the church spire','the port-hand buoy','the water tower']);
+  let prompt, givens = [['Variation', fmtErr(V)]];
+  if (cfg.hand) {
+    const trapDev = genDeviation(V, {opposite:'mix'});
+    if (hand) { prompt = `You step onto the side deck with the hand-bearing compass. ${mark[0].toUpperCase()+mark.slice(1)} bears ${pad(from)}°M. What do you plot on the chart?`; givens.push(['Steering compass dev.', fmtErr(trapDev)]); }
+    else { givens.push(['Steering compass dev.', fmtErr(D)]); prompt = down ? `The plotted course is ${pad(from)}°T. What do you give the helm on the steering compass?` : `The helm reports steering ${pad(from)}°C. What heading do you plot on the chart?`; }
+  } else {
+    const ctx = pick(['course to steer','course to steer','heading']);
+    const isBearing = Math.random() < .35;
+    prompt = down
+      ? (isBearing ? `The chart gives the bearing of ${mark} as ${pad(from)}°T. What will you read on the ${twoStep?'steering':'hand-bearing'} compass?` : `You plot a ${ctx} of ${pad(from)}°T on the chart. What do you give the helm?`)
+      : (isBearing ? `You take a bearing of ${mark}: ${pad(from)}°${unitFrom}. What do you plot on the chart?` : `The helm is steering ${pad(from)}°${unitFrom}. What ${ctx} do you plot on the chart?`);
+    if (m === 'dev') givens.push(['Deviation', fmtErr(D)]); if (m === 'card') givens.push(['Deviation','see card',true]);
+  }
+  q = { m, down, T, M, C, V, D, rows, unitFrom, unitTo, from, target: down ? (twoStep ? C : M) : T, needRule:false, hand, prompt, givens,
+    qtype: down ? `Chart → ${twoStep?'compass':'magnetic'}` : `${twoStep?'Compass':hand?'Hand-bearing':'Magnetic'} → chart` };
+  render();
+}
+
+function render(){
+  answered = false; rulePicked = null;
+  const passage = q.m === 'passage';
+  $('chartbox').hidden = !passage;
+  if (passage) {
+    $('legs').innerHTML = pas.p.wps.slice(1).map((_,i) => `<span class="leg ${i < pas.leg ? (pas.results[i] ? 'done' : 'bad') : i === pas.leg ? 'now' : ''}"></span>`).join('') +
+      `<span class="strikes">strikes <b>${'✕'.repeat(pas.strikes)}${'·'.repeat(3-pas.strikes)}</b></span>`;
+    drawChart(null);
+  }
+  $('qtype').textContent = q.qtype;
+  $('prompt').textContent = q.prompt;
+  $('givens').innerHTML = `<div class="given ${q.unitFrom.toLowerCase()}"><div class="k">Given · °${q.unitFrom}</div><div class="v mono">${pad(q.from)}</div></div>` +
+    q.givens.map(([k,v,soft]) => `<div class="given"><div class="k">${k}</div><div class="v ${soft?'serif':'mono'}" ${soft?'style="font-size:15px;font-style:italic"':''}>${v}</div></div>`).join('');
+  $('unit').textContent = '°' + q.unitTo;
+  $('rulepick').className = 'rulepick' + (q.needRule ? ' show' : '');
+  document.querySelectorAll('.chip').forEach(c => c.className = 'chip');
+  $('ans').disabled = q.needRule; $('ans').value = '';
+  if (!q.needRule) $('ans').focus();
+  $('fb').className = 'feedback'; $('fb').innerHTML = '';
+  $('check').textContent = 'Check';
+  renderCard(null);
+}
+
+function renderCard(hiRow){
+  const el = $('devcard');
+  if (!q.rows) { el.hidden = true; return; }
+  el.hidden = false;
+  el.innerHTML = `<table><caption>Deviation card · S/Y <em>Persistence</em> · swung ${new Date().getFullYear()}</caption>
+  <thead><tr><th>Ship's head °C</th><th>Deviation</th><th>Ship's head °M</th></tr></thead><tbody>` +
+  q.rows.map(r => `<tr class="${hiRow && hiRow.c === r.c ? 'hi':''}"><td class="mono">${pad(r.c)}</td><td class="mono">${fmtErr(r.dev)}</td><td class="mono">${pad(r.m)}</td></tr>`).join('') + `</tbody></table>`;
+}
+
+// ---- checking
+function check(){
+  const raw = $('ans').value.trim();
+  if (!/^\d{1,3}$/.test(raw)) { $('ans').focus(); return; }
+  finish(norm(parseInt(raw,10)), raw.length < 3, false);
+}
+function finish(a, shortForm, revealed){
+  answered = true;
+  const ok = a === q.target;
+  const fb = $('fb');
+  fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
+  const steps = [];
+  const sgn = (x, down) => { const w = x > 0; const add = down ? w : !w; return `${add ? '+' : '−'} ${Math.abs(x)}°${w?'W':'E'}`; };
+  const twoStep = q.m !== 'var' && !q.hand;
+  if (q.down) { steps.push([`${pad(q.T)}°T`, `${sgn(q.V,true)} variation`, `${pad(q.M)}°M`]); if (twoStep) steps.push([`${pad(q.M)}°M`, `${sgn(q.D,true)} deviation`, `${pad(q.C)}°C`]); }
+  else { if (twoStep) steps.push([`${pad(q.C)}°C`, `${sgn(q.D,false)} deviation`, `${pad(q.M)}°M`]); steps.push([`${pad(q.M)}°M`, `${sgn(q.V,false)} variation`, `${pad(q.T)}°T`]); }
+  let rule = q.down ? 'Going down (chart → compass): West is best, East is least. Add W, subtract E.' : 'Going up (compass → chart): CADET, Compass ADd East to get True. Add E, subtract W.';
+  if (q.hand) rule += ' Hand-bearing compass: variation only. The steering-compass deviation was a decoy.';
+  const err = revealed ? 0 : sgnDeg(a, q.target);
+  const title = revealed ? `Worked answer: ${pad(q.target)}°`
+    : ok ? pick(['Spot on.','Aye, correct.','Clean.','That would pass.','Steady as she goes.','Helm answers.']) + (shortForm ? ' Write it as three figures next time.' : '')
+    : `Not quite. It's ${pad(q.target)}°, you were ${Math.abs(err)}° ${err > 0 ? 'high' : 'low'}.`;
+  let extra = '';
+  if (q.m === 'passage' && !ok && !revealed && q.down) {
+    const nm = distNm(q.a, q.b), off = Math.abs(nm * Math.sin(err * Math.PI/180)), hit = hazardHit(err);
+    extra = `<p>Steering ${pad(a)}°C instead of ${pad(q.target)}°C puts you <strong>${off.toFixed(2)} nm off track</strong> after ${nm.toFixed(1)} nm${hit ? `, straight onto <strong>${hit.name}</strong>` : ''}.</p>`;
+  }
+  if (q.m === 'passage' && !ok && !revealed && !q.down) {
+    if (Math.abs(sgnDeg(a, norm(q.target - genDevGuess()))) <= 7) extra = `<p>You applied deviation to a hand-bearing compass. It has no deviation card, that number belonged to the steering compass.</p>`;
+    extra += `<p>A fix ${Math.abs(err)}° out puts your position ${(distNm(q.mid,[q.mark.x,q.mark.y]) * Math.abs(Math.sin(err*Math.PI/180))).toFixed(2)} nm from where you really are.</p>`;
+  }
+  fb.innerHTML = `<h3>${title}</h3><ul class="steps">` + steps.map(s => `<li><span class="mono s">${s[0]}</span><span>${s[1]} → <span class="mono s">${s[2]}</span></span></li>`).join('') + `</ul>${extra}<div class="rule">${rule}</div>`;
+  if (q.rows) renderCard(q.rows.find(r => r.dev === q.D && (q.down ? r.m === q.M : r.c === q.C)));
+  $('check').textContent = 'Next ›';
+
+  const credit = ok && !revealed;
+  if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); if (watch) watch.score++; }
+  else { store.streak = 0; if (watch && !revealed) watch.miss++; }
+  if (credit && store.streak % 10 === 0) pop(`${store.streak} in a row`);
+
+  if (q.m === 'passage') {
+    pas.results[q.leg] = credit;
+    if (!credit) { pas.strikes++; pas.errors++; }
+    pas.tracks[q.leg] = credit ? null : err;
+    drawChart(ok);
+    if (credit) bell(); else thud();
+    if (pas.strikes >= 3) setTimeout(passageOver, 700, false);
+    else if (q.leg === pas.p.wps.length - 2) setTimeout(passageOver, 900, true);
+  } else {
+    if (credit) bell(); else thud();
+    if (stage.kind === 'drill') recordStage(credit);
+  }
+  save(); renderStatus();
+}
+function genDevGuess(){ const g = q.givens.find(x => x[0].startsWith('Steering')); if (!g) return 0; const m = /(\d+)°([EW])/.exec(g[1]); return m ? (m[2]==='W'?1:-1)*+m[1] : 0; }
+function hazardHit(err){
+  const nm = distNm(q.a, q.b), ang = q.T + err, len = nm / NM_PER_UNIT;
+  const end = [q.a[0] + len*Math.sin(ang*Math.PI/180), q.a[1] - len*Math.cos(ang*Math.PI/180)];
+  for (const s of pas.p.shoals) { const dx = end[0]-q.a[0], dy = end[1]-q.a[1], t = Math.max(0, Math.min(1, ((s.x-q.a[0])*dx + (s.y-q.a[1])*dy) / (dx*dx+dy*dy)));
+    if (Math.hypot(q.a[0]+t*dx - s.x, q.a[1]+t*dy - s.y) < s.r + 4) return s; }
+  return null;
+}
+function passageOver(made){
+  const fb = $('fb'), legs = pas.p.wps.length - 1, right = pas.results.filter(Boolean).length;
+  if (made) {
+    fanfare();
+    store.log.unshift({ when: new Date().toISOString().slice(0,10), name: pas.p.name, legs, right, strikes: pas.strikes, clean: pas.errors === 0 });
+    fb.className = 'feedback show ok';
+    fb.innerHTML = `<h3>Alongside in ${pas.p.name.split(' to ')[1]}.</h3><p>${right} of ${legs} legs clean${pas.errors===0 ? '. Not a single degree wrong. That is a skipper’s passage.' : `, ${pas.errors} corrected on the way. Logged.`}</p>`;
+    if (pas.errors <= 1) completeStage();
+  } else {
+    aground();
+    fb.className = 'feedback show no';
+    fb.innerHTML = `<h3>Aground.</h3><p>Three courses wrong on one passage and the boat is on the putty. Say the rule out loud before every answer. Try the passage again.</p>`;
+    store.log.unshift({ when: new Date().toISOString().slice(0,10), name: pas.p.name, legs, right, strikes: 3, clean:false, aground:true });
+  }
+  $('check').textContent = 'New passage ›';
+  pas.done = true; save(); renderStatus(); renderLog();
+}
+function pop(t){ const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2000); }
 
 // ---- watch mode
 function startWatch(){
@@ -632,64 +585,81 @@ function startWatch(){
 }
 function endWatch(){
   clearTimeout(watch.t); const w = watch; watch = null; $('timer').textContent = '';
-  const fb = $('fb'); fb.className = 'feedback show ' + (w.miss === 0 && w.score >= 8 ? 'ok' : '');
-  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} correct, ${w.miss} wrong in 90 seconds. ${w.score >= 12 && w.miss <= 1 ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Speed comes with reps.' : 'Slow down and say the rule out loud each time.'}</p>`;
-  if (w.score >= 12 && w.miss <= 1) { award('watch'); if (stage && stage.kind === 'watch') completeStage(); }
-  store.points += w.score * 3; save(); renderStatus();
+  const passed = w.score >= 12 && w.miss <= 1;
+  const fb = $('fb'); fb.className = 'feedback show ' + (passed ? 'ok' : '');
+  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} correct, ${w.miss} wrong in 90 seconds. ${passed ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Speed comes with reps.' : 'Slow down and say the rule out loud each time.'}</p>`;
+  if (passed && stage.kind === 'watch') completeStage();
+  save(); renderStatus();
   answered = true; $('check').textContent = 'Again ›';
 }
 
 // ---- stages
-function stageState(st){ return store.stages[st.id]; }
-function unlocked(i){ return i === 0 || stageState(STAGES[i-1]).done; }
+const ss = () => store.stages[stage.id];
+const idx = () => STAGES.indexOf(stage);
+function unlocked(i){ return i === 0 || store.stages[STAGES[i-1].id].done; }
 function recordStage(ok){
-  const ss = stageState(stage); ss.recent.push(ok); if (ss.recent.length > 10) ss.recent.shift();
-  if (!ss.done && ss.recent.length >= 10 && ss.recent.filter(Boolean).length >= 8) completeStage();
-  renderStages();
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 10) s.recent.shift();
+  if (!s.done && s.recent.length >= 10 && s.recent.filter(Boolean).length >= 8) completeStage();
 }
 function completeStage(){
-  const ss = stageState(stage); if (ss.done) return; ss.done = true; save(); fanfare();
-  const i = STAGES.indexOf(stage), nxt = STAGES[i+1];
-  popStreak(nxt ? `Stage cleared · ${nxt.title} unlocked` : 'Ladder complete');
-  renderStages();
+  const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
+  const nxt = STAGES[idx()+1];
+  pop(nxt ? `Stage cleared · next: ${nxt.title}` : 'Ladder complete');
+  renderStatus();
 }
-function renderStages(){
-  $('stages').innerHTML = STAGES.map((st,i) => { const ss = stageState(st), lock = !unlocked(i);
-    const prog = st.kind === 'drill' ? Math.min(100, 100 * ss.recent.filter(Boolean).length / 8) : 0;
-    return `<button class="stage ${ss.done?'done':''} ${lock?'locked':''}" role="tab" data-i="${i}" aria-selected="${stage===st}" ${lock?'aria-disabled="true" title="Clear the previous stage first"':''}>
-      <span class="n">${lock?'🔒':i+1}</span><span class="t">${st.title}</span><span class="p"><i style="width:${ss.done?100:prog}%"></i></span></button>`; }).join('');
-  const cur = $('stages').querySelector('[aria-selected="true"]'); if (cur) cur.scrollIntoView({ block:'nearest', inline:'nearest' });
+function renderStatus(){
+  $('streak').textContent = store.streak; $('best').textContent = store.best;
+  $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted));
+  const i = idx(), s = ss();
+  $('stepper').innerHTML = `<div class="dots">` + STAGES.map((st,k) => { const lock = !unlocked(k), d = store.stages[st.id].done;
+      return `<button class="dot ${d?'done':''} ${k===i?'now':''} ${lock?'locked':''}" data-i="${k}" title="${k+1}. ${st.title}${lock?' (locked)':''}" aria-label="Stage ${k+1}: ${st.title}" ${lock?'disabled':''}></button>`; }).join('') + `</div>` +
+    `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
+    `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)||i===STAGES.length-1?'disabled':''} aria-label="Next stage">›</button></span>`;
+  const last = stage.kind === 'drill' ? s.recent : [];
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:10}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
+    `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
+}
+function renderConcept(){
+  const i = idx();
+  let fig = '';
+  if (stage.rose) { const [V,D] = stage.rose; fig = `<svg viewBox="-160 -160 320 320" id="conceptRose" aria-hidden="true"></svg>`; }
+  $('conceptBody').className = 'body' + (fig ? '' : ' nofig');
+  $('conceptBody').innerHTML = `<div><p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex.replace(/\n/g,'<br>')}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p></div>${fig}`;
+  if (stage.rose) drawRoseInto($('conceptRose'), stage.rose[0], stage.rose[1]);
+  $('concept').open = !store.seenConcept[stage.id];
+  store.seenConcept[stage.id] = true; save();
 }
 function setStage(i){
-  if (!unlocked(i)) return;
+  if (!unlocked(i) || i < 0 || i >= STAGES.length) return;
   if (watch) endWatch();
-  stage = STAGES[i]; mode = stage.kind === 'drill' ? (stage.cfg.dev === 'none' ? 'var' : stage.cfg.dev) : stage.kind;
-  const ss = stageState(stage);
-  const intro = $('intro');
-  intro.hidden = false;
-  intro.innerHTML = `<h3>Stage ${i+1} · ${stage.title}</h3><p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex.replace(/\n/g,'<br>')}</div>` : ''}<p class="gate">${stage.kind==='drill' ? 'Clear it: 8 of your last 10 right.' : stage.kind==='passage' ? 'Clear it: arrive with at most one correction.' : 'Clear it: 12 right, at most 1 wrong.'}${ss.done ? ' <strong>Cleared.</strong>' : ''}</p>`;
-  renderStages();
-  if (stage.kind === 'passage') { pas = null; startPassage(); return; }
-  card = makeCard();
-  if (stage.kind === 'watch') startWatch();
-  genDrill();
+  stage = STAGES[i];
+  renderConcept();
+  if (stage.kind === 'passage') { pas = null; startPassage(); }
+  else { card = makeCard(); if (stage.kind === 'watch') startWatch(); genDrill(); }
+  renderStatus(); renderLog();
+}
+function renderLog(){
+  const box = $('logbox'), b = $('logbody');
+  box.hidden = !store.log.length && stage.kind !== 'passage';
+  if (!store.log.length) { b.innerHTML = `<p class="empty">No passages yet. Slip the lines.</p>`; return; }
+  b.innerHTML = `<table><thead><tr><th>Date</th><th>Passage</th><th>Legs</th><th>Remarks</th></tr></thead><tbody>` +
+    store.log.slice(0,12).map(e => `<tr><td class="mono">${e.when}</td><td>${e.name}</td><td class="mono">${e.right}/${e.legs}</td><td>${e.aground ? 'Aground. Passage abandoned.' : e.clean ? 'Clean passage.' : `${e.strikes} course${e.strikes>1?'s':''} corrected.`}</td></tr>`).join('') + `</tbody></table>`;
 }
 
 // ---- wiring
 function next(){
-  if (mode === 'passage') { if (!pas || pas.done) startPassage(); else { pas.leg++; genPassageQ(); } }
-  else if (mode === 'watch' && !watch) { startWatch(); genDrill(); }
+  if (stage.kind === 'passage') { if (!pas || pas.done) startPassage(); else { pas.leg++; genPassageQ(); } }
+  else if (stage.kind === 'watch' && !watch) { startWatch(); genDrill(); }
   else genDrill();
 }
-$('stages').addEventListener('click', e => { const b = e.target.closest('.stage'); if (b) setStage(+b.dataset.i); });
+$('stepper').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) return setStage(+d.dataset.i); const n = e.target.closest('[data-step]'); if (n) setStage(idx() + +n.dataset.step); });
 $('form').addEventListener('submit', e => { e.preventDefault(); if (answered) next(); else if (!$('ans').disabled) check(); });
 $('skip').addEventListener('click', () => { if (!answered) { rulePicked = true; $('ans').disabled = false; finish(q.target, false, true); } });
 $('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) bell(); });
-document.addEventListener('keydown', e => { if (e.altKey && /^[1-9]$/.test(e.key)) { e.preventDefault(); setStage(+e.key-1); } });
+document.addEventListener('keydown', e => { if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); } });
 $('ans').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g,'').slice(0,3); });
 
-renderStatus(); renderLog();
-setStage(Math.max(0, STAGES.findIndex(st => !stageState(st).done)));
+setStage(Math.max(0, STAGES.findIndex(st => !store.stages[st.id].done)));
 })();
 </script>
 </body>
