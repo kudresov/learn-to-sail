@@ -29,7 +29,7 @@ tutorials/<slug>/       one self-contained tutorial per folder (index.html)
 | 02 | Course to Steer (tidal vectors, leeway) | next |
 | 03 | Secondary Ports (tide heights and times) | planned |
 | 04 | Buoys and Lights (IALA A) | planned |
-| 05 | Rules of the Road | planned |
+| 05 | Rules of the Road (Rules 12–18, lights, shapes, sound signals, night encounters) | live |
 | 06 | Weather | planned |
 
 ## Deploy

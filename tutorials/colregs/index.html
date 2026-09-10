@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Rules of the Road · Learn to Sail</title>
+<meta name="description" content="Drill the IRPCS for the RYA Day Skipper: sail on sail, power on power, the pecking order, navigation lights, day shapes and sound signals, then night encounters at exam pace.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../shared/site.css">
+<style>
+.col{max-width:640px;margin:0 auto}
+.tut-head{padding-block:22px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tut-head h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:24px;margin:0}
+.tut-head .streak{font-size:13px;color:var(--ink-3)}
+.tut-head .streak b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:10px;padding-block:16px 4px;flex-wrap:wrap}
+.stepper .dots{display:flex;gap:6px;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;padding:0;cursor:pointer}
+.stepper .dot.done{background:var(--good);border-color:var(--good)}
+.stepper .dot.now{background:var(--magenta);border-color:var(--magenta);transform:scale(1.3)}
+.stepper .dot.locked{border-color:var(--rule);cursor:not-allowed}
+.stepper .name{font:italic 400 17px "Libre Caslon Text",Georgia,serif}
+.stepper .name small{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:8px;font-style:normal}
+.stepper .nav{margin-left:auto;display:flex;gap:4px}
+.stepper .nav button{font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:4px 9px;cursor:pointer;border-radius:2px}
+.stepper .nav button:disabled{opacity:.35;cursor:default}
+.concept{border:1px solid var(--rule);border-left:4px solid var(--magenta);background:var(--paper);margin-top:14px}
+.concept summary{list-style:none;cursor:pointer;padding:12px 16px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);display:flex;justify-content:space-between}
+.concept summary::after{content:"show";font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.concept[open] summary::after{content:"hide"}
+.concept .body{padding:0 16px 16px;font-size:15px}
+.concept p{margin:0 0 8px;max-width:40em}
+.concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;color:var(--ink-2);white-space:pre-line}
+.concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.q{margin-top:22px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
+.timer{font-size:13px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(20px,3vw,24px);line-height:1.35;margin:8px 0 16px;text-wrap:balance}
+.scene{margin-bottom:16px;border:1px solid var(--rule);background:var(--paper)}
+.scene svg{width:100%;height:auto;display:block;max-height:360px}
+.scene svg.top{max-height:320px}
+.scene svg text{font-family:"Source Sans 3",sans-serif}
+.night{background:#060b14}
+.givens{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.given{border:1px solid var(--rule);padding:9px 12px;background:var(--paper);min-width:110px}
+.given .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.given .v{font-size:18px;font-weight:500}
+.given .v.sig{font-family:"IBM Plex Mono",monospace;letter-spacing:.15em;font-size:20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 14px "Source Sans 3",sans-serif;padding:10px 14px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:22px;min-height:44px;display:flex;align-items:center;gap:8px;text-align:left}
+.chip:hover:not(:disabled){border-color:var(--ink-2)}
+.chip:disabled{cursor:default;opacity:.7}
+.chip.picked{border-color:var(--good);background:var(--good-soft);opacity:1}
+.chip.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s;opacity:1}
+.chip kbd{opacity:.7}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink)}
+button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
+.feedback.show{display:block}
+.feedback.ok{border-color:var(--good);background:var(--good-soft)}
+.feedback.no{border-color:var(--bad);background:var(--bad-soft)}
+.feedback h3{margin:0 0 8px;font:700 15px "Source Sans 3",sans-serif}
+.feedback p{margin:6px 0 0;font-size:15px}
+.rule{font-size:13px;color:var(--ink-2);margin-top:8px;font-style:italic}
+.progress{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);flex-wrap:wrap}
+.progress .last{display:flex;gap:5px}
+.progress .last i{width:14px;height:14px;border-radius:3px;background:var(--rule);display:block}
+.progress .last i.y{background:var(--good)}.progress .last i.n{background:var(--bad)}
+.progress .cleared{color:var(--good);font-weight:600}
+.more{margin-top:28px;background:var(--paper);border:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 18px;font:italic 400 17px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
+.more[open] summary::after{content:"−"}
+.more .body{padding:0 18px 18px;font-size:15px}
+.more h4{margin:14px 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.more p{margin:0 0 6px;max-width:40em}
+.more .mono{font-family:"IBM Plex Mono",monospace;font-size:14px}
+.more .tbl{overflow-x:auto}
+.more table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+.more td,.more th{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.more th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
+.pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
+.pop.show{opacity:1;transform:translate(-50%,0)}
+.iconbtn{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-3);padding:4px 8px;cursor:pointer;border-radius:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="pop" id="pop"></div>
+<div class="col">
+<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Rules of the Road</a></div><button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button></nav>
+
+<header class="tut-head">
+  <h1>Rules of the Road</h1>
+  <span class="streak">streak <b id="streak">0</b> · best <b id="best">0</b></span>
+</header>
+
+<div class="stepper" id="stepper"></div>
+
+<details class="concept" id="concept">
+  <summary>The idea</summary>
+  <div class="body" id="conceptBody"></div>
+</details>
+
+<section class="q" aria-label="Question">
+  <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
+  <p class="prompt" id="prompt"></p>
+  <div class="scene" id="scene" hidden></div>
+  <div class="givens" id="givens"></div>
+  <div class="chips" id="chips" role="group" aria-label="Answers"></div>
+  <div class="actions">
+    <button class="btn" type="button" id="next" hidden>Next ›</button>
+    <button class="btn ghost" type="button" id="skip">Show me</button>
+  </div>
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<details class="more">
+  <summary>The rules, in one breath</summary>
+  <div class="body">
+    <h4>Sail on sail · Rule 12</h4>
+    <p><strong>Port gives way to starboard.</strong> Same tack: <strong>windward keeps clear of leeward</strong>. Your tack is the side the wind comes over, opposite the boom. Not sure of her tack? Assume she is on starboard and keep clear.</p>
+    <h4>Power on power · Rules 13–15</h4>
+    <p><strong>Overtaking</strong> (coming up from more than 22.5° abaft her beam, where you would see only her sternlight): the overtaker keeps clear, whatever she is. <strong>Head-on</strong>: both alter to starboard, pass red to red. <strong>Crossing</strong>: if she is on your starboard side, you give way, and do not cross ahead of her.</p>
+    <h4>What you do · Rules 8, 16, 17</h4>
+    <p>Give-way: early, substantial, obvious. Stand-on: hold course and speed, watch her bearing, and if she does nothing, act, but never alter to port for a vessel on your port side.</p>
+    <h4>Pecking order · Rule 18</h4>
+    <p><em>New Reels Catch Fish So Purchase Some.</em> Not under command, Restricted in ability to manoeuvre, Constrained by draught, Fishing, Sailing, Power, Seaplane. Lower on the list gives way. Overtaking and narrow-channel rules still override it. A pilot vessel is just a power-driven vessel for priority.</p>
+    <h4>Lights</h4>
+    <div class="tbl"><table><thead><tr><th>Lights (all-round unless said)</th><th>Vessel</th></tr></thead><tbody>
+      <tr><td>Masthead white + sidelights + sternlight</td><td>Power-driven under 50 m. Second masthead, aft and higher: 50 m or more</td></tr>
+      <tr><td>Sidelights + sternlight only</td><td>Sailing (or being towed)</td></tr>
+      <tr><td>Green over white</td><td>Trawling</td></tr>
+      <tr><td>Red over white</td><td>Fishing other than trawling</td></tr>
+      <tr><td>Red over red</td><td>Not under command</td></tr>
+      <tr><td>Red, white, red</td><td>Restricted in ability to manoeuvre</td></tr>
+      <tr><td>Three reds</td><td>Constrained by her draught</td></tr>
+      <tr><td>White over red</td><td>Pilot on duty</td></tr>
+      <tr><td>One white (two if 50 m+)</td><td>At anchor</td></tr>
+      <tr><td>Anchor light + two reds</td><td>Aground</td></tr>
+      <tr><td>Two mastheads in a vertical line + yellow over stern</td><td>Towing, tow under 200 m (three mastheads if longer)</td></tr>
+    </tbody></table></div>
+    <p><em>Red to red is a head-on. Green alone: she crosses left to right. Red alone: right to left. White alone, low: her stern.</em></p>
+    <h4>Day shapes</h4>
+    <p>Ball: anchor. Cone point down: motor-sailing. Cylinder: constrained by draught. Ball–diamond–ball: restricted. Two balls: not under command. Three balls: aground. Two cones point to point: fishing. Diamond: tow over 200 m.</p>
+    <h4>Sound · Rules 34, 35</h4>
+    <div class="tbl"><table><thead><tr><th>Signal</th><th>In sight</th></tr></thead><tbody>
+      <tr><td class="mono">●</td><td>Turning to starboard</td></tr>
+      <tr><td class="mono">● ●</td><td>Turning to port</td></tr>
+      <tr><td class="mono">● ● ●</td><td>Engines astern</td></tr>
+      <tr><td class="mono">● ● ● ● ●</td><td>What are you doing? (doubt)</td></tr>
+      <tr><td class="mono">▬ ▬ ●  /  ▬ ▬ ● ●</td><td>I will overtake on your starboard / port side</td></tr>
+      <tr><td class="mono">▬ ● ▬ ●</td><td>Agreed, come past</td></tr>
+      <tr><td class="mono">▬</td><td>Coming round a blind bend</td></tr>
+    </tbody></table></div>
+    <div class="tbl"><table><thead><tr><th>Signal</th><th>In fog (every 2 min, bells every 1 min)</th></tr></thead><tbody>
+      <tr><td class="mono">▬</td><td>Power, making way</td></tr>
+      <tr><td class="mono">▬ ▬</td><td>Power, underway but stopped</td></tr>
+      <tr><td class="mono">▬ ● ●</td><td>Sailing, fishing, NUC, RAM, CBD, towing. "Everyone with a handicap"</td></tr>
+      <tr><td class="mono">▬ ● ● ●</td><td>Last vessel of a tow</td></tr>
+      <tr><td>Bell, 5 s</td><td>At anchor (gong aft too if 100 m+)</td></tr>
+      <tr><td>3 strokes, bell, 3 strokes</td><td>Aground</td></tr>
+      <tr><td class="mono">● ● ● ●</td><td>Pilot vessel</td></tr>
+    </tbody></table></div>
+    <h4>Keys</h4>
+    <p><kbd>1</kbd>–<kbd>5</kbd> pick an answer, <kbd>Enter</kbd> moves on, <kbd>P</kbd> replays a sound. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
+  </div>
+</details>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="../../">More tutorials</a></footer>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const norm = d => ((d % 360) + 360) % 360;
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[rnd(0,a.length-1)];
+const shuffle = a => { a = a.slice(); for (let i = a.length-1; i > 0; i--) { const j = rnd(0,i); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const sgnDeg = (a,b) => { let d = norm(a) - norm(b); if (d > 180) d -= 360; if (d < -180) d += 360; return d; };
+const rad = d => d * Math.PI/180;
+
+// ---- persistence
+const KEY = 'lts:colregs:v1';
+let store = { streak:0, best:0, stages:{}, muted:false, seenConcept:{} };
+try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
+
+// ---- stages
+const STAGES = [
+  { id:'sail', kind:'drill', title:'Sail meets sail', gen: genSail,
+    intro:'Two yachts under sail. First find your tack: the side the wind comes over, opposite the boom. Different tacks, port gives way. Same tack, the windward boat (nearer the wind) keeps clear of the leeward one.',
+    ex:'Port tack v starboard tack → port gives way\nBoth starboard tack → windward gives way' },
+  { id:'power', kind:'drill', title:'Power meets power', gen: genPower,
+    intro:'Both motoring, bearing steady. Three questions in order: is anyone overtaking (coming from more than 22.5° abaft the beam)? Is it head-on? Otherwise it is crossing, and the boat that has the other on her starboard side gives way.',
+    ex:'Overtaker keeps clear, always\nHead-on: both to starboard\nCrossing: she is on my starboard → I give way' },
+  { id:'action', kind:'drill', title:'Helm orders', gen: genAction,
+    intro:'Knowing who gives way is half of it. Give-way: alter early and boldly, normally to starboard, and never cross ahead. Stand-on: hold your course and speed so she can predict you, but keep watching her bearing.',
+    ex:'Head-on → starboard\nGive-way in a crossing → starboard, pass astern\nStand-on → hold course and speed' },
+  { id:'order', kind:'drill', title:'Pecking order', gen: genOrder,
+    intro:'When the vessels are different kinds, Rule 18 decides. New Reels Catch Fish So Purchase Some: Not under command, Restricted, Constrained by draught, Fishing, Sailing, Power, Seaplane. Lower on the list gives way. Overtaking still beats everything.',
+    ex:'Sailing v fishing → sail gives way\nPower v sailing → power gives way\nSail overtaking power → sail gives way' },
+  { id:'lights', kind:'drill', title:'Lights: who is she?', gen: genLights,
+    intro:'At night the lights are all you have. Read the vertical stack first: it names the vessel. Then the sidelights and mastheads tell you whether she is a power-driven vessel, her size, and whether she is moving.',
+    ex:'Green over white → trawler\nRed over red → not under command\nWhite over red → pilot' },
+  { id:'aspect', kind:'drill', title:'Lights: which way?', gen: genAspect,
+    intro:'Sidelights are a compass for her heading. Green is her starboard side, so green alone means she is passing left to right across you. Red alone: right to left. Both: she is coming at you. A low white alone: you are looking at her stern.',
+    ex:'Green → left to right\nRed → right to left\nRed and green → head-on' },
+  { id:'shapes', kind:'drill', title:'Day shapes', gen: genShapes,
+    intro:'By day the special vessels hang shapes instead of lights. Balls, cones, a cylinder and a diamond, hoisted where best seen.',
+    ex:'Ball → anchor\nCone point down → motor-sailing\nTwo cones point to point → fishing' },
+  { id:'sound', kind:'drill', title:'Sound signals', gen: genSound,
+    intro:'In sight of each other, short blasts announce a manoeuvre: one starboard, two port, three astern, five "what are you doing?". In fog, one prolonged blast is a power vessel making way and prolonged plus two shorts is everyone with a handicap, sailing vessels included.',
+    ex:'● → starboard   ● ● → port\n▬ → power in fog   ▬ ● ● → sail, fishing, NUC, RAM in fog' },
+  { id:'night', kind:'drill', title:'Night encounter', gen: genNight,
+    intro:'Everything together. Read the lights, work out what she is and which way she is going, then apply the pecking order or the power rules. Remember that if you are overtaking her, none of that matters: you keep clear.',
+    ex:'Under sail, see masthead + red → power crossing right to left → we stand on' },
+  { id:'watch', kind:'watch', title:'Bridge watch',
+    intro:'Ninety seconds, everything mixed. On the exam paper you get about a minute a question; on deck you get less.' },
+];
+const GATE = { drill:'8 of your last 10', watch:'12 right, at most 1 wrong' };
+for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
+
+let stage, q = null, answered = false, watch = null;
+
+// ---- sound (WebAudio, tiny)
+let actx = null;
+const ctx = () => (actx ??= new (window.AudioContext || window.webkitAudioContext)());
+function tone(seq){
+  if (store.muted) return;
+  try {
+    const a = ctx(); let t = a.currentTime;
+    for (const [f, d, type] of seq) {
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(a.destination); o.start(t); o.stop(t + d); t += d * 0.8;
+    }
+  } catch(e) {}
+}
+const bell = () => tone([[1568, .35],[2093, .5]]);
+const thud = () => tone([[110, .25, 'triangle'],[82, .35, 'triangle']]);
+const fanfare = () => tone([[784,.18],[988,.18],[1175,.18],[1568,.5]]);
+function horn(pat){
+  if (store.muted) return;
+  try {
+    const a = ctx(); let t = a.currentTime + .05;
+    const blast = d => { const o = a.createOscillator(), g = a.createGain(), f = a.createBiquadFilter();
+      o.type = 'sawtooth'; o.frequency.value = 150; f.type = 'lowpass'; f.frequency.value = 600;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.14, t + .04); g.gain.setValueAtTime(0.14, t + d - .05); g.gain.linearRampToValueAtTime(0.0001, t + d);
+      o.connect(f).connect(g).connect(a.destination); o.start(t); o.stop(t + d + .02); t += d + .4; };
+    const ding = () => { const o = a.createOscillator(), g = a.createGain(); o.frequency.value = 1760;
+      g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + .35); o.connect(g).connect(a.destination); o.start(t); o.stop(t + .4); };
+    for (const ch of pat) {
+      if (ch === 's') blast(.35); else if (ch === 'L') blast(1.2);
+      else if (ch === 'B') { for (let i = 0; i < 8; i++) { ding(); t += .2; } t += .5; }
+      else if (ch === 'b') { for (let i = 0; i < 3; i++) { ding(); t += .55; } t += .4; }
+    }
+  } catch(e) {}
+}
+
+// ---- vessels
+const KIND = {
+  power:'a power-driven vessel', sail:'a sailing vessel', fish:'a vessel engaged in fishing',
+  ram:'a vessel restricted in her ability to manoeuvre', nuc:'a vessel not under command', cbd:'a vessel constrained by her draught',
+};
+const RANK = { nuc:5, ram:4, cbd:3, fish:2, sail:1, power:0 };
+const RANK_NAME = { nuc:'not under command', ram:'restricted in ability to manoeuvre', cbd:'constrained by draught', fish:'fishing', sail:'sailing', power:'power-driven' };
+const ORDER_SKIP = ['nuc|ram','cbd|nuc','cbd|ram'];
+
+// lights: [colour, kind, along (fwd +), height, across (stbd +)]
+const SIDES = [['g','sg',.1,.15,.13],['r','sr',.1,.15,-.13]], STERN = [['w','st',-.5,.15,0]];
+const L = {
+  power:  { name:'Power-driven vessel under 50 m', rank:'power', tell:'One masthead light over sidelights: power-driven, under 50 m.', lights:[['w','mh',.3,.55,0], ...SIDES, ...STERN] },
+  power50:{ name:'Power-driven vessel, 50 m or more', rank:'power', tell:'Two masthead lights, the after one higher: a power-driven vessel of 50 m or more.', lights:[['w','mh',.3,.55,0],['w','mh',-.25,.78,0], ...SIDES, ...STERN] },
+  sail:   { name:'Sailing vessel', rank:'sail', tell:'Sidelights with no masthead light above them: under sail.', lights:[...SIDES, ...STERN] },
+  trawl:  { name:'Vessel trawling', rank:'fish', tell:'Green over white, all-round: trawling. Sidelights show only when she is making way.', lights:[['g','ar',0,.72,0],['w','ar',0,.57,0], ...SIDES, ...STERN] },
+  fish:   { name:'Vessel fishing (not trawling)', rank:'fish', tell:'Red over white, all-round: fishing other than trawling. Red over white, fishing tonight.', lights:[['r','ar',0,.72,0],['w','ar',0,.57,0], ...SIDES, ...STERN] },
+  nuc:    { name:'Vessel not under command', rank:'nuc', tell:'Red over red, all-round: not under command. Sidelights mean she still has way on.', lights:[['r','ar',0,.72,0],['r','ar',0,.57,0], ...SIDES, ...STERN] },
+  ram:    { name:'Vessel restricted in ability to manoeuvre', rank:'ram', tell:'Red, white, red in a vertical line: restricted in her ability to manoeuvre. Making way, so masthead and sidelights as well.', lights:[['r','ar',0,.88,0],['w','ar',0,.73,0],['r','ar',0,.58,0],['w','mh',.3,.32,0], ...SIDES, ...STERN] },
+  cbd:    { name:'Vessel constrained by her draught', rank:'cbd', tell:'Three reds in a vertical line on top of ordinary power-driven lights: constrained by her draught.', lights:[['r','ar',0,.88,0],['r','ar',0,.73,0],['r','ar',0,.58,0],['w','mh',.3,.32,0], ...SIDES, ...STERN] },
+  pilot:  { name:'Pilot vessel on duty', rank:'power', tell:'White over red, all-round: a pilot vessel. For right of way she is just a power-driven vessel.', lights:[['w','ar',0,.72,0],['r','ar',0,.57,0], ...SIDES, ...STERN] },
+  anchor: { name:'Vessel at anchor', rank:'anchor', tell:'A single all-round white and nothing else: at anchor. No sidelights because she is not underway.', lights:[['w','ar',.3,.6,0]] },
+  aground:{ name:'Vessel aground', rank:'anchor', tell:'An anchor light plus two all-round reds: aground.', lights:[['w','ar',.3,.6,0],['r','ar',0,.78,0],['r','ar',0,.63,0]] },
+  tow:    { name:'Vessel towing, tow under 200 m', rank:'power', tell:'Two masthead lights in a vertical line and a yellow towing light above the sternlight: towing.', lights:[['w','mh',.3,.55,0],['w','mh',.3,.7,0], ...SIDES, ...STERN, ['y','tw',-.5,.32,0]] },
+};
+const LCOL = { r:'#ff453a', g:'#30d158', w:'#fff4d6', y:'#ffd60a' };
+function visible(kind, a){
+  const m = Math.abs(a);
+  if (kind === 'ar') return true;
+  if (kind === 'mh') return m <= 112.5;
+  if (kind === 'sg') return a >= 0 && a <= 112.5;
+  if (kind === 'sr') return a <= 0 && a >= -112.5;
+  return m >= 112.5; // st, tw
+}
+// A = where we are, as a relative bearing from her bow. 0: we look at her bow. +90: we are on her starboard beam.
+function lightDots(vid, A){
+  const a = sgnDeg(A, 0), s = Math.sin(rad(A)), c = Math.cos(rad(A)), k = 200, kh = 120;
+  return L[vid].lights.filter(l => visible(l[1], a)).map(([col, , p, h, x]) => ({ col, x: (p*s - x*c) * k, y: 62 - h*kh }));
+}
+const sig = (vid, A) => lightDots(vid, A).map(d => `${d.col}${Math.round(d.x/25)}${Math.round(d.y/15)}`).sort().join('|');
+function nightSvg(vid, A){
+  const dots = lightDots(vid, A).map(d => `<circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="11" fill="${LCOL[d.col]}" opacity=".18"/><circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="4.5" fill="${LCOL[d.col]}"/>`).join('');
+  return `<svg viewBox="-160 -60 320 140" class="night" aria-hidden="true"><rect x="-160" y="-60" width="320" height="140" fill="#060b14"/><line x1="-160" y1="70" x2="160" y2="70" stroke="#1a2736"/>${dots}</svg>`;
+}
+function aspectTell(a, hasSides){
+  if (!hasSides) return '';
+  const m = Math.abs(a);
+  if (m <= 10) return 'Both sidelights: she is coming straight at us.';
+  if (m >= 112.5) return 'Sternlight only: we are looking at her stern, she is going away.';
+  return a > 0 ? 'Green sidelight: we see her starboard side, she is crossing left to right.' : 'Red sidelight: we see her port side, she is crossing right to left.';
+}
+
+// ---- top-down scenes (our frame: we head up, sit at 0,40)
+function boat(x, y, h, o){
+  const col = o.us ? 'var(--ink)' : 'var(--magenta)';
+  let g = `<path d="M0,-20 C9,-9 9,9 6,16 L-6,16 C-9,9 -9,-9 0,-20Z" fill="${col}" fill-opacity=".14" stroke="${col}" stroke-width="1.6"/>`;
+  if (o.sail) { const s = o.sail === 'p' ? 1 : -1; g += `<path d="M0,-11 L${13*s},13 L0,9Z" fill="${col}" fill-opacity=".6"/><circle r="1.6" cy="-11" fill="${col}"/>`; }
+  if (o.power) g += `<path d="M-3,19 v11 M3,19 v11 M0,17 v15" stroke="${col}" stroke-width="1.3" opacity=".55" fill="none"/>`;
+  return `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><g transform="rotate(${h})">${g}</g><text y="-27" text-anchor="middle" font-size="11" font-weight="600" fill="${col}">${o.label}</text></g>`;
+}
+function windArrow(W){
+  return `<g transform="translate(-126,-124)"><g transform="rotate(${W + 180})"><path d="M0,-20 V16 M-7,8 L0,16 L7,8" stroke="var(--ink-2)" stroke-width="2" fill="none"/></g><text y="34" text-anchor="middle" font-size="11" letter-spacing=".1em" fill="var(--ink-3)">WIND</text></g>`;
+}
+function topSvg(parts, W){
+  return `<svg viewBox="-160 -160 320 320" class="top" aria-hidden="true"><rect x="-160" y="-160" width="320" height="320" fill="var(--shallow)"/>${W == null ? '' : windArrow(W)}${parts.join('')}</svg>`;
+}
+const posAt = (B, d) => [d * Math.sin(rad(B)), 40 - d * Math.cos(rad(B))];
+const sight = p => `<line x1="0" y1="40" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="var(--ink-3)" stroke-dasharray="3 4" stroke-width="1"/>`;
+const beamLines = `<g stroke="var(--ink-3)" stroke-dasharray="2 5" opacity=".5"><line x1="0" y1="40" x2="${(150*Math.sin(rad(112.5))).toFixed(1)}" y2="${(40-150*Math.cos(rad(112.5))).toFixed(1)}"/><line x1="0" y1="40" x2="${(150*Math.sin(rad(-112.5))).toFixed(1)}" y2="${(40-150*Math.cos(rad(-112.5))).toFixed(1)}"/></g><text x="0" y="146" text-anchor="middle" font-size="10" fill="var(--ink-3)">overtaking sector</text>`;
+const given = (k, v, cls = '') => `<div class="given"><div class="k">${k}</div><div class="v ${cls}">${v}</div></div>`;
+
+const GIVE = ['We give way', 'We stand on'], GIVE3 = ['We give way', 'We stand on', 'Both alter to starboard'];
+
+// ---- generators. Each returns q = {label, prompt, scene, givens, choices, answer, explain, rule, sound}
+function genSail(){
+  let W, tu, to, B, pos, ho, up, tries = 0;
+  for (;;) {
+    if (++tries > 500) break;
+    W = rnd(0,359); const r = sgnDeg(W, 0);
+    if (Math.abs(r) < 40 || Math.abs(r) > 165) continue;
+    tu = r > 0 ? 's' : 'p';
+    B = rnd(-80,80); pos = posAt(B, rnd(90,115));
+    ho = rnd(0,359); const ro = sgnDeg(W, ho);
+    if (Math.abs(ro) < 40 || Math.abs(ro) > 165) continue;
+    to = ro > 0 ? 's' : 'p';
+    if (Math.abs(sgnDeg(B + 180, ho)) > 85) continue;
+    if (Math.abs(sgnDeg(ho, 0)) < 25) continue;
+    up = pos[0]*Math.sin(rad(W)) + (pos[1]-40)*(-Math.cos(rad(W)));
+    if (tu === to && Math.abs(up) < 35) continue;
+    break;
+  }
+  const tackName = t => t === 'p' ? 'port' : 'starboard';
+  const weGive = tu !== to ? tu === 'p' : up < 0;
+  const explain = tu !== to
+    ? `We are on ${tackName(tu)} tack (wind over our ${tackName(tu)} side, boom to ${tackName(tu === 'p' ? 's' : 'p')}). She is on ${tackName(to)} tack. Different tacks: <strong>port gives way</strong>, so ${weGive ? 'we keep clear' : 'she keeps clear and we stand on'}.`
+    : `Both on ${tackName(tu)} tack. ${weGive ? 'We are the windward boat, nearer the wind' : 'She is the windward boat, nearer the wind'}. Same tack: <strong>windward keeps clear</strong>, so ${weGive ? 'we give way' : 'we stand on'}.`;
+  return { label:'Sail on sail', prompt:'Both under sail, bearing steady. Who gives way?',
+    scene: topSvg([sight(pos), boat(0,40,0,{us:true,sail:tu,label:'us'}), boat(pos[0],pos[1],ho,{sail:to,label:'her'})], W),
+    choices: GIVE, answer: weGive ? 0 : 1, explain,
+    rule:'Rule 12. Different tacks: port keeps clear of starboard. Same tack: windward keeps clear of leeward. Windward side is opposite the side the mainsail is on.' };
+}
+
+function powerScenario(types){
+  let type, R, ho, d, spd = null, tries = 0;
+  for (;;) {
+    if (++tries > 500) break;
+    type = pick(types); d = 105;
+    if (type === 'head') { R = rnd(-6,6); ho = 180 + rnd(-5,5); }
+    else if (type === 'stbd') { R = rnd(20,100); ho = -rnd(50,130); }
+    else if (type === 'port') { R = -rnd(20,100); ho = rnd(50,130); }
+    else if (type === 'overtake') { R = rnd(-25,25); ho = rnd(-12,12); d = 80; spd = [9,5]; }
+    else { R = pick([1,-1]) * rnd(125,175); ho = rnd(-12,12); d = 80; spd = [5,9]; }
+    if ((type === 'stbd' || type === 'port') && Math.abs(sgnDeg(R + 180, ho)) > 100) continue;
+    break;
+  }
+  const pos = posAt(R, d);
+  const scene = topSvg([beamLines, sight(pos), boat(0,40,0,{us:true,power:true,label:'us'}), boat(pos[0],pos[1],ho,{power:true,label:'her'})]);
+  const givens = spd ? given('Our speed', `${spd[0]} kn`) + given('Her speed', `${spd[1]} kn`) : '';
+  return { type, scene, givens };
+}
+const POWER_EXPLAIN = {
+  head:'Reciprocal courses, dead ahead, both power-driven: a <strong>head-on</strong> meeting. Neither is stand-on. Both alter to starboard and pass red to red.',
+  stbd:'She is on our <strong>starboard</strong> side and forward of the beam: a crossing. The vessel which has the other on her starboard side gives way. That is us.',
+  port:'She is on our <strong>port</strong> side: a crossing where she has us on her starboard side. She gives way, we stand on, and we keep watching her bearing.',
+  overtake:'We are coming up from astern and going faster: we are <strong>overtaking</strong>. The overtaking vessel keeps clear, whatever kind of vessel she is.',
+  overtaken:'She is coming up from more than 22.5° abaft our beam, faster than us: she is <strong>overtaking</strong> us. She keeps clear. We hold our course and speed.',
+};
+function genPower(){
+  const s = powerScenario(['head','stbd','port','overtake','overtaken']);
+  const answer = s.type === 'head' ? 2 : (s.type === 'stbd' || s.type === 'overtake') ? 0 : 1;
+  return { label:'Power on power', prompt:'Both power-driven, bearing steady. Who gives way?', scene:s.scene, givens:s.givens, choices:GIVE3, answer, explain:POWER_EXPLAIN[s.type],
+    rule:'Rules 13, 14, 15, in that order. Overtaking? Overtaker keeps clear. Head-on? Both to starboard. Crossing? The one with the other on her starboard side gives way.' };
+}
+function genAction(){
+  const s = powerScenario(['head','stbd','stbd','port','overtaken']);
+  const answer = s.type === 'head' || s.type === 'stbd' ? 0 : 2;
+  const explain = { head:'Head-on: <strong>alter course to starboard</strong>, early and obviously, so she sees your red light. Never to port.',
+    stbd:'She is on our starboard side, so we give way. <strong>Alter to starboard</strong> to pass astern of her. Do not cross ahead, and do not nibble five degrees: make it big enough that she can see it.',
+    port:'She has us on her starboard side: she gives way, we are stand-on. <strong>Hold course and speed</strong> so she can predict us. Watch her bearing. If she does nothing, we act, but not to port for a vessel on our port side.',
+    overtaken:'She is overtaking us. We are stand-on: <strong>hold course and speed</strong> and let her sort it out. Do not swerve into her path.' }[s.type];
+  return { label:'Helm orders', prompt:'Both power-driven, bearing steady. What do you do?', scene:s.scene, givens:s.givens, choices:['Alter course to starboard','Alter course to port','Hold course and speed'], answer, explain,
+    rule:'Rule 16: give-way acts early and substantially. Rule 17: stand-on holds course and speed, and if forced to act, never turns to port for a vessel on her port side.' };
+}
+function genOrder(){
+  const us = pick(['sail','power','sail']);
+  let her, tries = 0;
+  do { her = pick(Object.keys(KIND)); } while ((her === us || ORDER_SKIP.includes([us,her].sort().join('|'))) && ++tries < 50);
+  const overtaking = Math.random() < .2 && RANK[us] < RANK[her];
+  const weGive = overtaking ? true : RANK[us] < RANK[her];
+  const prompt = overtaking
+    ? `We are ${us === 'sail' ? 'under sail' : 'motoring'}, coming up fast from astern on ${KIND[her]}. Who gives way?`
+    : `We are ${us === 'sail' ? 'under sail' : 'motoring'}. Converging on a steady bearing: ${KIND[her]}. Who gives way?`;
+  const explain = overtaking
+    ? `We are <strong>overtaking</strong>. Rule 13 comes before Rule 18: the overtaking vessel keeps clear even of a vessel lower in the pecking order. We give way.`
+    : `New Reels Catch Fish So Purchase Some. ${RANK_NAME[her][0].toUpperCase() + RANK_NAME[her].slice(1)} sits <strong>${weGive ? 'above' : 'below'}</strong> ${RANK_NAME[us]} on the list, so ${weGive ? 'we give way' : 'she gives way and we stand on'}.`;
+  return { label:'Pecking order', prompt, choices:GIVE, answer: weGive ? 0 : 1, explain,
+    rule:'Rule 18. Not under command, Restricted, Constrained by draught, Fishing, Sailing, Power. Lower gives way. Rules 9, 10 and 13 (channels, TSS, overtaking) override it.' };
+}
+const ID_ASPECTS = [0, 40, -40, 80, -80];
+function genLights(){
+  const ids = Object.keys(L);
+  const vid = pick(ids);
+  const A = pick(ID_ASPECTS.filter(a => !(a === 0 && (vid === 'tow' || vid === 'power50'))));
+  const s = sig(vid, A);
+  const pool = shuffle(ids.filter(x => x !== vid && ID_ASPECTS.every(a => sig(x, a) !== s))).slice(0,4);
+  const opts = shuffle([vid, ...pool]);
+  const a = sgnDeg(A, 0), hasSides = L[vid].lights.some(l => l[1] === 'sg');
+  return { label:'Lights', prompt:'A dark night, these lights ahead. What is she?', scene: nightSvg(vid, A),
+    choices: opts.map(x => L[x].name), answer: opts.indexOf(vid),
+    explain: `${L[vid].tell} ${aspectTell(a, hasSides)}`,
+    rule:'Read the stack first (Rules 26–30), then mastheads and sidelights (Rule 23). Green over white trawls, red over white fishes, red over red is helpless, red white red is restricted, three reds is deep, white over red is the pilot.' };
+}
+function genAspect(){
+  const vid = pick(['power','power','power50','sail','sail','trawl','fish']);
+  const A = pick([0, 45, -45, 90, -90, 135, -135, 180]);
+  const a = sgnDeg(A, 0), m = Math.abs(a);
+  const answer = m <= 10 ? 0 : m >= 112.5 ? 1 : a > 0 ? 2 : 3;
+  return { label:'Lights', prompt:'Which way is she heading?', scene: nightSvg(vid, A),
+    choices:['Straight towards us','Away from us','Crossing left to right','Crossing right to left'], answer,
+    explain: `${aspectTell(a, true)} ${vid === 'sail' ? 'No masthead light: she is under sail.' : vid === 'trawl' || vid === 'fish' ? 'The stack says fishing; the sidelights say she is making way.' : 'The masthead light sits forward, so it leans the way she is going.'}`,
+    rule:'Green is her starboard side, red her port. See green, she goes to your right. See red, to your left. Both, she is head-on. Only a low white, she is leaving.' };
+}
+const SHAPES = {
+  anchor:   { name:'At anchor', s:['ball'] },
+  motorsail:{ name:'Sailing vessel also under engine', s:['cone'] },
+  cbd:      { name:'Constrained by her draught', s:['cyl'] },
+  ram:      { name:'Restricted in ability to manoeuvre', s:['ball','diamond','ball'] },
+  nuc:      { name:'Not under command', s:['ball','ball'] },
+  aground:  { name:'Aground', s:['ball','ball','ball'] },
+  fish:     { name:'Engaged in fishing', s:['hourglass'] },
+  tow:      { name:'Towing or towed, tow over 200 m', s:['diamond'] },
+};
+const SHAPE_TELL = { anchor:'One ball forward: at anchor.', motorsail:'A cone, point down: a sailing vessel also using her engine. She is a power-driven vessel for the rules.', cbd:'A cylinder: constrained by her draught.', ram:'Ball, diamond, ball: restricted in her ability to manoeuvre.', nuc:'Two balls: not under command.', aground:'Three balls: aground. One more than not under command.', fish:'Two cones point to point: fishing, trawling or otherwise.', tow:'A diamond: part of a tow longer than 200 m. Both tug and tow show it.' };
+function shapeSvg(list){
+  const draw = (t, y) => t === 'ball' ? `<circle cy="${y}" r="13"/>`
+    : t === 'cone' ? `<path d="M-13,${y-13} H13 L0,${y+13}Z"/>`
+    : t === 'cyl' ? `<rect x="-9" y="${y-16}" width="18" height="32"/>`
+    : t === 'diamond' ? `<path d="M0,${y-15} L12,${y} L0,${y+15} L-12,${y}Z"/>`
+    : `<path d="M-13,${y-17} H13 L0,${y} Z M-13,${y+17} H13 L0,${y} Z"/>`;
+  const n = list.length, step = 40, y0 = -((n-1)*step)/2;
+  return `<svg viewBox="-160 -80 320 160" aria-hidden="true"><rect x="-160" y="-80" width="320" height="160" fill="var(--paper)"/><line x1="0" y1="-80" x2="0" y2="80" stroke="var(--rule)"/><g fill="var(--ink)">${list.map((t,i) => draw(t, y0 + i*step)).join('')}</g></svg>`;
+}
+function genShapes(){
+  const ids = Object.keys(SHAPES), id = pick(ids);
+  const opts = shuffle([id, ...shuffle(ids.filter(x => x !== id)).slice(0,4)]);
+  return { label:'Day shapes', prompt:'Hoisted where best seen. What is she telling you?', scene: shapeSvg(SHAPES[id].s),
+    choices: opts.map(x => SHAPES[x].name), answer: opts.indexOf(id), explain: SHAPE_TELL[id],
+    rule:'Ball anchor, cone motor-sailing, cylinder deep, ball-diamond-ball restricted, two balls helpless, three balls aground, cones point to point fishing, diamond long tow.' };
+}
+const SOUNDS = [
+  { g:'sight', ctx:'In sight of each other, she sounds', pat:'s', name:'I am altering course to starboard' },
+  { g:'sight', ctx:'In sight of each other, she sounds', pat:'ss', name:'I am altering course to port' },
+  { g:'sight', ctx:'In sight of each other, she sounds', pat:'sss', name:'I am operating astern propulsion' },
+  { g:'sight', ctx:'In sight of each other, she sounds', pat:'sssss', name:'I do not understand your intentions' },
+  { g:'sight', ctx:'Narrow channel, she sounds from astern', pat:'LLs', name:'I intend to overtake on your starboard side' },
+  { g:'sight', ctx:'Narrow channel, she sounds from astern', pat:'LLss', name:'I intend to overtake on your port side' },
+  { g:'sight', ctx:'Narrow channel, she answers', pat:'LsLs', name:'Agreed, come past' },
+  { g:'sight', ctx:'Round a blind bend ahead, you hear', pat:'L', name:'A vessel approaching the bend' },
+  { g:'fog', ctx:'In fog, every two minutes, you hear', pat:'L', name:'Power-driven vessel making way' },
+  { g:'fog', ctx:'In fog, every two minutes, you hear', pat:'LL', name:'Power-driven vessel underway but stopped' },
+  { g:'fog', ctx:'In fog, every two minutes, you hear', pat:'Lss', name:'Sailing, fishing, NUC, RAM, CBD or towing vessel' },
+  { g:'fog', ctx:'In fog, every two minutes, you hear', pat:'Lsss', name:'Last vessel of a tow' },
+  { g:'fog', ctx:'In fog, every minute, you hear', pat:'B', name:'Vessel at anchor' },
+  { g:'fog', ctx:'In fog, every minute, you hear', pat:'bBb', name:'Vessel aground' },
+  { g:'fog', ctx:'In fog, you hear', pat:'ssss', name:'Pilot vessel on duty' },
+];
+const SOUND_TELL = { s:'One short blast: turning to starboard.', ss:'Two short: turning to port.', sss:'Three short: engines going astern. She may still be moving ahead.', sssss:'Five or more short: doubt. "What on earth are you doing?"', LLs:'Two prolonged then one short: she wants to overtake on your starboard side.', LLss:'Two prolonged then two short: she wants to overtake on your port side.', LsLs:'Prolonged, short, prolonged, short: agreement to be overtaken.', L:'One prolonged blast, once: a vessel nearing a bend or obstruction. In fog, repeated every two minutes: a power-driven vessel making way.', LL:'Two prolonged: a power-driven vessel underway but stopped.', Lss:'One prolonged, two short: a vessel with a handicap, and that includes a sailing vessel. Not under command, restricted, constrained, fishing, sailing, towing.', Lsss:'One prolonged, three short: the manned vessel at the end of a tow, answering the tug.', B:'Bell rung rapidly for five seconds: at anchor. Over 100 m she adds a gong aft.', bBb:'Three distinct strokes, rapid bell, three strokes: aground. Anchor signal with a frame round it.', ssss:'Four short blasts: a pilot vessel identifying herself.' };
+const notation = pat => [...pat].map(c => c === 's' ? '●' : c === 'L' ? '▬' : c === 'B' ? '🔔' : '♩♩♩').join(' ');
+function genSound(){
+  const s = pick(SOUNDS);
+  const same = SOUNDS.filter(x => x !== s && x.g === s.g && x.name !== s.name), other = SOUNDS.filter(x => x !== s && x.g !== s.g);
+  const opts = shuffle([s, ...shuffle(same).slice(0,3), ...shuffle(other).slice(0,1)]).slice(0,5);
+  if (!opts.includes(s)) opts[0] = s;
+  return { label:'Sound signals', prompt:`${s.ctx}…`, sound: s.pat,
+    givens: given('Signal', notation(s.pat), 'sig') + `<button class="chip" type="button" id="play">▶ Play <kbd>P</kbd></button>`,
+    choices: opts.map(x => x.name), answer: opts.indexOf(s), explain: SOUND_TELL[s.pat],
+    rule:'Rule 34 in sight: one starboard, two port, three astern, five doubt. Rule 35 fog: prolonged is power making way; prolonged plus two short is anyone hampered, sailing vessels included.' };
+}
+function genNight(){
+  const us = pick(['sail','power','sail']);
+  let vid, R, A, relation, tries = 0;
+  for (;;) {
+    if (++tries > 200) break;
+    vid = pick(['power','power','power50','sail','trawl','fish','nuc','ram','cbd','pilot','anchor','aground']);
+    if (L[vid].rank === us) { if (us === 'sail') continue; }
+    relation = pick(['cross','cross','cross','head','overtake']);
+    if (relation === 'head') { R = rnd(-5,5); A = 0; }
+    else if (relation === 'overtake') { R = rnd(-20,20); A = pick([160,-160,180]); }
+    else { R = pick([1,-1]) * rnd(20,95); A = -Math.sign(R) * pick([40,75,100]); }
+    if (L[vid].rank === 'anchor' && relation !== 'cross') continue;
+    if (vid === 'power50' && A === 0) continue;
+    break;
+  }
+  const herRank = L[vid].rank, a = sgnDeg(A, 0), hasSides = L[vid].lights.some(l => l[1] === 'sg');
+  let answer, why;
+  if (herRank === 'anchor') { answer = 0; why = `She is ${vid === 'anchor' ? 'anchored' : 'aground'} and cannot move. We keep clear.`; }
+  else if (relation === 'overtake') { answer = 0; why = `We see her stern: we are coming up from astern, <strong>overtaking</strong>. Rule 13 beats the pecking order. We keep clear${us === 'sail' ? ', even under sail' : ''}.`; }
+  else if (RANK[us] !== RANK[herRank]) { answer = RANK[us] < RANK[herRank] ? 0 : 1; why = `Rule 18: ${RANK_NAME[herRank]} is <strong>${answer === 0 ? 'above' : 'below'}</strong> ${RANK_NAME[us]}, so ${answer === 0 ? 'we give way' : 'she gives way and we stand on'}.`; }
+  else if (relation === 'head') { answer = 2; why = 'Both power-driven, red to red: <strong>head-on</strong>. Both alter to starboard.'; }
+  else { answer = R > 0 ? 0 : 1; why = `Both power-driven, crossing. She is on our <strong>${R > 0 ? 'starboard' : 'port'}</strong> side, so ${R > 0 ? 'we give way' : 'she gives way and we stand on'}.`; }
+  const bearing = Math.abs(R) <= 5 ? 'dead ahead' : `${Math.abs(R)}° on the ${R > 0 ? 'starboard' : 'port'} bow`;
+  return { label:'Night encounter', prompt:`We are ${us === 'sail' ? 'under sail' : 'motoring'}. These lights, ${bearing}, bearing steady. Who gives way?`, scene: nightSvg(vid, A),
+    givens: given('We are', us === 'sail' ? 'Under sail' : 'Under power') + given('Her bearing', bearing + ', steady'),
+    choices: GIVE3, answer, explain: `${L[vid].tell} ${aspectTell(a, hasSides)} ${why}`,
+    rule:'Lights first: what is she, which way is she going? Then Rule 13 (overtaking), then Rule 18 (pecking order), then Rules 14 and 15 if you are both power-driven.' };
+}
+const DRILLS = [genSail, genPower, genAction, genOrder, genLights, genAspect, genShapes, genSound, genNight];
+
+// ---- render
+function ask(){
+  q = (stage.kind === 'watch' ? pick(DRILLS) : stage.gen)();
+  answered = false;
+  $('qtype').textContent = q.label;
+  $('prompt').textContent = q.prompt;
+  $('scene').hidden = !q.scene; $('scene').innerHTML = q.scene || '';
+  $('givens').innerHTML = q.givens || '';
+  $('chips').innerHTML = q.choices.map((c,i) => `<button class="chip" type="button" data-i="${i}"><kbd>${i+1}</kbd>${c}</button>`).join('');
+  $('fb').className = 'feedback'; $('fb').innerHTML = '';
+  $('next').hidden = true; $('skip').hidden = false;
+  if (q.sound) horn(q.sound);
+}
+function finish(i, revealed){
+  if (answered) return;
+  answered = true;
+  const ok = i === q.answer;
+  [...$('chips').children].forEach((b,k) => { b.disabled = true; if (k === q.answer) b.classList.add('picked'); else if (k === i) b.classList.add('wrong'); });
+  const fb = $('fb');
+  fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
+  const title = revealed ? `Answer: ${q.choices[q.answer]}.`
+    : ok ? pick(['Aye.','Correct.','Clean.','That would pass.','Steady as she goes.','Good watch.'])
+    : `Not quite. ${q.choices[q.answer]}.`;
+  fb.innerHTML = `<h3>${title}</h3><p>${q.explain}</p><div class="rule">${q.rule}</div>`;
+  $('next').hidden = false; $('skip').hidden = true;
+  $('next').textContent = stage.kind === 'watch' && !watch ? 'Again ›' : 'Next ›';
+  $('next').focus();
+  const credit = ok && !revealed;
+  if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); if (watch) watch.score++; }
+  else { store.streak = 0; if (watch && !revealed) watch.miss++; }
+  if (credit && store.streak % 10 === 0) pop(`${store.streak} in a row`);
+  if (credit) bell(); else thud();
+  if (stage.kind === 'drill') recordStage(credit);
+  save(); renderStatus();
+}
+function pop(t){ const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2000); }
+
+// ---- watch mode
+function startWatch(){
+  watch = { left: 90, score: 0, miss: 0 };
+  const tick = () => { $('timer').textContent = `${watch.left}s · ${watch.score} right · ${watch.miss} wrong`; if (watch.left-- <= 0) endWatch(); else watch.t = setTimeout(tick, 1000); };
+  tick();
+}
+function endWatch(){
+  clearTimeout(watch.t); const w = watch; watch = null; $('timer').textContent = '';
+  const passed = w.score >= 12 && w.miss <= 1;
+  const fb = $('fb'); fb.className = 'feedback show ' + (passed ? 'ok' : '');
+  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} correct, ${w.miss} wrong in 90 seconds. ${passed ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Speed comes with reps.' : 'Slow down. Say what she is out loud before you answer.'}</p>`;
+  [...$('chips').children].forEach(b => b.disabled = true);
+  if (passed && stage.kind === 'watch') completeStage();
+  save(); renderStatus();
+  answered = true; $('next').hidden = false; $('skip').hidden = true; $('next').textContent = 'Again ›';
+}
+
+// ---- stages
+const ss = () => store.stages[stage.id];
+const idx = () => STAGES.indexOf(stage);
+function unlocked(i){ return i === 0 || store.stages[STAGES[i-1].id].done; }
+function recordStage(ok){
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 10) s.recent.shift();
+  if (!s.done && s.recent.length >= 10 && s.recent.filter(Boolean).length >= 8) completeStage();
+}
+function completeStage(){
+  const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
+  const nxt = STAGES[idx()+1];
+  pop(nxt ? `Stage cleared · next: ${nxt.title}` : 'Ladder complete');
+  renderStatus();
+}
+function renderStatus(){
+  $('streak').textContent = store.streak; $('best').textContent = store.best;
+  $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted));
+  const i = idx(), s = ss();
+  $('stepper').innerHTML = `<div class="dots">` + STAGES.map((st,k) => { const lock = !unlocked(k), d = store.stages[st.id].done;
+      return `<button class="dot ${d?'done':''} ${k===i?'now':''} ${lock?'locked':''}" data-i="${k}" title="${k+1}. ${st.title}${lock?' (locked)':''}" aria-label="Stage ${k+1}: ${st.title}" ${lock?'disabled':''}></button>`; }).join('') + `</div>` +
+    `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
+    `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)||i===STAGES.length-1?'disabled':''} aria-label="Next stage">›</button></span>`;
+  const last = stage.kind === 'drill' ? s.recent : [];
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:10}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
+    `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
+}
+function renderConcept(){
+  $('conceptBody').innerHTML = `<p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p>`;
+  $('concept').open = !store.seenConcept[stage.id];
+  store.seenConcept[stage.id] = true; save();
+}
+function setStage(i){
+  if (!unlocked(i) || i < 0 || i >= STAGES.length) return;
+  if (watch) endWatch();
+  stage = STAGES[i];
+  renderConcept();
+  if (stage.kind === 'watch') startWatch();
+  ask(); renderStatus();
+}
+
+// ---- wiring
+function next(){
+  if (stage.kind === 'watch' && !watch) startWatch();
+  ask();
+}
+$('stepper').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) return setStage(+d.dataset.i); const n = e.target.closest('[data-step]'); if (n) setStage(idx() + +n.dataset.step); });
+$('chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b && !answered) finish(+b.dataset.i, false); });
+$('givens').addEventListener('click', e => { if (e.target.closest('#play') && q.sound) horn(q.sound); });
+$('next').addEventListener('click', next);
+$('skip').addEventListener('click', () => { if (!answered) finish(q.answer, true); });
+$('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) bell(); });
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); return setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'Enter' && answered) { e.preventDefault(); return next(); }
+  if (/^[1-5]$/.test(e.key) && !answered && q.choices[+e.key-1] != null) { e.preventDefault(); return finish(+e.key-1, false); }
+  if ((e.key === 'p' || e.key === 'P') && q.sound) horn(q.sound);
+});
+
+setStage(Math.max(0, STAGES.findIndex(st => !store.stages[st.id].done)));
+})();
+</script>
+</body>
+</html>
