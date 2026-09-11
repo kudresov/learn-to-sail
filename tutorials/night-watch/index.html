@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Night Watch · Learn to Sail</title>
+<meta name="description" content="Stand a night watch in 3D. Read real navigation lights as their arcs open and close, hang day shapes on real masts, hear fog signals from a bearing, and identify every vessel in the IRPCS at exam pace.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../shared/site.css">
+<style>
+.col{max-width:680px;margin:0 auto}
+.tut-head{padding-block:22px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tut-head h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:24px;margin:0}
+.tut-head .streak{font-size:13px;color:var(--ink-3)}
+.tut-head .streak b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:10px;padding-block:16px 4px;flex-wrap:wrap}
+.stepper .dots{display:flex;gap:6px;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;padding:0;cursor:pointer}
+.stepper .dot.done{background:var(--good);border-color:var(--good)}
+.stepper .dot.now{background:var(--magenta);border-color:var(--magenta);transform:scale(1.3)}
+.stepper .dot.locked{border-color:var(--rule);cursor:not-allowed}
+.stepper .name{font:italic 400 17px "Libre Caslon Text",Georgia,serif}
+.stepper .name small{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:8px;font-style:normal}
+.stepper .nav{margin-left:auto;display:flex;gap:4px}
+.stepper .nav button{font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:4px 9px;cursor:pointer;border-radius:2px}
+.stepper .nav button:disabled{opacity:.35;cursor:default}
+.concept{border:1px solid var(--rule);border-left:4px solid var(--magenta);background:var(--paper);margin-top:14px}
+.concept summary{list-style:none;cursor:pointer;padding:12px 16px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);display:flex;justify-content:space-between}
+.concept summary::after{content:"show";font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.concept[open] summary::after{content:"hide"}
+.concept .body{padding:0 16px 16px;font-size:15px}
+.concept p{margin:0 0 8px;max-width:42em}
+.concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;color:var(--ink-2);white-space:pre-line}
+.concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.q{margin-top:22px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
+.timer{font-size:13px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.timer.hot{color:var(--bad);font-weight:600}
+.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(20px,3vw,24px);line-height:1.35;margin:8px 0 14px;text-wrap:balance}
+.scene{position:relative;margin-bottom:12px;border:1px solid var(--rule);background:#060b14;aspect-ratio:16/9;max-height:420px;overflow:hidden;border-radius:2px}
+@media (min-width:900px){.scene{--w:min(1100px,100vw - 32px);width:var(--w);margin-left:calc((680px - var(--w))/2);max-height:620px}}
+.scene canvas{width:100%;height:100%;display:block}
+.hud{position:absolute;left:10px;top:8px;font:500 11px "IBM Plex Mono",monospace;letter-spacing:.06em;color:#c7d2dc;text-shadow:0 1px 2px #000;pointer-events:none;text-transform:uppercase}
+.hud.day{color:#1c2a38;text-shadow:0 1px 0 #fff8}
+.hint{position:absolute;right:10px;bottom:8px;font:11px "Source Sans 3",sans-serif;color:#c7d2dc;text-shadow:0 1px 2px #000;pointer-events:none;opacity:0;transition:opacity .4s}
+.hint.show{opacity:.9}.hint.day{color:#1c2a38;text-shadow:none}
+.nogl[hidden]{display:none}.nogl{position:absolute;inset:0;display:grid;place-items:center;padding:20px;text-align:center;color:#c7d2dc;font-size:15px}
+.tools{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.tools .spacer{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 14px "Source Sans 3",sans-serif;padding:10px 14px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:22px;min-height:44px;display:flex;align-items:center;gap:8px;text-align:left}
+.chip:hover:not(:disabled){border-color:var(--ink-2)}
+.chip:disabled{cursor:default;opacity:.7}
+.chip.picked{border-color:var(--good);background:var(--good-soft);opacity:1}
+.chip.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s;opacity:1}
+.chip.on{border-color:var(--magenta);color:var(--magenta)}
+.chip kbd{opacity:.7}
+.chip .arrow{font-size:18px;line-height:1;width:20px;text-align:center}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink)}
+button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
+.feedback.show{display:block}
+.feedback.ok{border-color:var(--good);background:var(--good-soft)}
+.feedback.no{border-color:var(--bad);background:var(--bad-soft)}
+.feedback h3{margin:0 0 8px;font:700 15px "Source Sans 3",sans-serif}
+.feedback p{margin:6px 0 0;font-size:15px}
+.feedback .seen{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-2);margin-top:6px}
+.feedback .sea{margin-top:10px;padding:8px 10px;border:1px dashed var(--bad);font-size:14px;font-style:italic;font-family:"Libre Caslon Text",serif}
+.feedback.ok .sea{border-color:var(--good)}
+.rule{font-size:13px;color:var(--ink-2);margin-top:8px;font-style:italic}
+.progress{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);flex-wrap:wrap}
+.progress .last{display:flex;gap:5px}
+.progress .last i{width:14px;height:14px;border-radius:3px;background:var(--rule);display:block}
+.progress .last i.y{background:var(--good)}.progress .last i.n{background:var(--bad)}
+.progress .cleared{color:var(--good);font-weight:600}
+.more{margin-top:28px;background:var(--paper);border:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 18px;font:italic 400 17px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
+.more[open] summary::after{content:"−"}
+.more .body{padding:0 18px 18px;font-size:15px}
+.more h4{margin:14px 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.more p{margin:0 0 6px;max-width:42em}
+.more .tbl{overflow-x:auto}
+.more table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+.more td,.more th{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.more th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.log{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.log span{font-size:13px;border:1px solid var(--rule);padding:3px 9px;border-radius:12px;color:var(--ink-2)}
+.log span b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 14px;padding:14px 16px;border:1px solid var(--rule);background:var(--paper);margin-bottom:14px;font-size:13px}
+.review label{display:grid;gap:3px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-size:10px;font-weight:600}
+.review select,.review input[type=range]{font:14px "Source Sans 3",sans-serif;color:var(--ink);background:var(--ground);border:1px solid var(--rule);padding:4px;width:100%}
+.review .seen{grid-column:1/-1;font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-2);text-transform:none;letter-spacing:0}
+.review .chk{display:flex;gap:6px;align-items:center;flex-direction:row;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink)}
+kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
+.pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
+.pop.show{opacity:1;transform:translate(-50%,0)}
+.iconbtn{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-3);padding:4px 8px;cursor:pointer;border-radius:2px}
+.iconbtn.on{border-color:var(--magenta);color:var(--magenta)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="pop" id="pop"></div>
+<div class="col">
+<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Night Watch</a></div><button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button></nav>
+
+<header class="tut-head">
+  <h1>Night Watch</h1>
+  <span class="streak">streak <b id="streak">0</b> · best <b id="best">0</b> · logged <b id="logged">0</b></span>
+</header>
+
+<div class="stepper" id="stepper"></div>
+
+<details class="concept" id="concept">
+  <summary>The idea</summary>
+  <div class="body" id="conceptBody"></div>
+</details>
+
+<section class="q" aria-label="Question">
+  <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
+  <p class="prompt" id="prompt"></p>
+  <div class="scene" id="scene" role="img" aria-label="View from the cockpit">
+    <canvas id="gl"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="hint" id="hint"></div>
+    <div class="nogl" id="nogl" hidden>This drill needs WebGL, which your browser has switched off. The 2D version of these questions lives in <a href="../colregs/">Rules of the Road</a>.</div>
+  </div>
+  <div class="tools" id="tools">
+    <button class="iconbtn" id="binos" type="button" aria-pressed="false">Binoculars <kbd>B</kbd></button>
+    <button class="iconbtn" id="play" type="button" hidden>▶ Replay <kbd>P</kbd></button>
+    <button class="iconbtn" id="vis" type="button" hidden aria-pressed="false">Show signal as dots</button>
+    <button class="iconbtn" id="bear" type="button" hidden>Take a bearing <kbd>C</kbd></button>
+    <span id="bearings" class="mono" style="font-size:15px;color:var(--ink-2)"></span>
+    <span class="spacer"></span>
+    <span id="sig" class="mono" style="letter-spacing:.15em;font-size:18px"></span>
+  </div>
+  <div class="chips" id="chips" role="group" aria-label="Answers"></div>
+  <div class="actions">
+    <button class="btn" type="button" id="next" hidden>Next ›</button>
+    <button class="btn ghost" type="button" id="skip">Show me</button>
+  </div>
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<details class="more">
+  <summary>The rules, in one breath</summary>
+  <div class="body">
+    <h4>Arcs · Rule 21</h4>
+    <p>Masthead light: white, 225°, from right ahead to 22.5° abaft the beam on each side. Sidelights: green to starboard, red to port, 112.5° each, right ahead to 22.5° abaft the beam. Sternlight: white, 135°, the rest. Masthead plus sidelights therefore covers exactly what the sternlight does not: <strong>see a low white alone and you are in her overtaking sector</strong>.</p>
+    <h4>Read her in three looks</h4>
+    <p><strong>1. The stack</strong> (all-round lights in a vertical line) names her. <strong>2. Mastheads</strong> say power-driven, and how long. <strong>3. Sidelights</strong> say which way, and whether she is making way at all.</p>
+    <div class="tbl"><table><thead><tr><th>Stack</th><th>Vessel</th><th>Day shape</th></tr></thead><tbody>
+      <tr><td>Green over white</td><td>Trawling</td><td>Two cones, points together</td></tr>
+      <tr><td>Red over white</td><td>Fishing, not trawling (white all-round toward gear if it runs out over 150 m)</td><td>Two cones, points together (cone up toward the gear)</td></tr>
+      <tr><td>Red over red</td><td>Not under command</td><td>Two balls</td></tr>
+      <tr><td>Red, white, red</td><td>Restricted in ability to manoeuvre</td><td>Ball, diamond, ball</td></tr>
+      <tr><td>Red white red + two reds one side, two greens the other</td><td>Dredging or underwater ops: pass on the green side</td><td>Two balls / two diamonds</td></tr>
+      <tr><td>Three reds</td><td>Constrained by her draught</td><td>Cylinder</td></tr>
+      <tr><td>Three greens (masthead and both yardarms)</td><td>Mine clearance: keep 1000 m clear</td><td>Three balls</td></tr>
+      <tr><td>White over red (+ sidelights and sternlight underway, + anchor light at anchor)</td><td>Pilot vessel on duty</td><td>—</td></tr>
+      <tr><td>One white forward (second, lower, aft if 50 m+; deck lights 100 m+)</td><td>At anchor</td><td>Ball forward</td></tr>
+      <tr><td>Anchor lights + two reds</td><td>Aground</td><td>Three balls</td></tr>
+      <tr><td>Two mastheads in a line (three if tow over 200 m) + yellow over the sternlight</td><td>Towing. The tow shows sidelights and sternlight only</td><td>Diamond on both if over 200 m</td></tr>
+      <tr><td>All-round flashing yellow</td><td>Hovercraft skimming</td><td>—</td></tr>
+    </tbody></table></div>
+    <p><em>Red over red, the captain is dead. Red white red, restricted ahead. Red over white, fishing tonight. Green over white, trawling tonight. White over red, pilot ahead.</em></p>
+    <h4>Sail and power · Rules 23, 25</h4>
+    <p>Sidelights and sternlight with <strong>no masthead light</strong>: sail. Under 20 m she may combine them in one tricolour at the masthead. Optional red over green all-round at the masthead, never with a tricolour. Motor-sailing: power-driven lights, cone point down by day. Power under 12 m: one all-round white plus sidelights. Under 7 m and under 7 knots: all-round white, plus sidelights if practicable. Sailing under 7 m, or under oars: the same lights if practicable, otherwise a torch ready to show in time.</p>
+    <h4>Underway, making way, at anchor</h4>
+    <p><strong>Underway</strong> means not anchored, moored or aground, even if stopped. <strong>Making way</strong> means moving through the water. Masthead lights go with underway (power, towing, constrained by draught). Sidelights on a hampered vessel (fishing, NUC, RAM) go with making way. A pilot vessel keeps her sidelights whenever underway. At anchor, a restricted vessel adds anchor lights; a fishing vessel never does. Under 7 m at anchor clear of channels and anchorages, no light needed; under 12 m aground, no aground lights needed.</p>
+    <h4>Risk of collision · Rule 7</h4>
+    <p>Hand-bearing compass on her lights, then again a minute or two later, at least three times. <strong>Steady bearing and closing range: collision course.</strong> Bearing drawing forward, toward your bow: she passes ahead. Drawing aft: she passes astern. Big ships and tows can still hit you with a slowly changing bearing.</p>
+    <h4>Sound · Rules 34, 35</h4>
+    <p>In sight: ● starboard, ●● port, ●●● astern, ●●●●● doubt. Narrow channel: ▬▬● / ▬▬●● I will overtake on your starboard / port, ▬●▬● agreed, ▬ blind bend. In fog every two minutes: ▬ power making way, ▬▬ power stopped, ▬●● everyone hampered (sailing included), ▬●●● last vessel of a tow. Intervals are maxima. At least every minute: bell 5 s at anchor (gong aft too if 100 m+), three strokes, bell, three strokes aground. Fishing or working at anchor: ▬●●, not the bell. Pilot may add ●●●●. Whistle from 12 m, bell from 20 m, gong from 100 m.</p>
+    <h4>Ship's log</h4>
+    <div class="log" id="log"></div>
+    <h4>Keys</h4>
+    <p><kbd>1</kbd>–<kbd>5</kbd> pick an answer, <kbd>Enter</kbd> moves on, <kbd>P</kbd> replays a signal, <kbd>B</kbd> binoculars, <kbd>C</kbd> takes a compass bearing. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
+  </div>
+</details>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="../../">More tutorials</a></footer>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const norm = d => ((d % 360) + 360) % 360;
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const rndf = (a,b) => a + Math.random()*(b-a);
+const pick = a => a[rnd(0,a.length-1)];
+const shuffle = a => { a = a.slice(); for (let i = a.length-1; i > 0; i--) { const j = rnd(0,i); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const rad = d => d * Math.PI/180;
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+
+// ---- persistence
+const KEY = 'lts:night-watch:v1';
+let store = { streak:0, best:0, stages:{}, muted:false, seenConcept:{}, log:{}, visualSig:false, watchBest:0 };
+try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
+
+// ---- stages
+const STAGES = [
+  { id:'arcs', kind:'drill', title:'Arcs of light', gen: genAspect,
+    intro:'You are on watch in the cockpit. A power-driven vessel is out there and all you have is her lights. Each light only shows over its own arc: masthead 225° forward, green over her starboard bow, red over her port bow, sternlight over the 135° astern. So the lights you can see tell you which of her sides faces you. After you answer, watch her for a few minutes, sped up: as her aspect changes the arcs open and close.',
+    ex:'Green alone → her starboard side faces you → she crosses left to right\nRed alone → right to left\nRed and green together → coming straight at you\nA low white alone → her stern, she is going away' },
+  { id:'sailpower', kind:'drill', title:'Sail or power', gen: genSailPower,
+    intro:'Same sidelights, different vessel. A masthead light above the sidelights means an engine. None means sail. A yacht under 20 m may show one tricolour lantern at the masthead instead, and any sailing vessel may add red over green all-round up the mast. Sails up with a steaming light showing? She is motor-sailing and counts as power. Under 12 m, a motor boat may replace masthead and sternlight with one all-round white.',
+    ex:'Masthead over sidelights → power-driven, under 50 m\nTwo mastheads, the after one higher → 50 m or more\nSidelights, no masthead → sail\nRed, green and white at the masthead only → sail, tricolour' },
+  { id:'stacks', kind:'drill', title:'The stacks', gen: genStack,
+    intro:'The special vessels wear a vertical stack of all-round lights. Read the stack first, it names her. Then look for mastheads and sidelights to learn if she is power-driven and whether she is moving. Some of these can only show what they are; a vessel not under command or trawling cannot get out of your way.',
+    ex:'Green over white → trawling\nRed over white → fishing\nRed over red → not under command\nRed white red → restricted\nThree reds → deep draught\nWhite over red → pilot\nOne white, nothing else → at anchor' },
+  { id:'detail', kind:'drill', title:'The second look', gen: genDetail,
+    intro:'Once you know what she is, the rest of her lights answer the next question: how long is she, is she making way, how long is the tow, which side is safe? A second masthead light means 50 m or more, and how far apart the two mastheads look tells you how broad her aspect is. Sidelights only appear when a hampered vessel is actually moving through the water.',
+    ex:'Two mastheads wide apart → beam-on\nTwo mastheads nearly in line → almost head-on\nStack but no sidelights → stopped in the water\nThree mastheads in a line → tow over 200 m\nTwo greens one side → pass that side' },
+  { id:'bearing', kind:'drill', title:'Steady bearing', gen: genBearing,
+    intro:'Knowing what she is does not tell you whether you will hit her. For that you take her bearing with the hand-bearing compass, wait, and take it again. If the bearing does not change and the range is closing, you are on a collision course (Rule 7). If it draws forward, toward your bow, she passes ahead. If it draws aft she passes astern. Take at least three bearings before you decide; two can lie.',
+    ex:'047° · 047° · 046°  → steady, collision course\n047° · 041° · 034° on the starboard bow → drawing forward, passes ahead\n047° · 053° · 061° on the starboard bow → drawing aft, passes astern' },
+  { id:'shapes', kind:'drill', title:'Day shapes', gen: genShapes,
+    intro:'By day the same vessels hoist black shapes where best seen. Balls, cones, a cylinder, a diamond. The tow and the tug each hang a diamond when the tow is long, and a dredger shows balls on the foul side and diamonds on the clear side.',
+    ex:'Ball → anchor\nCone point down → motor-sailing\nTwo cones point to point → fishing\nBall diamond ball → restricted\nCylinder → constrained by draught' },
+  { id:'sound', kind:'drill', title:'Sound signals', gen: genSound,
+    intro:'Fog. You hear her before you see her, and the signal tells you what she is and roughly where. Prolonged blasts are four to six seconds, short ones about one. In sight of each other, short blasts announce a manoeuvre instead, and after you answer you will see her do it. Cannot hear the sound? Switch on the dots.',
+    ex:'▬ every 2 min → power, making way\n▬ ▬ → power, stopped\n▬ ● ● → sailing, fishing, NUC, RAM, CBD, towing\nBell → at anchor   ● → I am turning to starboard' },
+  { id:'watch', kind:'watch', title:'Night watch',
+    intro:'Twelve contacts, one minute each, no scaffolding. Lights, shapes, sounds and second looks, mixed. Say what she is out loud before you touch a key.' },
+];
+const GATE = { drill:'8 of your last 10', watch:'12 contacts, at most 1 wrong' };
+for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
+
+let stage, q = null, answered = false, watch = null, qTimer = null;
+
+// ---- audio
+let actx = null;
+const ctx = () => (actx ??= new (window.AudioContext || window.webkitAudioContext)());
+function tone(seq){
+  if (store.muted) return;
+  try {
+    const a = ctx(); let t = a.currentTime;
+    for (const [f, d, type] of seq) {
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(a.destination); o.start(t); o.stop(t + d); t += d * 0.8;
+    }
+  } catch(e) {}
+}
+const ding = () => tone([[1568, .3],[2093, .45]]);
+const thud = () => tone([[110, .25, 'triangle'],[82, .35, 'triangle']]);
+const fanfare = () => tone([[784,.18],[988,.18],[1175,.18],[1568,.5]]);
+let hornNodes = [];
+// pan: -1 left .. 1 right. deep: big ship. far: 0..1 muffles.
+function horn(pat, opt = {}){
+  if (store.muted) return;
+  try {
+    const a = ctx(); let t = a.currentTime + .08;
+    for (const n of hornNodes) { try { n.stop(); } catch(e) {} } hornNodes = [];
+    const out = a.createGain(); out.gain.value = 1 - (opt.far || 0) * .5;
+    const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400 - (opt.far || 0) * 900;
+    let pn = null; const pan = d => { if (pn) pn.pan.setValueAtTime(clamp((opt.pan || 0) + d, -1, 1), t); }; // the gong sounds aft: a little further round than the bell
+    if (a.createStereoPanner) { pn = a.createStereoPanner(); pn.pan.value = clamp(opt.pan || 0, -1, 1); out.connect(pn).connect(a.destination); }
+    else out.connect(a.destination);
+    lp.connect(out);
+    const base = opt.deep ? 150 : opt.small ? 520 : 330;
+    const gap = pat === 'LL' ? 2 : pat.length >= 5 ? .3 : .7;
+    const blast = d => {
+      for (const det of [0, 1.7]) {
+        const o = a.createOscillator(), g = a.createGain(); o.type = 'sawtooth'; o.frequency.value = base + det;
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.11, t + .09); g.gain.setValueAtTime(0.11, t + d - .12); g.gain.linearRampToValueAtTime(0.0001, t + d);
+        o.connect(g).connect(lp); o.start(t); o.stop(t + d + .05); hornNodes.push(o);
+      }
+      t += d + gap;
+    };
+    const strike = (f, d, v) => { for (const [m, w] of [[1, 1],[2.4, .5],[3.9, .25]]) { const o = a.createOscillator(), g = a.createGain(); o.frequency.value = f * m;
+      g.gain.setValueAtTime(v * w, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d); o.connect(g).connect(lp); o.start(t); o.stop(t + d + .02); hornNodes.push(o); } };
+    for (const ch of pat) {
+      if (ch === 's') blast(1); else if (ch === 'L') blast(4.5);
+      else if (ch === 'B') { pan(0); for (let i = 0; i < 18; i++) { strike(1720, .5, .09); t += .27; } t += pat.includes('G') ? .1 : .6; }
+      else if (ch === 'b') { for (let i = 0; i < 3; i++) { strike(1720, .9, .11); t += .8; } t += .4; }
+      else if (ch === 'G') { pan(.35); for (let i = 0; i < 12; i++) { strike(190, 1.4, .13); t += .4; } t += .6; }
+    }
+  } catch(e) {}
+}
+
+// ---- vessels. lights: [colour, arc kind, along (-.5 stern .. .5 bow, of L), height m, across m (+stbd), opt]
+// arc kinds: ar all-round, mh masthead 225, sg green side, sr red side, st stern, tw towing (yellow, stern arc), fl flashing all-round
+const SIDES = (B, h, z = .12) => [['g','sg', z, h, B*.48], ['r','sr', z, h, -B*.48]];
+const STERN = h => [['w','st', -.49, h, 0]];
+const hullOf = (L, B, F, house, extra) => ({ L, B, F, house, ...extra });
+const M = {
+  yacht:   hullOf(12, 3.8, 1.05, [.02, 4.4, .5], { sail:true, mast:[.1, 16], flare:.32 }),
+  launch:  hullOf(10, 3.4, 1.0, [.05, 3.5, 1.6]),
+  pilot:   hullOf(16, 4.5, 1.4, [.05, 6, 2.2]),
+  coaster: hullOf(38, 8, 2.6, [-.3, 8, 6]),
+  trawler: hullOf(28, 7.5, 2.4, [.18, 7, 4.5]),
+  tug:     hullOf(24, 8, 2.6, [.1, 8, 5]),
+  barge:   hullOf(45, 10, 1.6, null),
+  ship:    hullOf(120, 18, 6, [-.36, 16, 12]),
+  bigship: hullOf(160, 24, 8, [-.38, 20, 15]),
+  midship: hullOf(70, 12, 4, [-.34, 12, 8]),
+  dredger: hullOf(60, 14, 3.5, [-.34, 10, 7], { crane:true }),
+};
+// shapes: [kind, along, height, across]
+const V = {
+  power:   { name:'Power-driven vessel under 50 m', short:'power-driven, under 50 m', model:'coaster', spd:6, fog:'L',
+             lights:() => [['w','mh', .22, 13, 0], ...SIDES(8, 5, -.3), ...STERN(4)],
+             tell:'One masthead light above sidelights: a power-driven vessel under 50 m. She could be any length under 50 m, small craft included.' },
+  power50: { name:'Power-driven vessel, 50 m or more', short:'power-driven, 50 m or more', model:'ship', spd:7, fog:'L', deep:true,
+             lights:() => [['w','mh', .28, 20, 0], ['w','mh', -.06, 29, 0], ...SIDES(18, 9, -.36), ...STERN(7)],
+             tell:'Two masthead lights, the after one higher: a power-driven vessel of 50 m or more. The gap between the two mastheads tells you her aspect.' },
+  power12: { name:'Power-driven vessel under 12 m', short:'power-driven, under 12 m', model:'launch', spd:7, fog:'L', small:true,
+             lights:() => [['w','ar', -.1, 4.5, 0], ...SIDES(3.4, 1.6, .05)],
+             tell:'An all-round white with sidelights and no sternlight: a power-driven vessel under 12 m, using the small-craft option in Rule 23. The option is permissive: a boat under 12 m may equally show ordinary masthead, sidelights and sternlight.' },
+  sail:    { name:'Sailing vessel', short:'under sail', model:'yacht', spd:3, fog:'Lss',
+             lights:v => v === 'tri' ? [['g','sg', .08, 16.3, 0], ['r','sr', .08, 16.3, 0], ['w','st', .08, 16.3, 0]]
+                       : v === 'rg' ? [['r','ar', .08, 17.6, 0], ['g','ar', .08, 16.4, 0], ...SIDES(1.3, 1.75, .44), ...STERN(1.2)]
+                       : [...SIDES(1.3, 1.75, .44), ...STERN(1.2)],
+             tellV:{ tri:'Red, green and white in one lantern at the masthead and nothing on deck: a sailing vessel under 20 m showing a tricolour.', rg:'Sidelights and sternlight with red over green all-round at the masthead: a sailing vessel using the optional lights in Rule 25(c).', plain:'Sidelights and a sternlight with no masthead light above them: under sail.' } },
+  motorsail:{ name:'Power-driven vessel under 50 m', short:'motor-sailing, so power-driven', model:'yacht', spd:5, fog:'L', dayName:'Sailing vessel also under engine',
+             lights:() => [['w','mh', .08, 10, 0], ...SIDES(1.3, 1.75, .44), ...STERN(1.2)],
+             shapes:() => [['cone', .12, 6, 0]],
+             tell:'Sails up, but a steaming light above her sidelights: she is motor-sailing, and for the rules she is a power-driven vessel. By day she shows a cone, point down.' },
+  tow:     { name:'Vessel towing', short:'towing', model:'tug', spd:3, fog:'Lss', tow:true,
+             lights:v => [['w','mh', .15, 10, 0], ['w','mh', .15, 12.5, 0], ...(v === 'long' ? [['w','mh', .15, 15, 0]] : []), ...SIDES(8, 4.5, .1), ...STERN(3.5), ['y','tw', -.49, 5.5, 0]],
+             shapes:v => v === 'long' ? [['diamond', .15, 12, 0]] : [],
+             tell:'Two masthead lights in a vertical line (three when the tow is over 200 m) and a yellow towing light above the sternlight: a tug with a tow. The tow itself shows only sidelights and a sternlight, and the line between them is unlit.' },
+  trawl:   { name:'Vessel trawling', short:'trawling', model:'trawler', spd:2, fog:'Lss', modelV:{ big:'midship' },
+             lights:(v, w) => v === 'big' ? [['g','ar', .1, 18, 0], ['w','ar', .1, 15.5, 0], ['w','mh', -.3, 22, 0], ...(w ? [...SIDES(12, 6, -.34), ...STERN(5)] : [])]
+                                          : [['g','ar', .02, 14, 0], ['w','ar', .02, 11.5, 0], ...(w ? [...SIDES(7.5, 4, .18), ...STERN(3.5)] : [])],
+             shapes:() => [['cones', .02, 11, 0]],
+             work:(v, w) => w ? [[-.2, 7, 0, .8], [-.05, 6.5, 2.5, .6], [-.05, 6.5, -2.5, .6]] : [[-.2, 7, 0, .4]],
+             tell:'Green over white, all-round: trawling. Sidelights and sternlight only when she is making way. A trawler of 50 m or more adds a masthead light abaft of and higher than the green.' },
+  fish:    { name:'Vessel fishing, not trawling', short:'fishing', model:'trawler', spd:1.5, fog:'Lss',
+             lights:(v, w) => [['r','ar', .02, 14, 0], ['w','ar', .02, 11.5, 0], ...(v === 'gear' ? [['w','ar', .02, 7, -6]] : []), ...(w && v !== 'anchored' ? [...SIDES(7.5, 4, .18), ...STERN(3.5)] : [])],
+             shapes:v => [['cones', .02, 11, 0], ...(v === 'gear' ? [['coneup', .02, 7, -6]] : [])],
+             work:(v, w) => v === 'anchored' ? [[-.2, 7, 0, .3]] : [[-.2, 7, 0, .7], [.1, 6.5, 0, .5]],
+             tell:'Red over white, all-round: fishing other than trawling. An extra all-round white out to one side marks gear extending more than 150 m that way. At anchor she shows the same fishing lights and no anchor light.' },
+  nuc:     { name:'Vessel not under command', short:'not under command', model:'midship', spd:.6, fog:'Lss', deep:true,
+             lights:(v, w) => [['r','ar', 0, 20, 0], ['r','ar', 0, 17.5, 0], ...(w ? [...SIDES(12, 6, -.34), ...STERN(5)] : [])],
+             shapes:() => [['ball', 0, 20, 0], ['ball', 0, 17.5, 0]],
+             tell:'Red over red, all-round, and no masthead lights: not under command. Sidelights mean she still has way on her.' },
+  ram:     { name:'Vessel restricted in ability to manoeuvre', short:'restricted in her ability to manoeuvre', model:'midship', spd:2, fog:'Lss', deep:true,
+             lights:(v, w) => [['r','ar', 0, 22, 0], ['w','ar', 0, 19.5, 0], ['r','ar', 0, 17, 0], ...(v === 'anchored' ? [['w','ar', .4, 10, 0], ['w','ar', -.4, 5.5, 0]] : w ? [['w','mh', .3, 13, 0], ['w','mh', -.3, 18, 0], ...SIDES(12, 6, -.34), ...STERN(5)] : [])],
+             shapes:() => [['ball', 0, 22, 0], ['diamond', 0, 19.5, 0], ['ball', 0, 17, 0]],
+             tell:'Red, white, red in a vertical line: restricted in her ability to manoeuvre. Making way, she adds masthead lights, sidelights and sternlight. At anchor she adds anchor lights on top, unlike a fishing vessel.' },
+  dredge:  { name:'Dredger, obstruction on one side', short:'dredging', model:'dredger', spd:0, fog:'Lss', deep:true,
+             lights:() => [['r','ar', -.05, 22, 0], ['w','ar', -.05, 19.5, 0], ['r','ar', -.05, 17, 0], ['r','ar', -.05, 14, -7], ['r','ar', -.05, 11.5, -7], ['g','ar', -.05, 14, 7], ['g','ar', -.05, 11.5, 7]],
+             shapes:() => [['ball', -.05, 22, 0], ['diamond', -.05, 19.5, 0], ['ball', -.05, 17, 0], ['ball', -.05, 14, -7], ['ball', -.05, 11.5, -7], ['diamond', -.05, 14, 7], ['diamond', -.05, 11.5, 7]],
+             tell:'Red white red for restricted, plus two reds on the side where the obstruction is and two greens on the side you may pass. By day, two balls foul side, two diamonds clear side.' },
+  cbd:     { name:'Vessel constrained by her draught', short:'constrained by her draught', model:'bigship', spd:5, fog:'Lss', deep:true,
+             lights:() => [['r','ar', -.32, 41, 0], ['r','ar', -.32, 38.5, 0], ['r','ar', -.32, 36, 0], ['w','mh', .3, 24, 0], ['w','mh', -.32, 34, 0], ...SIDES(24, 11, -.38), ...STERN(9)],
+             shapes:() => [['cyl', -.32, 38, 0]],
+             tell:'Three all-round reds on top of ordinary power-driven lights: constrained by her draught. She can only stay in the deep water.' },
+  mine:    { name:'Mine clearance vessel', short:'clearing mines', model:'coaster', spd:3, fog:'Lss',
+             lights:() => [['w','mh', .22, 19.5, 0], ['g','ar', .22, 17, 0], ['g','ar', .22, 13.5, -5], ['g','ar', .22, 13.5, 5], ...SIDES(8, 5, -.3), ...STERN(4)],
+             shapes:() => [['ball', .22, 17, 0], ['ball', .22, 13.5, -5], ['ball', .22, 13.5, 5]],
+             tell:'Three all-round greens, one at the foremast head and one at each yardarm, over power-driven lights: mine clearance. Keep 1000 m clear.' },
+  pilot:   { name:'Pilot vessel on duty', short:'a pilot vessel', model:'pilot', spd:5, fog:'ssss', small:true,
+             lights:v => [['w','ar', 0, 8.5, 0], ['r','ar', 0, 7, 0], ...(v === 'anchored' ? [['w','ar', .4, 3.5, 0]] : [...SIDES(4.5, 2.2, .05), ...STERN(1.8)])],
+             tell:'White over red, all-round: a pilot vessel on duty. Underway she shows sidelights and sternlight even when stopped (Rule 29 says underway, not making way), never a masthead light. At anchor she adds an anchor light.' },
+  hover:   { name:'Hovercraft, skimming', short:'a hovercraft in non-displacement mode', model:'launch', spd:12, fog:'L', small:true,
+             lights:() => [['y','fl', .2, 5.5, 0], ['w','mh', .2, 4.5, 0], ...SIDES(3.4, 1.6, .05), ...STERN(1.2)],
+             tell:'Power-driven lights with an all-round flashing yellow: an air-cushion vessel in non-displacement mode.' },
+  anchor:  { name:'Vessel at anchor', short:'at anchor', model:'coaster', spd:0, fog:'B', anchored:true,
+             lights:v => v === 'big' ? [['w','ar', .4, 17, 0], ['w','ar', -.38, 12, 0], ]
+                       : v === 'mid' ? [['w','ar', .4, 17, 0], ['w','ar', -.38, 12, 0]]
+                       : [['w','ar', .38, 12, 0]],
+             modelV:{ big:'ship', mid:'midship' }, fogV:{ big:'BG' },
+             work:v => v === 'big' ? [[.3, 9, 0, .7], [.1, 9, 0, .7], [-.1, 9, 0, .7], [-.28, 14, 0, .8], [-.36, 11, 6, .5], [-.36, 11, -6, .5]] : v === 'mid' ? [[-.3, 8, 0, .5], [.1, 6, 0, .4]] : [],
+             shapes:() => [['ball', .38, 8, 0]],
+             tell:'An all-round white forward and nothing else: at anchor. Fifty metres or more adds a second, lower, aft; a hundred metres or more lights the deck as well.' },
+  aground: { name:'Vessel aground', short:'aground', model:'coaster', spd:0, fog:'bBb', anchored:true,
+             lights:() => [['w','ar', .38, 12, 0], ['r','ar', -.05, 15, 0], ['r','ar', -.05, 12.5, 0]],
+             shapes:() => [['ball', -.05, 16, 0], ['ball', -.05, 13.5, 0], ['ball', -.05, 11, 0]],
+             tell:'Anchor light plus two all-round reds: aground. Three balls by day, one more than not under command.' },
+  towed:   { name:'Vessel being towed', short:'being towed', model:'barge', spd:3, fog:'Lsss',
+             lights:() => [...SIDES(10, 3, .3), ...STERN(2.5)], shapes:v => v === 'long' ? [['diamond', 0, 8, 0]] : [] },
+};
+const LCOL = { r:[1,.22,.14], g:[.25,1,.42], w:[1,.86,.6], y:[1,.8,.18], win:[1,.78,.48] };
+const LSIZE = { mh:1.35, ar:1, fl:1, sg:.8, sr:.8, st:.8, tw:.8, win:.55, deck:.75 };
+const ARC_NAME = { mh:'masthead light', sg:'green sidelight', sr:'red sidelight', st:'sternlight', tw:'yellow towing light' };
+
+// ---- WebGL renderer
+const cv = $('gl');
+let gl = null;
+try { gl = cv.getContext('webgl', { antialias:true, alpha:false, powerPreference:'low-power' }); } catch(e) {}
+if (!gl) { $('nogl').hidden = false; $('hud').hidden = true; }
+
+function prog(vs, fs){
+  const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o), s); return o; };
+  const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) console.error(gl.getProgramInfoLog(p));
+  const u = {}, a = {};
+  for (let i = 0; i < gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS); i++) { const n = gl.getActiveUniform(p, i).name.replace('[0]',''); u[n] = gl.getUniformLocation(p, n); }
+  for (let i = 0; i < gl.getProgramParameter(p, gl.ACTIVE_ATTRIBUTES); i++) { const n = gl.getActiveAttrib(p, i).name; a[n] = gl.getAttribLocation(p, n); }
+  return { p, u, a };
+}
+const P = '#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n';
+const SKY = gl && prog(`attribute vec2 p;varying vec2 v;void main(){v=p;gl_Position=vec4(p,.9999,1.);}`,
+`${P}varying vec2 v;uniform vec3 uR,uU,uF,uZen,uHor,uMoon;uniform float uTan,uAsp,uT,uMode;
+float hash(vec3 p){p=fract(p*.3183+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+void main(){vec3 d=normalize(uF+uR*v.x*uTan*uAsp+uU*v.y*uTan);float e=max(d.y,0.);vec3 c=mix(uHor,uZen,pow(e,.55));c=mix(c,uHor*1.25,exp(-e*22.)*.7);
+if(uMode<.5){vec3 g=floor(d*700.);float h=hash(g);float s=step(.9985,h)*smoothstep(0.,.12,e)*(.85+.15*sin(uT*1.2+h*50.));c+=vec3(s*.9);
+float m=max(dot(d,uMoon),0.);c+=vec3(1.,.96,.82)*(smoothstep(.99975,.9999,m)*.9+pow(m,400.)*.3+pow(m,12.)*.04);}
+if(uMode>1.5){c=mix(uHor,uZen,pow(e,.3));}
+if(d.y<0.)c=uHor;gl_FragColor=vec4(c,1.);}`);
+const SEA = gl && prog(`attribute vec2 p;uniform mat4 uVP;uniform float uTv,uAmp;varying vec3 vW;varying float vD;
+void main(){float r=length(p);float a=uAmp*clamp(1.-r/700.,0.,1.);float y=a*(sin(p.x*.09+uTv*1.2)+sin(p.y*.06-uTv*.9)+.6*sin((p.x+p.y)*.14+uTv*1.8));vW=vec3(p.x,y,p.y);vD=r;gl_Position=uVP*vec4(vW,1.);}`,
+`${P}varying vec3 vW;varying float vD;uniform vec3 uSea,uHor,uFogC,uEye;uniform float uFogD,uT;uniform vec4 uL[16];uniform vec3 uLC[16];uniform int uLN;
+void main(){vec3 Vv=normalize(uEye-vW);float fr=pow(1.-max(Vv.y,0.),4.);vec3 c=mix(uSea,uHor,fr*.9);
+for(int i=0;i<16;i++){if(i>=uLN)break;vec2 lp=uL[i].xy;vec2 d=uEye.xz-lp;float len=length(d);d/=len;vec2 w=vW.xz-lp;float al=dot(w,d);float pe=abs(w.x*d.y-w.y*d.x);
+if(al>0.&&al<len){float sg=uL[i].w*(1.+al/len*1.3);float k=exp(-pe*pe/(sg*sg))*pow(1.-al/len,1.4)*uL[i].z;float sh=.3+.7*abs(sin(al*1.9+uT*2.6+sin(vW.x*.9+uT)*1.2))*(.6+.4*abs(sin(al*.37-uT*.8)));c+=uLC[i]*k*sh;}}
+float f=1.-exp(-vD*uFogD);c=mix(c,uFogC,f);gl_FragColor=vec4(c,1.);}`);
+const MESH = gl && prog(`attribute vec3 p,n;uniform mat4 uVP,uM;uniform vec3 uEye;varying vec3 vN,vL;varying float vD;
+void main(){vec4 w=uM*vec4(p,1.);vN=normalize((uM*vec4(n,0.)).xyz);vL=p;vD=length(w.xyz-uEye);gl_Position=uVP*w;}`,
+`${P}varying vec3 vN,vL;varying float vD;uniform vec3 uCol,uSunD,uAmb,uSunC,uFogC;uniform float uFogD,uTex,uWL;
+float hash(vec3 p){p=fract(p*.3183+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+void main(){vec3 c=uCol;
+if(uTex>1.5){ if(vL.y<uWL-.3)c=vec3(.42,.13,.09); else if(vL.y<uWL)c=vec3(.09,.13,.3); }
+else if(uTex>.5){float pl=hash(floor(vL/vec3(2.4,1.8,2.4)));c*=.86+.22*pl;float seam=step(.94,fract(vL.z/2.4))+step(.94,fract(vL.y/1.8));c*=1.-.25*min(seam,1.);
+ if(vL.y<uWL)c=mix(c,vec3(.42,.13,.09),.9); if(vL.y>uWL&&vL.y<uWL+.25)c=vec3(.05);}
+float d=max(dot(normalize(vN),uSunD),0.);c*=uAmb+uSunC*d;float f=1.-exp(-vD*uFogD);gl_FragColor=vec4(mix(c,uFogC,f),1.);}`);
+const PTS = gl && prog(`attribute vec3 p,c;attribute float s,k;uniform mat4 uVP;uniform float uHaloV,uPx;varying vec3 vC;varying float vA;
+void main(){vec4 cp=uVP*vec4(p,1.);gl_Position=cp;float d=max(cp.w,1.);float px=clamp(2400./d,3.5,9.)*uPx*k;gl_PointSize=px*(1.+uHaloV*7.);vC=c;vA=s;}`,
+`${P}varying vec3 vC;varying float vA;uniform float uHalo;
+void main(){float d=length(gl_PointCoord-.5)*2.;if(d>1.)discard;float a=uHalo>.5?exp(-d*d*5.)*.13*(1.-d):smoothstep(1.,.25,d)*1.15;gl_FragColor=vec4(vC*a*vA,1.);}`);
+
+const m4 = {
+  persp:(fov,a,n,f) => { const t = 1/Math.tan(fov/2), r = 1/(n-f); return [t/a,0,0,0, 0,t,0,0, 0,0,(n+f)*r,-1, 0,0,2*n*f*r,0]; },
+  mul:(a,b) => { const o = new Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k*4+j]*b[i*4+k]; o[i*4+j] = s; } return o; },
+  rotX:a => { const c = Math.cos(a), s = Math.sin(a); return [1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]; },
+  rotZ:a => { const c = Math.cos(a), s = Math.sin(a); return [c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1]; },
+  rotY:a => { const c = Math.cos(a), s = Math.sin(a); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]; },
+  tr:(x,y,z) => [1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1],
+  T3:m => [m[0],m[4],m[8],0, m[1],m[5],m[9],0, m[2],m[6],m[10],0, 0,0,0,1],
+};
+
+// geometry builder: interleaved position+normal
+function builder(){
+  const v = [], lv = [];
+  const line = (a, b) => { lv.push(a[0],a[1],a[2],0,0,0, b[0],b[1],b[2],0,0,0); };
+  const tri = (a,b,c) => { const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+    let nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx; const l=Math.hypot(nx,ny,nz)||1; nx/=l;ny/=l;nz/=l;
+    for (const p of [a,b,c]) v.push(p[0],p[1],p[2],nx,ny,nz); };
+  const quad = (a,b,c,d) => { tri(a,b,c); tri(a,c,d); };
+  const box = (x,y,z,sx,sy,sz) => { const x0=x-sx/2,x1=x+sx/2,y0=y,y1=y+sy,z0=z-sz/2,z1=z+sz/2;
+    quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]); quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0]);
+    quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0]); quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1]);
+    quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0]); };
+  // revolve profile [[radius, y]...] around vertical axis at (cx, cz)
+  const lathe = (prof, cx, cy, cz, segs = 14) => { for (let i = 0; i < segs; i++) { const a0 = i/segs*Math.PI*2, a1 = (i+1)/segs*Math.PI*2;
+    for (let j = 0; j < prof.length-1; j++) { const [r0,y0] = prof[j], [r1,y1] = prof[j+1];
+      const p = (r,y,a) => [cx + r*Math.cos(a), cy + y, cz + r*Math.sin(a)];
+      quad(p(r0,y0,a0), p(r0,y0,a1), p(r1,y1,a1), p(r1,y1,a0)); } } };
+  const hull = (L, B, F, flare = .06) => { const N = 14, st = []; // stern (s=0) to bow (s=1); flare narrows the hull at the waterline so sections read as rounded
+    for (let i = 0; i <= N; i++) { const s = i/N; const hb = B/2 * (s < .35 ? .88 + .12*(s/.35) : Math.sqrt(Math.max(0, 1 - Math.pow((s-.35)/.65, 2)))) ;
+      const y = F * (1 + .35*Math.pow((s-.45)*2, 2)); st.push({ z:(s-.5)*L, hb:Math.max(hb, .02), y }); }
+    const k = 1 - flare;
+    for (let i = 0; i < N; i++) { const a = st[i], b = st[i+1];
+      quad([-a.hb*k,-.4,a.z],[-b.hb*k,-.4,b.z],[-b.hb,b.y,b.z],[-a.hb,a.y,a.z]); quad([b.hb*k,-.4,b.z],[a.hb*k,-.4,a.z],[a.hb,a.y,a.z],[b.hb,b.y,b.z]);
+      quad([-a.hb,a.y,a.z],[-b.hb,b.y,b.z],[b.hb,b.y,b.z],[a.hb,a.y,a.z]); }
+    const s0 = st[0]; quad([s0.hb*k,-.4,s0.z],[-s0.hb*k,-.4,s0.z],[-s0.hb,s0.y,s0.z],[s0.hb,s0.y,s0.z]); };
+  const shape = (kind, x, y, z) => { const r = 1.1;
+    if (kind === 'ball') { const pr = []; for (let i = 0; i <= 8; i++) { const a = -Math.PI/2 + i/8*Math.PI; pr.push([r*Math.cos(a), r*Math.sin(a)]); } lathe(pr, x, y, z, 12); }
+    else if (kind === 'cone') lathe([[0,-r],[r,r]], x, y, z);
+    else if (kind === 'coneup') lathe([[r,-r],[0,r]], x, y, z);
+    else if (kind === 'cones') { lathe([[r,r*2.1],[0,.1]], x, y, z); lathe([[0,-.1],[r,-r*2.1]], x, y, z); }
+    else if (kind === 'diamond') lathe([[0,-r*1.5],[r,0],[0,r*1.5]], x, y, z);
+    else if (kind === 'cyl') lathe([[0,-r*1.3],[r*.6,-r*1.3],[r*.6,r*1.3],[0,r*1.3]], x, y, z, 12); };
+  const buf = () => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW); return { b, n:v.length/6 }; };
+  const lbuf = () => { if (!lv.length) return null; const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lv), gl.STATIC_DRAW); return { b, n:lv.length/6, lines:true }; };
+  return { tri, quad, box, lathe, hull, shape, buf, lbuf, line, v };
+}
+const meshCache = {};
+// A vessel model: hull+house (grey), masts (dark), sails (white), shapes (black). Masts auto-grow under every light or shape.
+function model(type, variant){
+  const key = type + ':' + (variant || '');
+  if (meshCache[key]) return meshCache[key];
+  const d = V[type], m = M[(d.modelV && d.modelV[variant]) || d.model];
+  const lights = d.lights(variant, true), shapes = d.shapes ? d.shapes(variant) : [];
+  const H = builder(), Mst = builder(), S = builder(), Sh = builder();
+  H.hull(m.L, m.B, m.F, m.flare);
+  if (m.house) { const [z, len, h] = m.house; H.box(0, m.F, z*m.L, m.B*.72, h, len); if (m.L > 50) { H.box(0, m.F + h, z*m.L, m.B*.5, 2.5, len*.5); H.box(0, m.F + h - .35, z*m.L, m.B*.98, .35, Math.min(len*.4, 4)); } } // bridge wings carry the sidelights
+  if (m.crane) { Mst.box(0, m.F, -.05*m.L, 1.2, 14, 1.2); Mst.box(0, m.F + 13, .1*m.L, .6, .6, .3*m.L); }
+  const posts = {};
+  for (const l of [...lights.filter(l => l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl'), ...shapes]) {
+    const along = l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl' ? l[2] : l[1], h = l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl' ? l[3] : l[2], x = l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl' ? l[4] : l[3];
+    const k = along.toFixed(2); posts[k] = Math.max(posts[k] || 0, h);
+    if (x) Mst.box(x/2, h - .15, along*m.L, Math.abs(x), .3, .3);
+  }
+  for (const k in posts) { const along = +k, top = posts[k] - .25, w = m.L > 50 ? .9 : .35; Mst.box(0, 0, along*m.L, w, top, w); }
+  // lantern housings, so by day you can see where each light lives
+  const lb = m.L > 50 ? .7 : m.L > 15 ? .45 : .25;
+  for (const [, kind, along, h, x] of lights) { if (kind === 'sg' || kind === 'sr') Mst.box(x, h - lb/2, along*m.L, lb, lb, lb*1.4); else Mst.box(x || 0, h - lb/2, along*m.L, lb, lb, lb); }
+  if (m.sail) {
+    const mz = m.mast[0]*m.L, mh = m.mast[1], F = m.F, L = m.L, hw = m.B/2;
+    // deck furniture: pulpit with the sidelights, pushpit, stanchions and lifelines, coachroof windows, cockpit coaming
+    Mst.box(0, F + .55, .44*L, 1.45, .06, .06); Mst.box(-.62, F, .44*L, .06, .6, .06); Mst.box(.62, F, .44*L, .06, .6, .06);
+    Mst.box(0, F + .6, -.47*L, hw*1.6, .06, .06); Mst.box(-hw*.8, F, -.47*L, .06, .65, .06); Mst.box(hw*.8, F, -.47*L, .06, .65, .06);
+    const rail = []; for (let i = 0; i <= 4; i++) { const t = i/4, z = (-.42 + .8*t)*L, x = hw*(t < .55 ? .92 : .92 - (t-.55)*1.4); rail.push([x, z]); Mst.box(x, F, z, .05, .62, .05); Mst.box(-x, F, z, .05, .62, .05); }
+    for (let i = 0; i < 4; i++) for (const sd of [1, -1]) Mst.line([sd*rail[i][0], F + .6, rail[i][1]], [sd*rail[i+1][0], F + .6, rail[i+1][1]]);
+    const [hz, hl, hh] = m.house; for (const sd of [1, -1]) Mst.box(sd*m.B*.36, F + hh*.45, hz*L, .06, hh*.4, hl*.7); // window strip
+    Mst.box(0, F, -.25*L, m.B*.6, .3, .06); Mst.box(-m.B*.3, F, -.2*L, .06, .3, .16*L); Mst.box(m.B*.3, F, -.2*L, .06, .3, .16*L);
+    // spars and standing rigging
+    Mst.box(0, 0, mz, .22, mh, .22); if (variant !== 'own') Mst.box(0, 2.1, mz - 2.5, .16, .16, 5.2);
+    Mst.box(0, mh*.55, mz, 3.2, .08, .08); // spreaders
+    Mst.line([0, mh, mz], [0, F + .3, .5*L]); Mst.line([0, mh, mz], [0, F + .4, -.49*L]);
+    for (const sd of [1, -1]) { Mst.line([0, mh, mz], [sd*1.6, mh*.55, mz]); Mst.line([sd*1.6, mh*.55, mz], [sd*hw*.9, F, mz]); Mst.line([0, mh*.55, mz], [sd*hw*.9, F, mz + .6]); }
+    if (variant !== 'bare' && variant !== 'own') {
+      // a sail is a curved surface: luff on the mast (or forestay), leech falling to the clew, belly sagging to leeward
+      const sail = (luff0, luff1, clew, belly) => { const N = 6, K = 5, P = (u, w) => { const lx = luff0[0] + (luff1[0]-luff0[0])*u, ly = luff0[1] + (luff1[1]-luff0[1])*u, lz = luff0[2] + (luff1[2]-luff0[2])*u;
+          const cx = clew[0], cy = clew[1], cz = clew[2]; const x = lx + (cx-lx)*w*(1-u), y = ly + (cy-ly)*w*(1-u), z = lz + (cz-lz)*w*(1-u); return [x + belly*Math.sin(Math.PI*w)*(1-u)*(.3+.7*(1-u)), y, z]; };
+        for (let i = 0; i < N; i++) for (let j = 0; j < K; j++) { const u0 = i/N, u1 = (i+1)/N, w0 = j/K, w1 = (j+1)/K; S.quad(P(u0,w0), P(u0,w1), P(u1,w1), P(u1,w0)); } };
+      sail([0,2.4,mz], [0,mh-.6,mz], [0,2.4,mz-5.0], -1.2); sail([0,mh-.8,mz], [0,F+.4,.5*L], [0,1.7,mz-1.8], -1.4); } }
+  for (const [k, along, h, x] of shapes) Sh.shape(k, x, h, along*m.L);
+  // ships carry lit accommodation windows at night: dim, warm, never part of the answer
+  const windows = [];
+  if (m.house && m.L > 45) { const [z, len, h] = m.house; for (let i = -1; i <= 1; i++) for (const side of [-1, 1]) windows.push([side*m.B*.37, m.F + h*.65, z*m.L + i*len*.3]); }
+  return meshCache[key] = { hull:H.buf(), mast:Mst.buf(), rig:Mst.lbuf(), sail:S.v.length ? S.buf() : null, shapes:Sh.v.length ? Sh.buf() : null, m, windows };
+}
+
+let seaBuf, seaN, skyBuf, ptBuf, lineBuf;
+if (gl) {
+  const s = []; const R = 48, K = 80; // radial sea grid, dense near the eye
+  const r = i => 2 * Math.exp(i * 0.096);
+  for (let i = 0; i < K; i++) for (let j = 0; j <= R; j++) { const a = j/R*Math.PI*2, r0 = r(i), r1 = r(i+1);
+    s.push(r0*Math.cos(a), r0*Math.sin(a), r1*Math.cos(a), r1*Math.sin(a)); }
+  seaBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, seaBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(s), gl.STATIC_DRAW); seaN = s.length/2;
+  skyBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  ptBuf = gl.createBuffer(); lineBuf = gl.createBuffer();
+  gl.enable(gl.DEPTH_TEST);
+}
+const seaStrips = []; if (gl) for (let i = 0; i < 80; i++) seaStrips.push(i * 49 * 2);
+
+const ENV = {
+  night:{ zen:[.008,.012,.028], hor:[.05,.075,.12], sea:[.012,.02,.032], fogD:.00045, amb:[1,1,1], sunC:[.9,.9,1.1], hull:[.016,.02,.028], amp:.16, mode:0 },
+  day:  { zen:[.33,.52,.82], hor:[.76,.8,.84], sea:[.1,.24,.34], fogD:.00042, amb:[.45,.47,.5], sunC:[.7,.68,.62], amp:.18, mode:1 },
+  fog:  { zen:[.66,.68,.7], hor:[.6,.62,.64], sea:[.36,.4,.43], fogD:.02, amb:[.5,.5,.5], sunC:[.3,.3,.3], amp:.25, mode:2 },
+};
+const DAYCOL = { hull:[.36,.37,.39], house:[.8,.8,.77], mast:[.2,.2,.2], sail:[.93,.93,.9], shape:[.02,.02,.02], barge:[.3,.22,.18], yacht:[.9,.9,.88], spar:[.55,.56,.58], rig:[.3,.3,.32] };
+
+// ---- scene state
+const scn = { mode:'night', vessels:[], t:0, timeScale:1, fogD:0, targetFogD:0, binos:false, bearing:0, track:false, ownSpd:0, ownHdg:0, busy:false };
+let lastT = 0;
+function setScene(spec){
+  scn.mode = spec.mode; scn.vessels = spec.vessels; scn.timeScale = 1; scn.track = !!spec.track; scn.trackFree = !!spec.track; scn.ownSpd = spec.ownSpd || 0; scn.ownHdg = spec.ownHdg || 0; scn.busy = false;
+  scn.fogD = scn.targetFogD = ENV[spec.mode].fogD;
+  for (const v of scn.vessels) { v.hdg = norm(v.hdg); v.turnTo = null; v.spdMul = 1; }
+  $('scene').classList.toggle('day', spec.mode !== 'night');
+  $('hud').className = 'hud' + (spec.mode === 'night' ? '' : ' day'); $('hint').className = 'hint' + (spec.mode === 'night' ? '' : ' day');
+  $('hud').textContent = spec.hud || '';
+}
+const fwd = h => [Math.sin(rad(h)), 0, -Math.cos(rad(h))];
+const stbd = h => [Math.cos(rad(h)), 0, Math.sin(rad(h))];
+// relative bearing of the eye from her bow, 0..360 clockwise
+function relBearing(v, eye = [0,0,0]){ const f = fwd(v.hdg), s = stbd(v.hdg), dx = eye[0]-v.x, dz = eye[2]-v.z;
+  return norm(Math.atan2(dx*s[0]+dz*s[2], dx*f[0]+dz*f[2]) * 180/Math.PI); }
+// Annex I 9: full intensity inside the arc, falling to nothing within ~3° outside it, so arcs overlap slightly rather than gap
+function arcVis(kind, rb){
+  const inArc = (a0, a1) => { const x = norm(rb - a0), w = norm(a1 - a0); if (x <= w) return 1; return Math.max(0, 1 - Math.min(x - w, 360 - x) / 3); };
+  if (kind === 'ar' || kind === 'fl') return 1;
+  if (kind === 'mh') return inArc(247.5, 112.5);
+  if (kind === 'sg') return inArc(0, 112.5);
+  if (kind === 'sr') return inArc(247.5, 360);
+  return inArc(112.5, 247.5);
+}
+function worldLights(v){ const d = V[v.type], m = model(v.type, v.variant).m, f = fwd(v.hdg), s = stbd(v.hdg), rb = relBearing(v), out = [];
+  for (const [col, kind, along, h, across, dim] of d.lights(v.variant, v.making)) {
+    let vis = arcVis(kind, rb); if (kind === 'fl') vis *= (Math.sin(scn.t * 12.6) > .2 ? 1 : 0);
+    if (!vis) continue;
+    const z = along*m.L; out.push({ x:v.x + f[0]*z + s[0]*across, y:h, z:v.z + f[2]*z + s[2]*across, col:LCOL[col], vis:vis*(dim || 1)*(kind === 'mh' ? 1 : kind === 'ar' || kind === 'fl' ? .75 : .55), kind, c:col });
+  }
+  for (const [x, y, z] of model(v.type, v.variant).windows) out.push({ x:v.x + f[0]*z + s[0]*x, y, z:v.z + f[2]*z + s[2]*x, col:LCOL.win, vis:.2, kind:'win', dim:1 });
+  // working lights: an anchored ship lights her decks, a fishing vessel working her gear is lit like a stadium. Nav lights hide inside the glare.
+  const work = d.work ? d.work(v.variant, v.making) : [];
+  for (const [along, h, x, vv] of work) { const z = along*m.L; out.push({ x:v.x + f[0]*z + s[0]*x, y:h, z:v.z + f[2]*z + s[2]*x, col:LCOL.win, vis:vv, kind:'deck', dim:1 }); }
+  return out;
+}
+function seen(v){ const rb = relBearing(v), count = {};
+  for (const [col, kind, , , , dim] of V[v.type].lights(v.variant, v.making)) { if (arcVis(kind, rb) < .5 || dim) continue;
+    const k = kind === 'ar' || kind === 'fl' ? { r:'red', g:'green', w:'white', y:'yellow' }[col] + (kind === 'fl' ? ' flashing' : ' all-round') : ARC_NAME[kind]; count[k] = (count[k] || 0) + 1; }
+  return Object.entries(count).map(([k, n]) => n > 1 ? `${n} ${k.replace('light', 'lights')}` : k).join(', ') || 'nothing at all';
+}
+
+function resize(){ const dpr = Math.min(devicePixelRatio || 1, 2), w = Math.round(cv.clientWidth*dpr), h = Math.round(cv.clientHeight*dpr);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } }
+
+function frame(now){
+  requestAnimationFrame(frame);
+  if (!gl) return;
+  try { frameInner(now); } catch (e) { console.error(e); }
+}
+function frameInner(now){
+  const dt = Math.min(.1, (now - lastT)/1000 || 0); lastT = now;
+  scn.t += dt;
+  const sim = dt * scn.timeScale;
+  for (const v of scn.vessels) {
+    if (v.turnTo != null) { const d = ((v.turnTo - v.hdg + 540) % 360) - 180; v.hdg = Math.abs(d) < .5 ? v.turnTo : norm(v.hdg + Math.sign(d) * Math.min(Math.abs(d), 4 * sim)); }
+    const f = fwd(v.hdg), sp = V[v.type].spd * v.spdMul;
+    v.x += f[0]*sp*sim; v.z += f[2]*sp*sim + scn.ownSpd*sim; // we steer straight ahead, so the world slides past us
+    if (v.towOf) { const t = v.towOf, g = fwd(t.hdg); v.x = t.x - g[0]*v.towLen; v.z = t.z - g[2]*v.towLen; v.hdg = t.hdg; }
+  }
+  scn.fogD += (scn.targetFogD - scn.fogD) * Math.min(1, dt * 1.5);
+  // after the answer the lookout follows her, and the fast-forward eases off once she is close
+  if (scn.track && scn.vessels[0]) { const v = scn.vessels[0], tb = Math.atan2(v.x, -v.z) * 180/Math.PI;
+    scn.bearing += ((scn.trackFree ? tb : clamp(tb, -12, 12)) - scn.bearing) * Math.min(1, dt * 2); if (Math.hypot(v.x, v.z) < 150) scn.timeScale = 1; }
+  resize();
+  const env = ENV[scn.mode], asp = cv.width/cv.height, fov = rad(scn.binos ? 9 : 26);
+  const eye = [1.45, 2.9, 4.9]; // at the helm of our own 12 m yacht, starboard side of the cockpit, looking forward over the coachroof
+  const pitch = rad(.2)*Math.sin(scn.t*.45), roll = rad(.4)*Math.sin(scn.t*.31 + 1);
+  const Rc = m4.mul(m4.rotY(-rad(scn.bearing)), m4.mul(m4.rotX(pitch), m4.rotZ(roll)));
+  const view = m4.mul(m4.T3(Rc), m4.tr(-eye[0], -eye[1], -eye[2]));
+  const VP = m4.mul(m4.persp(fov, asp, .5, 6000), view);
+  gl.viewport(0, 0, cv.width, cv.height);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // sky
+  gl.disable(gl.DEPTH_TEST); gl.useProgram(SKY.p);
+  gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.enableVertexAttribArray(SKY.a.p); gl.vertexAttribPointer(SKY.a.p, 2, gl.FLOAT, false, 0, 0);
+  gl.uniform3f(SKY.u.uR, Rc[0], Rc[1], Rc[2]); gl.uniform3f(SKY.u.uU, Rc[4], Rc[5], Rc[6]); gl.uniform3f(SKY.u.uF, -Rc[8], -Rc[9], -Rc[10]);
+  gl.uniform1f(SKY.u.uTan, Math.tan(fov/2)); gl.uniform1f(SKY.u.uAsp, asp); gl.uniform1f(SKY.u.uT, scn.t); gl.uniform1f(SKY.u.uMode, env.mode);
+  gl.uniform3fv(SKY.u.uZen, env.zen); gl.uniform3fv(SKY.u.uHor, env.hor); gl.uniform3f(SKY.u.uMoon, -.5, .28, -.82);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.enable(gl.DEPTH_TEST);
+  // lights (world) for sea reflections
+  const lights = [];
+  const fogA = d => Math.exp(-d * scn.fogD * 1.6);
+  if (scn.mode !== 'day') for (const v of scn.vessels) for (const l of worldLights(v)) { l.vis *= fogA(Math.hypot(l.x, l.z)); if (l.vis > .01) lights.push(l); }
+  if (scn.mode !== 'day') lights.push({ x:-.62, y:1.5, z:-5.3, col:LCOL.r, vis:.3, own:true, kind:'sr' }, { x:.62, y:1.5, z:-5.3, col:LCOL.g, vis:.3, own:true, kind:'sg' });
+  const uL = [], uLC = []; let ln = 0;
+  if (scn.mode === 'night') { uL.push(-1500, -2460, .05, 4); uLC.push(.6, .58, .5); ln++; }
+  for (const l of lights) { if (ln >= 16) break; if (l.own || l.kind === 'win') continue; uL.push(l.x, l.z, l.vis * (l.kind === 'deck' ? .4 : .55) * (l.kind === 'mh' ? 1.3 : 1), l.kind === 'deck' ? 1.1 : .65); uLC.push(...l.col); ln++; }
+  // sea
+  gl.useProgram(SEA.p);
+  gl.bindBuffer(gl.ARRAY_BUFFER, seaBuf); gl.enableVertexAttribArray(SEA.a.p); gl.vertexAttribPointer(SEA.a.p, 2, gl.FLOAT, false, 0, 0);
+  gl.uniformMatrix4fv(SEA.u.uVP, false, VP); gl.uniform1f(SEA.u.uT, scn.t); gl.uniform1f(SEA.u.uTv, scn.t); gl.uniform1f(SEA.u.uAmp, env.amp);
+  gl.uniform3fv(SEA.u.uSea, env.sea); gl.uniform3fv(SEA.u.uHor, env.hor); gl.uniform3fv(SEA.u.uFogC, env.hor); gl.uniform3fv(SEA.u.uEye, eye);
+  gl.uniform1f(SEA.u.uFogD, scn.fogD); gl.uniform1i(SEA.u.uLN, ln);
+  if (ln) { gl.uniform4fv(SEA.u.uL, uL); gl.uniform3fv(SEA.u.uLC, uLC); }
+  for (const off of seaStrips) gl.drawArrays(gl.TRIANGLE_STRIP, off, 98);
+  // hulls
+  gl.useProgram(MESH.p);
+  gl.uniformMatrix4fv(MESH.u.uVP, false, VP); gl.uniform3fv(MESH.u.uEye, eye); gl.uniform3fv(MESH.u.uFogC, env.hor); gl.uniform1f(MESH.u.uFogD, scn.fogD);
+  gl.uniform3f(MESH.u.uSunD, .4, .8, .45); gl.uniform3fv(MESH.u.uAmb, env.amb); gl.uniform3fv(MESH.u.uSunC, env.sunC);
+  const drawMesh = (mesh, col, tex = 0, wl = 0) => { if (!mesh) return; gl.uniform3fv(MESH.u.uCol, col); gl.uniform1f(MESH.u.uTex, tex); gl.uniform1f(MESH.u.uWL, wl);
+    if (mesh.lines) { gl.bindBuffer(gl.ARRAY_BUFFER, mesh.b); gl.enableVertexAttribArray(MESH.a.p); gl.vertexAttribPointer(MESH.a.p, 3, gl.FLOAT, false, 24, 0); gl.enableVertexAttribArray(MESH.a.n); gl.vertexAttribPointer(MESH.a.n, 3, gl.FLOAT, false, 24, 12); gl.drawArrays(gl.LINES, 0, mesh.n); return; }
+    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.b); gl.enableVertexAttribArray(MESH.a.p); gl.vertexAttribPointer(MESH.a.p, 3, gl.FLOAT, false, 24, 0);
+    gl.enableVertexAttribArray(MESH.a.n); gl.vertexAttribPointer(MESH.a.n, 3, gl.FLOAT, false, 24, 12); gl.drawArrays(gl.TRIANGLES, 0, mesh.n); };
+  const night = scn.mode === 'night';
+  // our own boat: hull, mast and boom, bow fixed on our heading so the turning lookout sees which bow she is on
+  const own = model('sail', 'own');
+  gl.uniformMatrix4fv(MESH.u.uM, false, [1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1]);
+  drawMesh(own.hull, night ? [.045,.05,.06] : DAYCOL.yacht, night ? 0 : 2, own.m.F * .3); drawMesh(own.mast, night ? [.035,.04,.05] : DAYCOL.spar); drawMesh(own.rig, night ? [.03,.035,.045] : DAYCOL.rig);
+  for (const v of scn.vessels) {
+    const mo = model(v.type, v.variant), f = fwd(v.hdg), s = stbd(v.hdg);
+    const heel = mo.m.sail && v.type !== 'towed' && V[v.type].spd ? rad(11) : 0, ch = Math.cos(heel), sh = Math.sin(heel); // under sail she heels to leeward (we put the wind on her starboard side)
+    gl.uniformMatrix4fv(MESH.u.uM, false, [s[0]*ch,sh,s[2]*ch,0, -s[0]*sh,ch,-s[2]*sh,0, f[0],0,f[2],0, v.x,0,v.z,1]);
+    drawMesh(mo.hull, night ? env.hull : v.type === 'towed' ? DAYCOL.barge : mo.m.sail ? DAYCOL.yacht : DAYCOL.hull, night ? 0 : mo.m.sail ? 2 : mo.m.L > 15 ? 1 : 0, mo.m.F * .3);
+    drawMesh(mo.mast, night ? env.hull : mo.m.sail ? DAYCOL.spar : DAYCOL.mast); drawMesh(mo.rig, night ? env.hull : DAYCOL.rig);
+    drawMesh(mo.sail, night ? [.03,.035,.045] : DAYCOL.sail);
+    if (!night) drawMesh(mo.shapes, DAYCOL.shape);
+    if (v.towOf) { const t = v.towOf, tm = model(t.type, t.variant).m, g = fwd(t.hdg);
+      gl.uniformMatrix4fv(MESH.u.uM, false, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]); gl.uniform3fv(MESH.u.uCol, night ? env.hull : [.15,.13,.1]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, lineBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([t.x - g[0]*tm.L*.49, tm.F + .5, t.z - g[2]*tm.L*.49, 0,0,0, v.x + f[0]*mo.m.L*.49, mo.m.F + .3, v.z + f[2]*mo.m.L*.49, 0,0,0]), gl.DYNAMIC_DRAW);
+      gl.vertexAttribPointer(MESH.a.p, 3, gl.FLOAT, false, 24, 0); gl.vertexAttribPointer(MESH.a.n, 3, gl.FLOAT, false, 24, 12); gl.drawArrays(gl.LINES, 0, 2); }
+  }
+  // lights
+  if (lights.length) {
+    const arr = new Float32Array(lights.length * 8); lights.forEach((l, i) => { const tw = .92 + .08*Math.sin(scn.t*7 + i*3.1); arr.set([l.x, l.y, l.z, ...l.col, l.vis * tw, LSIZE[l.kind] || 1], i*8); });
+    gl.useProgram(PTS.p); gl.depthMask(false); gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.bindBuffer(gl.ARRAY_BUFFER, ptBuf); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(PTS.a.p); gl.vertexAttribPointer(PTS.a.p, 3, gl.FLOAT, false, 32, 0);
+    gl.enableVertexAttribArray(PTS.a.c); gl.vertexAttribPointer(PTS.a.c, 3, gl.FLOAT, false, 32, 12);
+    gl.enableVertexAttribArray(PTS.a.s); gl.vertexAttribPointer(PTS.a.s, 1, gl.FLOAT, false, 32, 24);
+    gl.enableVertexAttribArray(PTS.a.k); gl.vertexAttribPointer(PTS.a.k, 1, gl.FLOAT, false, 32, 28);
+    gl.uniformMatrix4fv(PTS.u.uVP, false, VP); gl.uniform1f(PTS.u.uPx, (devicePixelRatio || 1) * (scn.binos ? 1.6 : 1) * (scn.mode === 'fog' ? 1.8 : 1));
+    gl.uniform1f(PTS.u.uHalo, 1); gl.uniform1f(PTS.u.uHaloV, 1); gl.drawArrays(gl.POINTS, 0, lights.length);
+    gl.uniform1f(PTS.u.uHalo, 0); gl.uniform1f(PTS.u.uHaloV, 0); gl.drawArrays(gl.POINTS, 0, lights.length);
+    gl.disable(gl.BLEND); gl.depthMask(true); gl.enable(gl.DEPTH_TEST);
+  }
+}
+if (gl) requestAnimationFrame(frame);
+
+
+// hand-bearing compass: first reading now, each later one 45 s on (time runs fast while you wait)
+const compassBearing = v => norm(scn.ownHdg + Math.atan2(v.x, -v.z) * 180/Math.PI);
+function takeBearing(){
+  if (!q || !q.bearing || answered || scn.busy) return;
+  const v = scn.vessels[0], log = () => { q.bearings.push(Math.round(compassBearing(v))); renderBearings(); };
+  if (!q.bearings.length) return log();
+  scn.busy = true; $('bear').disabled = true; scn.timeScale = 15;
+  setTimeout(() => { scn.timeScale = 1; scn.busy = false; $('bear').disabled = false; log(); }, 3000);
+}
+const fmtB = b => String(b).padStart(3, '0') + '°';
+function renderBearings(){ $('bearings').textContent = q && q.bearing ? (q.bearings.length ? q.bearings.map(fmtB).join(' · ') : 'no bearing taken yet') : ''; }
+
+// ---- scenario helpers
+function place(type, o = {}){
+  const d = V[type], m = M[(d.modelV && d.modelV[o.variant]) || d.model];
+  const range = o.range || clamp(m.L * 6 + 180, 260, 620) * rndf(.9, 1.15), b = o.bearing ?? rndf(-14, 14);
+  const v = { type, variant:o.variant, making:o.making ?? true, hdg:norm(o.hdg ?? 0), x:range*Math.sin(rad(b)), z:-range*Math.cos(rad(b)), range, b };
+  v.delta = norm(v.hdg - b);
+  return v;
+}
+const HOUR = () => `${String(rnd(22, 27) % 24).padStart(2,'0')}${pick(['05','20','40','55'])}`;
+const hudFor = (v, mode) => `${mode === 'night' ? HOUR() + ' · clear night' : mode === 'fog' ? 'fog · vis 150 m' : 'day · good vis'} · contact ${(v.range/1852).toFixed(1)} nm ${Math.abs(v.b) < 5 ? 'dead ahead' : `${Math.round(Math.abs(v.b))}° on the ${v.b > 0 ? 'starboard' : 'port'} bow`}`;
+const withTow = v => { const t = { type:'towed', variant:v.variant, making:true, hdg:v.hdg, towOf:v, towLen:v.variant === 'long' ? 300 : 120, x:0, z:0 }; return [v, t]; };
+const ASPECT = [
+  { k:0, a:'↓', name:'Coming straight at us', gen:() => 180 + rndf(-2, 2) },
+  { k:1, a:'↑', name:'Going away from us', gen:() => rndf(-50, 50) },
+  { k:2, a:'→', name:'Crossing left to right', gen:() => rndf(75, 150) },
+  { k:3, a:'←', name:'Crossing right to left', gen:() => rndf(210, 285) },
+];
+function aspectOf(v){ const rb = relBearing(v); if (rb <= 2.5 || rb >= 357.5) return 0; if (rb > 112.5 && rb < 247.5) return 1; return rb < 112.5 ? 2 : 3; }
+const aspectTell = v => { const a = aspectOf(v);
+  return a === 0 ? 'Both sidelights together: she is coming straight at us.' : a === 1 ? 'Only a low white: we are looking at her stern and she is going away.'
+    : a === 2 ? 'Her green sidelight: we see her starboard side, so she crosses left to right.' : 'Her red sidelight: we see her port side, so she crosses right to left.'; };
+const RISK = {
+  trawl:'Astern of a trawler run warps and a net a quarter of a mile long. Pass close under her stern and they wrap your keel and prop.',
+  fish:'Her nets and lines lie out to one side. Cut across them and you are anchored to a fishing boat by the propeller.',
+  tow:'The dark water between the tug and the barge is a steel towline just under the surface. Yachts that cut through it are rolled under.',
+  towed:'The dark water between the tug and the barge is a steel towline just under the surface. Yachts that cut through it are rolled under.',
+  nuc:'She cannot steer. Wait for her to give way and you end up under her bow.',
+  ram:'She is working and cannot alter for you. Give her room; if she is dredging, only on the green side.',
+  dredge:'Pass on the red side and you meet the pipeline, the wires or the bucket.',
+  cbd:'She cannot leave the deep water. Expecting her to alter puts a ship across your bow in a channel too narrow for both of you.',
+  mine:'Mine clearance gear streams up to a thousand metres astern and abeam of her.',
+  anchor:'She is not moving. Altering for a ghost crossing takes you into the traffic you were trying to avoid.',
+  aground:'She is stopped on the bank. Head for the water round her and you find the same bank.',
+  pilot:'She will turn and stop without warning to put a pilot aboard the ship behind her.',
+  power:'Misjudge a motor vessel and the collision-regulations rank you gave her was wrong, and so was who gives way.',
+  power50:'A ship of this size needs a mile to stop and a minute to turn. Misread her and there is no time left to fix it.',
+  power12:'Small, fast and low: she closes quicker than you expect.',
+  sail:'Call a yacht a power boat and you will stand on when you should give way.',
+  motorsail:'Sails up but an engine running: she must give way to a boat under sail, and you must not assume she will.',
+  hover:'She is doing forty knots. The bearing changes before you have finished the sentence.',
+};
+
+// ---- generators. q = {label, prompt, scene, choices, answer, explain, rule, sound?, after?}
+function genAspect(){
+  const asp = pick(ASPECT), type = pick(['power','power','power50']);
+  const v = place(type, { bearing:rndf(-12, 12) }); v.hdg = norm(v.b + asp.gen());
+  return { label:'Arcs of light', prompt:'Dark night, a power-driven vessel ahead. Which way is she heading?',
+    scene:{ mode:'night', vessels:[v], hud:hudFor(v, 'night') },
+    choices: ASPECT.map(a => a.name), arrows: ASPECT.map(a => a.a), answer: aspectOf(v), fine:true,
+    explain:`${aspectTell(v)} ${type === 'power50' ? 'Two mastheads, the after one higher: the gap between them opens as she turns beam-on.' : 'The masthead light sits forward and leans the way she is going.'}`,
+    rule:'Rule 21 arcs. Green: her starboard side, she goes to your right. Red: her port side, to your left. Both: head-on. Sternlight only: she is leaving, and you are in her overtaking sector.' };
+}
+function genSailPower(){
+  const opts = [['sail','plain'], ['sail','tri'], ['sail','rg'], ['power'], ['power50'], ['power12'], ['motorsail']];
+  const [type, variant] = pick(opts);
+  const v = place(type, { variant }); v.hdg = norm(v.b + pick(ASPECT).gen());
+  const names = ['Sailing vessel', 'Power-driven vessel under 12 m', 'Power-driven vessel under 50 m', 'Power-driven vessel, 50 m or more'];
+  const answer = names.indexOf(V[type].name);
+  const tell = V[type].tellV ? V[type].tellV[variant] : V[type].tell;
+  return { label:'Sail or power', prompt:'What is she?', scene:{ mode:'night', vessels:[v], hud:hudFor(v, 'night') }, choices:names, answer,
+    explain:`${tell} ${aspectTell(v)}`,
+    rule:'Rule 23: power-driven shows a masthead light, two if 50 m or more. Rule 25: sail shows sidelights and sternlight only, or a tricolour under 20 m. Motor-sailing counts as power.' };
+}
+// weighted: the vessels Day Skipper papers actually show come up most; CBD and mine clearance are the long tail
+const STACK_POOL = ['trawl','trawl','fish','fish','nuc','nuc','ram','ram','anchor','anchor','tow','tow','power','sail','hover','pilot','aground','dredge','cbd','mine'];
+function genStack(){
+  const type = DEV.get('type') || pick(STACK_POOL);
+  const variant = type === 'tow' ? pick(['short','long']) : type === 'anchor' ? pick([undefined,'mid']) : type === 'fish' ? pick([undefined,'gear','anchored']) : type === 'trawl' ? pick([undefined,undefined,'big']) : type === 'ram' ? pick([undefined,undefined,'anchored']) : type === 'pilot' ? pick([undefined,undefined,'anchored']) : undefined;
+  const making = V[type].anchored || variant === 'anchored' ? false : type === 'dredge' ? false : Math.random() < .6;
+  let v = place(type, { variant, making, range: type === 'tow' ? rndf(480, 600) : undefined }); v.hdg = norm(v.b + (V[type].anchored || type === 'dredge' ? rndf(40, 320) : pick(ASPECT.slice(0, 3)).gen()));
+  const vessels = type === 'tow' ? withTow(v) : [v];
+  const pool = shuffle([...new Set(STACK_POOL)].filter(x => x !== type && V[x].name !== V[type].name)).slice(0, 4);
+  const opts = shuffle([type, ...pool]);
+  const wayTell = V[type].anchored ? '' : variant === 'anchored' ? (type === 'fish' ? ' She is at anchor, but a fishing vessel shows only her fishing lights, never an anchor light.' : ' She is at anchor: anchor lights on top of the stack.') : making ? ' She is making way, so sidelights and sternlight show too.' : (['trawl','fish','nuc','ram'].includes(type) ? ' No sidelights: she is underway but stopped in the water.' : '');
+  return { label:'The stacks', prompt:'Read the stack. What is she?', scene:{ mode:'night', vessels, hud:hudFor(v, 'night') },
+    choices: opts.map(x => V[x].name), answer: opts.indexOf(type), risk:type,
+    explain:`${V[type].tell}${wayTell}`,
+    rule:'Stack first (Rules 26–30), then mastheads and sidelights (Rule 23). Red over red the captain is dead; red white red restricted ahead; red over white fishing tonight; green over white trawling tonight; white over red pilot ahead.' };
+}
+function genDetail(){
+  const kind = pick(['size','size','way','way','tow','side','aspect','aspect','anchor','sees','sees','sees']);
+  let v, vessels, choices, answer, explain, track = false, prompt = 'Second look. What else do her lights tell you?';
+  if (kind === 'size') {
+    const type = pick(['power12','power','power50']); v = place(type); v.hdg = norm(v.b + pick(ASPECT.slice(2)).gen());
+    choices = ['Under 12 m', 'Under 50 m', '50 m or more']; answer = ['power12','power','power50'].indexOf(type);
+    explain = V[type].tell; prompt = 'A power-driven vessel. How long is she?';
+  } else if (kind === 'way') {
+    const type = pick(['trawl','fish','nuc','ram']), making = Math.random() < .5; v = place(type, { making }); v.hdg = norm(v.b + pick(ASPECT.slice(0, 3)).gen());
+    choices = ['Making way through the water', 'Underway but stopped']; answer = making ? 0 : 1;
+    explain = `${V[type].tell} ${making ? 'Her sidelights are showing: she is moving through the water.' : 'No sidelights or sternlight: she is underway but not making way, stopped and probably drifting.'}`;
+    prompt = `She is ${V[type].short}. Is she moving?`;
+  } else if (kind === 'tow') {
+    const variant = pick(['short','long']); v = place('tow', { variant }); v.hdg = norm(v.b + pick(ASPECT.slice(2)).gen()); vessels = withTow(v);
+    choices = ['Tow is 200 m or less', 'Tow is over 200 m']; answer = variant === 'long' ? 1 : 0;
+    explain = `${variant === 'long' ? 'Three' : 'Two'} masthead lights in a vertical line: the tow, measured from the tug's stern to the end of the tow, is ${variant === 'long' ? 'more than' : 'not more than'} 200 m. Look for the dim sidelights of the barge well astern of the yellow light, and stay out of the gap.`;
+    prompt = 'A tug. How long is her tow?';
+  } else if (kind === 'side') {
+    v = place('dredge', { making:false }); v.hdg = norm(v.b + pick([rndf(150, 210), rndf(-30, 30)]));
+    const s = stbd(v.hdg), greenRight = s[0] > 0; // her starboard side (greens) is to our right?
+    choices = ['Pass to the left of her', 'Pass to the right of her']; answer = greenRight ? 1 : 0;
+    explain = `Two greens on the side you may pass, two reds on the side of the obstruction. From here the greens are on her ${greenRight ? 'right' : 'left'} as we see her, so leave her ${greenRight ? 'to port and pass on the right' : 'to starboard and pass on the left'}.`;
+    prompt = 'A dredger at work ahead. Which side do you pass?';
+  } else if (kind === 'aspect') {
+    const broad = Math.random() < .5; v = place('power50'); v.hdg = norm(v.b + (broad ? pick([rndf(85, 110), rndf(250, 275)]) : pick([rndf(150, 172), rndf(188, 210)])));
+    choices = ['Almost head-on, fine on the bow', 'Beam-on, crossing']; answer = broad ? 1 : 0;
+    explain = broad ? 'Her two masthead lights are wide apart, the lower forward one leading the way she is going: you are looking at her side, and she is crossing. On a 120 m ship at 0.3 nm the pair spans about 7°.' : 'Her masthead lights are nearly in a vertical line with a sidelight tucked beneath: you are looking almost straight down her bow, and the pair spans barely 1°. She is coming nearly towards you and the situation will develop fast.';
+    prompt = 'A ship over 50 m. How is she pointing?';
+  } else if (kind === 'sees') {
+    // her view of us: which of our lights does she see? Our yacht shows sidelights and sternlight; the camera turns to keep her in frame
+    const type = pick(['power','power50','sail']); const ourRb = pick([rndf(-110, -20), rndf(20, 110), rndf(125, 235), rndf(-3, 3)]);
+    v = place(type, { bearing:ourRb, range:rndf(300, 420) }); v.hdg = norm(ourRb + 180 + rndf(-25, 25)); track = true;
+    const rb = norm(ourRb), g = arcVis('sg', rb), r = arcVis('sr', rb), st = arcVis('st', rb);
+    choices = ['Our green sidelight', 'Our red sidelight', 'Both our sidelights', 'Only our sternlight: she is overtaking us'];
+    answer = g && r ? 2 : g ? 0 : r ? 1 : 3;
+    const where = Math.abs(ourRb) < 3 ? 'dead ahead' : rb > 180 ? `${Math.round(360 - rb)}° on our port ${rb > 247.5 ? 'bow' : 'quarter'}` : `${Math.round(rb)}° on our starboard ${rb < 112.5 ? 'bow' : 'quarter'}`;
+    explain = `She bears ${where}. ${answer === 2 ? 'From right ahead she sees both our sidelights.' : answer === 0 ? 'She is on our starboard side, inside the 112.5° arc of our green light, so she sees green.' : answer === 1 ? 'She is on our port side, inside the arc of our red light, so she sees red.' : 'She is more than 22.5° abaft our beam, in the arc of our sternlight only. Nothing coloured: she is the overtaking vessel and must keep clear of us.'} Read your own lights the same way you read hers.`;
+    prompt = 'Turn it round. Which of our lights is she looking at?';
+  } else {
+    const variant = pick([undefined,'mid','big']); v = place('anchor', { variant, making:false, range:rndf(300, 420) }); v.hdg = rndf(0, 360);
+    choices = ['Under 50 m', '50 m or more', '100 m or more']; answer = [undefined,'mid','big'].indexOf(variant);
+    explain = `${variant === 'big' ? 'Two anchor lights and her decks lit: 100 m or more.' : variant === 'mid' ? 'A second anchor light aft, lower than the forward one: 50 m or more.' : 'One anchor light forward and nothing else: under 50 m.'} Anchor lights are all-round, so you see them from every side.`;
+    prompt = 'At anchor. How long is she?';
+  }
+  return { label:'The second look', prompt, scene:{ mode:'night', vessels:vessels || [v], hud: track ? `${HOUR()} · clear night · contact ${(v.range/1852).toFixed(1)} nm, lookout turning to her` : hudFor(v, 'night'), track }, choices, answer, explain, risk:kind === 'side' ? 'dredge' : null,
+    rule:'Rule 23: a second masthead light aft and higher means 50 m or more. Rules 26–27: sidelights only when making way. Rule 24: three mastheads, tow over 200 m. Rule 30: anchor lights by length.' };
+}
+const SHAPE_POOL = ['anchor','motorsail','fish','ram','nuc','aground','cbd','tow','dredge','mine'];
+function genShapes(){
+  const type = DEV.get('type') || pick(SHAPE_POOL), variant = type === 'tow' ? 'long' : type === 'fish' ? pick([undefined,'gear']) : type === 'motorsail' ? undefined : undefined;
+  // yardarm shapes only separate when seen from ahead or astern; a long tow only fits in frame from further off
+  const endOn = type === 'dredge' || type === 'mine';
+  let v = place(type, { variant, making:!V[type].anchored, range: type === 'tow' ? rndf(340, 400) : rndf(120, 200) });
+  v.hdg = norm(v.b + (endOn ? pick([rndf(150, 210), rndf(-30, 30)]) : type === 'tow' ? pick([rndf(115, 145), rndf(215, 245)]) : pick([rndf(60, 120), rndf(240, 300)])));
+  const vessels = type === 'tow' ? withTow(v) : [v];
+  const names = x => V[x].dayName || V[x].name;
+  const pool = shuffle(SHAPE_POOL.filter(x => x !== type)).slice(0, 4), opts = shuffle([type, ...pool]);
+  return { label:'Day shapes', prompt:'Daylight. What is she telling you?', scene:{ mode:'day', vessels, hud:hudFor(v, 'day') },
+    choices: opts.map(names), answer: opts.indexOf(type), risk:type,
+    explain: { anchor:'One ball forward: at anchor.', motorsail:'A cone, point down, forward: sailing but with the engine running. She counts as power-driven.', fish:'Two cones point to point: fishing, trawling or otherwise.' + (variant === 'gear' ? ' The single cone point up out to one side marks gear more than 150 m long that way.' : ''),
+      ram:'Ball, diamond, ball: restricted in her ability to manoeuvre.', nuc:'Two balls: not under command.', aground:'Three balls: aground. One more than not under command.', cbd:'A cylinder: constrained by her draught.',
+      tow:'A diamond on the tug and another on the tow: a tow longer than 200 m. Do not pass between them.', dredge:'Ball diamond ball for restricted, two balls on the foul side, two diamonds on the side you may pass.', mine:'Three balls, one at the foremast head and one at each yardarm: mine clearance. Keep 1000 m clear.' }[type],
+    rule:'Ball anchor, cone motor-sailing, cylinder deep, ball diamond ball restricted, two balls helpless, three balls aground, cones point to point fishing, diamond long tow, three balls in a triangle mines.' };
+}
+const SOUNDS = [
+  { g:'fog', pat:'L', name:'Power-driven vessel making way', type:'power', making:true },
+  { g:'fog', pat:'LL', name:'Power-driven vessel underway but stopped', type:'power', making:false },
+  { g:'fog', pat:'Lss', name:'Sailing, fishing, NUC, RAM, CBD or towing vessel', type:'sail' },
+  { g:'fog', pat:'Lss', name:'Sailing, fishing, NUC, RAM, CBD or towing vessel', type:'trawl' },
+  { g:'fog', pat:'Lsss', name:'Last vessel of a tow, manned', type:'towed' },
+  { g:'fog', pat:'B', name:'Vessel at anchor', type:'anchor' },
+  { g:'fog', pat:'BG', name:'Vessel at anchor, 100 m or more', type:'anchor', variant:'big' },
+  { g:'fog', pat:'bBb', name:'Vessel aground', type:'aground' },
+  { g:'fog', pat:'ssss', name:'Pilot vessel on duty', type:'pilot' },
+  { g:'sight', pat:'s', name:'I am altering course to starboard', turn:70 },
+  { g:'sight', pat:'ss', name:'I am altering course to port', turn:-70 },
+  { g:'sight', pat:'sss', name:'I am operating astern propulsion', stop:true },
+  { g:'sight', pat:'sssss', name:'Doubt: what are you doing? Are you doing enough?', turn:0 },
+  { g:'sight', pat:'L', name:'A vessel approaching a blind bend', bend:true },
+  { g:'sight', pat:'LLs', name:'I intend to overtake on your starboard side', astern:true },
+  { g:'sight', pat:'LLss', name:'I intend to overtake on your port side', astern:true },
+  { g:'sight', pat:'LsLs', name:'Agreed, come past', astern:true },
+];
+const SOUND_TELL = { s:'One short blast: turning to starboard.', ss:'Two short: turning to port.', sss:'Three short: engines astern. She may still be carrying way ahead.', sssss:'Five or more short and rapid: doubt. Either I do not understand your intentions, or I doubt you are doing enough to avoid collision. The stand-on vessel\'s signal.', LLs:'Two prolonged then one short: she wants to overtake on your starboard side.', LLss:'Two prolonged then two short: on your port side.', LsLs:'Prolonged, short, prolonged, short: agreement to be overtaken, in a narrow channel only. In open water there is no exchange: the overtaking vessel simply keeps clear.', L:'One prolonged blast. In fog, at intervals of not more than two minutes, a power-driven vessel making way. In sight, once, nearing a blind bend, and a vessel round the bend answers with the same.', LL:'Two prolonged, about two seconds apart, not more than two minutes between signals: a power-driven vessel underway but stopped.', Lss:'One prolonged, two short: a hampered vessel, and that includes a sailing vessel. Sailing, fishing, NUC, RAM, CBD, towing.', Lsss:'One prolonged, three short: the manned vessel at the end of a tow, right after the tug.', B:'Bell rung rapidly for about five seconds, at intervals of not more than one minute: at anchor. She may add short, prolonged, short to warn you off.', BG:'Bell forward, then immediately a gong aft: at anchor and 100 m or more long. You can hear her length.', bBb:'Three strokes, rapid bell, three strokes: aground. The anchor signal with a frame round it.', ssss:'Four short blasts: a pilot vessel identifying herself.' };
+const notation = pat => [...pat].map(c => c === 's' ? '●' : c === 'L' ? '▬' : c === 'B' ? '🔔' : c === 'G' ? '🥁' : '♩♩♩').join(' ');
+function genSound(){
+  const s = pick(SOUNDS), fog = s.g === 'fog';
+  const same = SOUNDS.filter(x => x.g === s.g && x.name !== s.name), other = SOUNDS.filter(x => x.g !== s.g);
+  const names = [...new Set([s, ...shuffle(same).slice(0, 3), ...shuffle(other).slice(0, 1)].map(x => x.name))];
+  const opts = shuffle(names.slice(0, 5)); if (!opts.includes(s.name)) opts[0] = s.name;
+  let vessels = [], v = null, after = null, hud;
+  if (fog) {
+    const b = rndf(-40, 40); v = place(s.type, { variant:s.variant, making:s.making ?? true, bearing:b, range:rndf(380, 520) });
+    v.hdg = norm(v.b + (V[s.type].anchored ? rndf(0, 360) : pick(ASPECT).gen()));
+    vessels = s.type === 'towed' ? (() => { const tug = place('tow', { variant:'long', bearing:b, range:v.range + 300, making:true }); tug.hdg = v.hdg; return withTow(tug); })() : [v];
+    hud = `fog · vis 150 m · a signal ${Math.abs(b) < 8 ? 'ahead' : `${Math.round(Math.abs(b))}° to ${b > 0 ? 'starboard' : 'port'}`}`;
+  } else if (s.bend) { hud = 'day · narrow channel · a blind bend ahead';
+  } else if (!s.astern) {
+    v = place('power', { bearing:rndf(-8, 8), range:rndf(280, 360) }); v.hdg = norm(v.b + pick([rndf(95, 125), rndf(235, 265)])); vessels = [v];
+    after = () => { if (s.stop) { v.spdMul = 0; } else if (s.turn) v.turnTo = norm(v.hdg + s.turn); };
+    hud = hudFor(v, 'day');
+  } else hud = 'day · narrow channel · a signal from astern';
+  const pan = v && fog ? Math.sin(rad(v.b)) : 0;
+  return { label:'Sound signals', prompt: fog ? 'Fog. You hear this. What is out there?' : s.astern ? 'Narrow channel, a vessel astern sounds this. What does she mean?' : s.bend ? 'Narrow channel, you hear this from round the bend. What is it?' : 'In sight of each other, she sounds this. What is she doing?',
+    scene:{ mode: fog ? 'fog' : 'day', vessels, hud }, sound:{ pat:s.pat, pan, far:fog ? .6 : 0, deep:v ? !!V[v.type].deep : true, small:v ? !!V[v.type].small : false },
+    choices: opts, answer: opts.indexOf(s.name), explain: SOUND_TELL[s.pat] + (fog ? ` The bearing of the sound is all you have, and in fog it lies. Slow down, post a lookout, sound your own signal. Under 12 m you need not sound these, but must make some efficient signal at least every two minutes.` : ''), after, lift: fog,
+    rule:'Rule 34 in sight: one starboard, two port, three astern, five doubt. Rule 35 fog: prolonged is power making way; prolonged plus two short is anyone hampered, sailing vessels included; bells at anchor.' };
+}
+function genBearing(){
+  const own = 2.6, ownHdg = rnd(0, 359), type = pick(['power','power','power50','sail','trawl']), sh = Math.min(V[type].spd, 5);
+  let v, kind, drift, cpa, tries = 0;
+  for (;;) {
+    if (++tries > 300) break;
+    kind = pick(['collide','collide','ahead','astern']);
+    v = place(type, { range:rndf(900, 1150), bearing:pick([1,-1]) * rndf(9, 18), making:true });
+    // heading that puts her relative velocity straight down the line of sight, then bend it for the passing cases
+    let best = 0, bestErr = 1e9;
+    for (let H = 0; H < 360; H += 1) { const f = fwd(H), rx = f[0]*sh, rz = f[2]*sh + own, len = Math.hypot(rx, rz);
+      const err = Math.acos(clamp((-v.x*rx - v.z*rz) / (len * v.range), -1, 1)); if (err < bestErr) { bestErr = err; best = H; } }
+    if (bestErr > rad(2)) continue;
+    v.hdg = norm(best + (kind === 'collide' ? rndf(-1, 1) : pick([1,-1]) * rndf(18, 40)));
+    const f = fwd(v.hdg), rx = f[0]*sh, rz = f[2]*sh + own, vv = rx*rx + rz*rz, tStar = -(v.x*rx + v.z*rz) / vv;
+    cpa = tStar > 0 ? Math.hypot(v.x + rx*tStar, v.z + rz*tStar) : v.range;
+    const rb0 = Math.abs(Math.atan2(v.x, -v.z)), rb1 = Math.abs(Math.atan2(v.x + rx*90, -(v.z + rz*90)));
+    drift = rb1 - rb0; // negative: drawing forward, toward our bow
+    if (kind === 'collide' ? cpa > 40 : (cpa < 200 || Math.abs(drift) < rad(5))) continue;
+    if (kind !== 'collide') kind = drift < 0 ? 'ahead' : 'astern';
+    if (relBearing(v) > 112.5 && relBearing(v) < 247.5) continue; // we want to see her sidelights, not her stern
+    break;
+  }
+  const choices = ['Steady bearing: collision course', 'Bearing drawing forward: she passes ahead', 'Bearing drawing aft: she passes astern'];
+  const answer = kind === 'collide' ? 0 : kind === 'ahead' ? 1 : 2;
+  const side = v.b > 0 ? 'starboard' : 'port';
+  return { label:'Steady bearing', prompt:`We are making ${(own*1.94).toFixed(0)} knots on ${fmtB(ownHdg)}. Take her bearing, wait, take it again. Are we going to hit?`,
+    scene:{ mode:'night', vessels:[v], hud:`${HOUR()} · our course ${fmtB(ownHdg)} · contact on the ${side} bow`, ownSpd:own, ownHdg, track:true },
+    bearing:true, bearings:[], choices, answer, risk:null,
+    explain: kind === 'collide' ? `Her bearing held steady while the range closed: a collision course. ${aspectTell(v)} Act early and make it obvious.`
+      : kind === 'ahead' ? `Her bearing drew forward, toward our bow, on the ${side} side. She will pass ahead of us. ${aspectTell(v)}`
+      : `Her bearing drew aft, away from our bow, on the ${side} side. She will pass astern of us. ${aspectTell(v)}`,
+    rule:'Rule 7: risk of collision exists if the compass bearing of an approaching vessel does not appreciably change. Take at least three bearings. Steady and closing: risk. Forward: ahead. Aft: astern. A big ship or a tow at close range can hit you even with a changing bearing.' };
+}
+const DRILLS = [genAspect, genSailPower, genStack, genStack, genDetail, genBearing, genShapes, genSound];
+
+// ---- render
+function ask(){
+  q = (stage.kind === 'watch' ? pick(DRILLS) : stage.gen)();
+  answered = false;
+  scn.bearing = 0;
+  setScene(q.scene);
+  $('qtype').textContent = q.label;
+  $('prompt').textContent = q.prompt;
+  $('chips').innerHTML = q.choices.map((c,i) => `<button class="chip" type="button" data-i="${i}"><kbd>${i+1}</kbd>${q.arrows ? `<span class="arrow" aria-hidden="true">${q.arrows[i]}</span>` : ''}${c}</button>`).join('');
+  $('fb').className = 'feedback'; $('fb').innerHTML = '';
+  $('next').hidden = true; $('skip').hidden = false;
+  $('hint').classList.remove('show');
+  $('play').hidden = !q.sound; $('vis').hidden = !q.sound; $('bear').hidden = !q.bearing; $('bear').disabled = false; renderBearings();
+  $('sig').textContent = q.sound && store.visualSig ? notation(q.sound.pat) : '';
+  if (q.sound) horn(q.sound.pat, q.sound);
+  if (watch) startQTimer();
+}
+function finish(i, revealed){
+  if (answered || REVIEW) return;
+  answered = true; stopQTimer();
+  const ok = i === q.answer;
+  [...$('chips').children].forEach((b,k) => { b.disabled = true; if (k === q.answer) b.classList.add('picked'); else if (k === i) b.classList.add('wrong'); });
+  const v = scn.vessels[0];
+  if (q.bearing && q.bearings.length < 3) q.explain = `<strong>You decided on ${q.bearings.length} bearing${q.bearings.length === 1 ? '' : 's'}. Three is the minimum.</strong> ` + q.explain;
+  const seenLine = v && scn.mode === 'night' && v.type !== 'towed' ? `<div class="seen">Seen from here: ${seen(v)}.</div>` : '';
+  const sea = !ok && !revealed && q.bearing ? `<div class="sea">At sea: ${q.answer === 0 ? 'you held on across a steady bearing. Watch her come.' : 'you altered for a vessel that was already passing clear, and turned a safe pass into a close-quarters situation.'}</div>`
+    : !ok && !revealed && q.risk && RISK[q.risk] ? `<div class="sea">At sea: ${RISK[q.risk]}</div>`
+    : !ok && !revealed && q.fine ? `<div class="sea">At sea: you set up to pass her on the wrong side. Watch her now.</div>` : '';
+  const fb = $('fb');
+  fb.className = 'feedback show ' + (ok ? 'ok' : 'no');
+  const title = revealed ? `Answer: ${q.choices[q.answer]}.`
+    : ok ? pick(['Aye.','Correct.','Clean.','That would pass.','Steady as she goes.','Good watch.','Logged.'])
+    : `Not quite. ${q.choices[q.answer]}.`;
+  fb.innerHTML = `<h3>${title}</h3><p>${q.explain}</p>${seenLine}${sea}<div class="rule">${q.rule}</div>`;
+  $('next').hidden = false; $('skip').hidden = true;
+  $('next').textContent = 'Next ›';
+  $('next').focus();
+  if (q.sound) $('sig').textContent = notation(q.sound.pat);
+  // let the scene play out: fog lifts, she manoeuvres, time runs fast so her track shows
+  if (q.lift) scn.targetFogD = .0008;
+  scn.track = true;
+  if (q.after) q.after();
+  const sp = v ? V[v.type].spd || 1 : 1;
+  scn.timeScale = v ? clamp((v.range - 120) / (sp * 5), 1, q.after ? 3 : 5) : 1; setTimeout(() => { scn.timeScale = 1; }, 5000);
+  if (v && V[v.type].spd && !q.after) { $('hint').textContent = 'Watch her track: the next few minutes, sped up'; $('hint').classList.add('show'); }
+  const credit = ok && !revealed;
+  if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); if (watch) watch.score++;
+    if (v && q.label !== 'Sound signals') { const k = v.type; const first = !store.log[k]; store.log[k] = (store.log[k] || 0) + 1; if (first) pop(`New in the log: ${V[k].name}`); } }
+  else { store.streak = 0; if (watch && !revealed) watch.miss++; }
+  if (credit && store.streak % 10 === 0) pop(`${store.streak} in a row`);
+  if (credit) ding(); else thud();
+  if (stage.kind === 'drill') recordStage(credit);
+  if (watch) { watch.n++; if (watch.n >= 12) endWatch(); }
+  save(); renderStatus();
+}
+function pop(t){ const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2200); }
+
+// ---- watch mode: 12 contacts, 60 s each
+function startWatch(){ watch = { n:0, score:0, miss:0 }; }
+function startQTimer(){ stopQTimer(); let left = 60;
+  const tick = () => { $('timer').textContent = `contact ${watch.n+1} of 12 · ${left}s · ${watch.miss} wrong`; $('timer').classList.toggle('hot', left <= 10);
+    if (left-- <= 0) { finish(-1, false); } else qTimer = setTimeout(tick, 1000); };
+  tick(); }
+function stopQTimer(){ clearTimeout(qTimer); qTimer = null; }
+function endWatch(){
+  stopQTimer(); const w = watch; watch = null; $('timer').textContent = ''; $('timer').classList.remove('hot');
+  const passed = w.score >= 11;
+  store.watchBest = Math.max(store.watchBest || 0, w.score);
+  const fb = $('fb'); fb.className = 'feedback show ' + (passed ? 'ok' : 'no');
+  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} of 12 contacts identified, ${w.miss} wrong. ${passed ? 'That is exam pace, and a safe watch.' : w.score >= 8 ? 'Solid. Speed comes with reps: say the stack out loud first.' : 'Slow down. Stack, mastheads, sidelights, in that order.'}</p>`;
+  if (passed && stage.kind === 'watch') completeStage();
+  save(); renderStatus();
+  answered = true; $('next').hidden = false; $('skip').hidden = true; $('next').textContent = 'Stand another watch ›';
+}
+
+// ---- stages
+const ss = () => store.stages[stage.id];
+const idx = () => STAGES.indexOf(stage);
+const DEV = new URLSearchParams(location.search);
+function unlocked(i){ return i === 0 || DEV.has('dev') || store.stages[STAGES[i-1].id].done; }
+function recordStage(ok){
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 10) s.recent.shift();
+  if (!s.done && s.recent.length >= 10 && s.recent.filter(Boolean).length >= 8) completeStage();
+}
+function completeStage(){
+  const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
+  const nxt = STAGES[idx()+1];
+  pop(nxt ? `Stage cleared · next: ${nxt.title}` : 'Ladder complete');
+  renderStatus();
+}
+function renderStatus(){
+  $('streak').textContent = store.streak; $('best').textContent = store.best;
+  $('logged').textContent = Object.keys(store.log).length;
+  $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted));
+  $('vis').classList.toggle('on', store.visualSig); $('vis').setAttribute('aria-pressed', String(store.visualSig));
+  $('log').innerHTML = Object.entries(store.log).sort((a,b) => b[1]-a[1]).map(([k,n]) => `<span>${V[k].name} <b>×${n}</b></span>`).join('') || '<span>Nothing logged yet.</span>';
+  const i = idx(), s = ss();
+  $('stepper').innerHTML = `<div class="dots">` + STAGES.map((st,k) => { const lock = !unlocked(k), d = store.stages[st.id].done;
+      return `<button class="dot ${d?'done':''} ${k===i?'now':''} ${lock?'locked':''}" data-i="${k}" title="${k+1}. ${st.title}${lock?' (locked)':''}" aria-label="Stage ${k+1}: ${st.title}" ${lock?'disabled':''}></button>`; }).join('') + `</div>` +
+    `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
+    `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)||i===STAGES.length-1?'disabled':''} aria-label="Next stage">›</button></span>`;
+  const last = stage.kind === 'drill' ? s.recent : [];
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:10}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : `<span>best watch: ${store.watchBest || 0} of 12</span>`) +
+    `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
+}
+function renderConcept(){
+  $('conceptBody').innerHTML = `<p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p>`;
+  $('concept').open = !store.seenConcept[stage.id];
+  store.seenConcept[stage.id] = true; save();
+}
+function setStage(i){
+  if (REVIEW || !unlocked(i) || i < 0 || i >= STAGES.length) return;
+  if (watch) { stopQTimer(); watch = null; $('timer').textContent = ''; }
+  stage = STAGES[i];
+  renderConcept();
+  if (stage.kind === 'watch') startWatch();
+  ask(); renderStatus();
+}
+
+// ---- wiring
+function next(){
+  if (REVIEW) return;
+  if (stage.kind === 'watch' && !watch) startWatch();
+  ask();
+}
+$('stepper').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) return setStage(+d.dataset.i); const n = e.target.closest('[data-step]'); if (n) setStage(idx() + +n.dataset.step); });
+$('chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b && !answered) finish(+b.dataset.i, false); });
+$('play').addEventListener('click', () => { if (q.sound) horn(q.sound.pat, q.sound); });
+$('vis').addEventListener('click', () => { store.visualSig = !store.visualSig; save(); renderStatus(); if (q.sound && store.visualSig) $('sig').textContent = notation(q.sound.pat); else if (!answered) $('sig').textContent = ''; });
+$('bear').addEventListener('click', takeBearing);
+$('binos').addEventListener('click', () => { scn.binos = !scn.binos; $('binos').classList.toggle('on', scn.binos); $('binos').setAttribute('aria-pressed', String(scn.binos)); });
+$('next').addEventListener('click', next);
+$('skip').addEventListener('click', () => { if (!answered) finish(q.answer, true); });
+$('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) ding(); });
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); return setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'Enter' && answered) { e.preventDefault(); return next(); }
+  if (/^[1-5]$/.test(e.key) && !answered && q.choices[+e.key-1] != null) { e.preventDefault(); return finish(+e.key-1, false); }
+  if ((e.key === 'p' || e.key === 'P') && q.sound) horn(q.sound.pat, q.sound);
+  if (e.key === 'b' || e.key === 'B') $('binos').click();
+  if (e.key === 'c' || e.key === 'C') takeBearing();
+});
+document.addEventListener('visibilitychange', () => { lastT = performance.now(); });
+
+const REVIEW = DEV.has('review');
+if (REVIEW) window.__nw = { scn, model, V, place, relBearing, seen, frame:frameInner };
+if (REVIEW) initReview();
+else {
+  setStage(DEV.has('dev') ? +DEV.get('dev') : Math.max(0, STAGES.findIndex(st => !store.stages[st.id].done)));
+  if (DEV.has('ans')) setTimeout(() => finish(+DEV.get('ans'), false), 300);
+}
+function initReview(){
+  stage = STAGES[0]; answered = true; q = { choices:[] };
+  for (const id of ['concept','chips','skip','next','progress','stepper']) $(id).hidden = true;
+  $('qtype').textContent = 'Model review'; $('prompt').textContent = 'Every vessel, every variant, any heading. Watch which lights show and tell me what looks wrong.';
+  const VARS = { sail:['plain','tri','rg'], tow:['short','long'], towed:['short','long'], anchor:['small','mid','big'], fish:['plain','gear','anchored'], trawl:['plain','big'], ram:['plain','anchored'], pilot:['plain','anchored'] };
+  const types = Object.keys(V).filter(k => k !== 'towed');
+  const opt = (arr, sel) => arr.map(([v, l]) => `<option value="${v}" ${v === sel ? 'selected' : ''}>${l}</option>`).join('');
+  const st = { type: DEV.get('type') || 'power', variant: DEV.get('variant') || 'plain', mode: DEV.get('mode') || 'night', hdg: +(DEV.get('hdg') ?? 135), range: +(DEV.get('range') ?? 300), bearing: +(DEV.get('bearing') ?? 0), making: DEV.get('making') !== '0', moving: DEV.get('moving') === '1' };
+  const panel = document.createElement('div'); panel.className = 'review'; panel.setAttribute('aria-label', 'Review controls');
+  $('tools').before(panel);
+  const render = () => {
+    const vars = VARS[st.type] || ['plain'];
+    if (!vars.includes(st.variant)) st.variant = vars[0];
+    panel.innerHTML = `<label>Vessel<select id="rvType">${opt(types.map(t => [t, `${V[t].name} (${t})`]), st.type)}</select></label>` +
+      `<label>Variant<select id="rvVar">${opt(vars.map(v => [v, v]), st.variant)}</select></label>` +
+      `<label>Time<select id="rvMode">${opt([['night','night'],['day','day'],['fog','fog']], st.mode)}</select></label>` +
+      `<label>Her heading relative to our line of sight: ${st.hdg}° (0 away, 90 to our right, 180 towards us)<input id="rvHdg" type="range" min="0" max="359" value="${st.hdg}"></label>` +
+      `<label>Range ${st.range} m<input id="rvRange" type="range" min="60" max="1500" step="10" value="${st.range}"></label>` +
+      `<label>Bearing ${st.bearing}° off our bow<input id="rvBear" type="range" min="-60" max="60" value="${st.bearing}"></label>` +
+      `<label class="chk"><input id="rvMaking" type="checkbox" ${st.making ? 'checked' : ''}> making way</label>` +
+      `<label class="chk"><input id="rvMoving" type="checkbox" ${st.moving ? 'checked' : ''}> let her move</label>` +
+      `<div class="seen" id="rvSeen"></div>`;
+    const variant = st.variant === 'plain' || st.variant === 'small' ? undefined : st.variant;
+    const v = place(st.type, { variant, making: st.making, range: st.range, bearing: st.bearing }); v.hdg = norm(st.bearing + st.hdg);
+    const vessels = st.type === 'tow' ? withTow(v) : [v];
+    setScene({ mode: st.mode, vessels, hud: `review · ${st.type}${variant ? ' ' + variant : ''} · rel hdg ${st.hdg}° · ${st.range} m` });
+    v.spdMul = st.moving ? 1 : 0; scn.fogD = scn.targetFogD = st.mode === 'fog' ? .004 : ENV[st.mode].fogD;
+    const u = new URLSearchParams({ review:'', type:st.type, variant:st.variant, mode:st.mode, hdg:st.hdg, range:st.range, bearing:st.bearing, making:st.making ? 1 : 0, moving:st.moving ? 1 : 0 });
+    history.replaceState(null, '', '?' + u.toString().replace('review=', 'review'));
+    const tick = () => { if (!document.contains(panel)) return; $('rvSeen').textContent = `relative bearing of us from her bow ${relBearing(v).toFixed(0)}° · seen: ${seen(v)} · fog signal ${notation((V[st.type].fogV && V[st.type].fogV[variant]) || V[st.type].fog)}`; };
+    tick(); clearInterval(render.iv); render.iv = setInterval(tick, 500);
+  };
+  panel.addEventListener('input', e => { const t = e.target;
+    if (t.id === 'rvType') st.type = t.value; else if (t.id === 'rvVar') st.variant = t.value; else if (t.id === 'rvMode') st.mode = t.value;
+    else if (t.id === 'rvHdg') st.hdg = +t.value; else if (t.id === 'rvRange') st.range = +t.value; else if (t.id === 'rvBear') st.bearing = +t.value;
+    else if (t.id === 'rvMaking') st.making = t.checked; else if (t.id === 'rvMoving') st.moving = t.checked; else return;
+    const focus = t.id; render(); const el = $(focus); if (el) el.focus(); });
+  render(); renderStatus();
+}
+})();
+</script>
+</body>
+</html>

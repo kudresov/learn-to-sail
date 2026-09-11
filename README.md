@@ -30,7 +30,8 @@ tutorials/<slug>/       one self-contained tutorial per folder (index.html)
 | 03 | Secondary Ports (tide heights and times) | planned |
 | 04 | Buoys and Lights (IALA A) | planned |
 | 05 | Rules of the Road (Rules 12–18, lights, shapes, sound signals, night encounters) | live |
-| 06 | Weather | planned |
+| 06 | Night Watch (WebGL: lights and arcs in 3D, day shapes, fog signals, timed watch) | live |
+| 07 | Weather | planned |
 
 ## Deploy
 
