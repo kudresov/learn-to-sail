@@ -240,7 +240,9 @@ let stage, q = null, answered = false, watch = null, qTimer = null;
 
 // ---- audio
 let actx = null;
-const ctx = () => (actx ??= new (window.AudioContext || window.webkitAudioContext)());
+const ctx = () => { actx ??= new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; };
+// browsers start the context suspended until a gesture; a horn scheduled before that would never sound
+for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { if (actx && actx.state === 'suspended') actx.resume(); }, { passive:true });
 function tone(seq){
   if (store.muted) return;
   try {
@@ -673,10 +675,6 @@ function frameInner(now){
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.b); gl.enableVertexAttribArray(MESH.a.p); gl.vertexAttribPointer(MESH.a.p, 3, gl.FLOAT, false, 24, 0);
     gl.enableVertexAttribArray(MESH.a.n); gl.vertexAttribPointer(MESH.a.n, 3, gl.FLOAT, false, 24, 12); gl.drawArrays(gl.TRIANGLES, 0, mesh.n); };
   const night = scn.mode === 'night';
-  // our own boat: hull, mast and boom, bow fixed on our heading so the turning lookout sees which bow she is on
-  const own = model('sail', 'own');
-  gl.uniformMatrix4fv(MESH.u.uM, false, [1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1]);
-  drawMesh(own.hull, night ? [.045,.05,.06] : DAYCOL.yacht, night ? 0 : 2, own.m.F * .3); drawMesh(own.mast, night ? [.035,.04,.05] : DAYCOL.spar); drawMesh(own.rig, night ? [.03,.035,.045] : DAYCOL.rig);
   for (const v of scn.vessels) {
     const mo = model(v.type, v.variant), f = fwd(v.hdg), s = stbd(v.hdg);
     const heel = mo.m.sail && v.type !== 'towed' && V[v.type].spd ? rad(11) : 0, ch = Math.cos(heel), sh = Math.sin(heel); // under sail she heels to leeward (we put the wind on her starboard side)
@@ -690,8 +688,10 @@ function frameInner(now){
       gl.bindBuffer(gl.ARRAY_BUFFER, lineBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([t.x - g[0]*tm.L*.49, tm.F + .5, t.z - g[2]*tm.L*.49, 0,0,0, v.x + f[0]*mo.m.L*.49, mo.m.F + .3, v.z + f[2]*mo.m.L*.49, 0,0,0]), gl.DYNAMIC_DRAW);
       gl.vertexAttribPointer(MESH.a.p, 3, gl.FLOAT, false, 24, 0); gl.vertexAttribPointer(MESH.a.n, 3, gl.FLOAT, false, 24, 12); gl.drawArrays(gl.LINES, 0, 2); }
   }
-  // lights
-  if (lights.length) {
+  // lights: depth test off so a lantern is never swallowed by its own mast box, which means our boat must be drawn
+  // after the contacts' lights (so our mast and rigging still cross in front of them) and before our own pulpit lights
+  const drawLights = lights => {
+    if (!lights.length) return;
     const arr = new Float32Array(lights.length * 8); lights.forEach((l, i) => { const tw = .92 + .08*Math.sin(scn.t*7 + i*3.1); arr.set([l.x, l.y, l.z, ...l.col, l.vis * tw, LSIZE[l.kind] || 1], i*8); });
     gl.useProgram(PTS.p); gl.depthMask(false); gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
     gl.bindBuffer(gl.ARRAY_BUFFER, ptBuf); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
@@ -703,7 +703,13 @@ function frameInner(now){
     gl.uniform1f(PTS.u.uHalo, 1); gl.uniform1f(PTS.u.uHaloV, 1); gl.drawArrays(gl.POINTS, 0, lights.length);
     gl.uniform1f(PTS.u.uHalo, 0); gl.uniform1f(PTS.u.uHaloV, 0); gl.drawArrays(gl.POINTS, 0, lights.length);
     gl.disable(gl.BLEND); gl.depthMask(true); gl.enable(gl.DEPTH_TEST);
-  }
+  };
+  drawLights(lights.filter(l => !l.own));
+  // our own boat: hull, mast and rigging, bow fixed on our heading so the turning lookout sees which bow she is on
+  const own = model('sail', 'own');
+  gl.useProgram(MESH.p); gl.uniformMatrix4fv(MESH.u.uM, false, [1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1]);
+  drawMesh(own.hull, night ? [.045,.05,.06] : DAYCOL.yacht, night ? 0 : 2, own.m.F * .3); drawMesh(own.mast, night ? [.035,.04,.05] : DAYCOL.spar); drawMesh(own.rig, night ? [.03,.035,.045] : DAYCOL.rig);
+  drawLights(lights.filter(l => l.own));
 }
 if (gl) requestAnimationFrame(frame);
 
