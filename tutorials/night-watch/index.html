@@ -424,7 +424,7 @@ void main(){vec4 w=uM*vec4(p,1.);vN=normalize((uM*vec4(n,0.)).xyz);vL=p;vD=lengt
 `${P}varying vec3 vN,vL;varying float vD;uniform vec3 uCol,uSunD,uAmb,uSunC,uFogC;uniform float uFogD,uTex,uWL;
 float hash(vec3 p){p=fract(p*.3183+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
 void main(){vec3 c=uCol;
-if(uTex>1.5){ if(vL.y<uWL-.3)c=vec3(.42,.13,.09); else if(vL.y<uWL)c=vec3(.09,.13,.3); }
+if(uTex>1.5){ c*=.82+.18*clamp((vL.y-uWL)/1.2,0.,1.); if(vL.y<uWL-.3)c=vec3(.42,.13,.09); else if(vL.y<uWL)c=vec3(.09,.13,.3); }
 else if(uTex>.5){float pl=hash(floor(vL/vec3(2.4,1.8,2.4)));c*=.86+.22*pl;float seam=step(.94,fract(vL.z/2.4))+step(.94,fract(vL.y/1.8));c*=1.-.25*min(seam,1.);
  if(vL.y<uWL)c=mix(c,vec3(.42,.13,.09),.9); if(vL.y>uWL&&vL.y<uWL+.25)c=vec3(.05);}
 float d=max(dot(normalize(vN),uSunD),0.);c*=uAmb+uSunC*d;float f=1.-exp(-vD*uFogD);gl_FragColor=vec4(mix(c,uFogC,f),1.);}`);
@@ -468,6 +468,24 @@ function builder(){
       quad([-a.hb*k,-.4,a.z],[-b.hb*k,-.4,b.z],[-b.hb,b.y,b.z],[-a.hb,a.y,a.z]); quad([b.hb*k,-.4,b.z],[a.hb*k,-.4,a.z],[a.hb,a.y,a.z],[b.hb,b.y,b.z]);
       quad([-a.hb,a.y,a.z],[-b.hb,b.y,b.z],[b.hb,b.y,b.z],[a.hb,a.y,a.z]); }
     const s0 = st[0]; quad([s0.hb*k,-.4,s0.z],[-s0.hb*k,-.4,s0.z],[-s0.hb,s0.y,s0.z],[s0.hb,s0.y,s0.z]); };
+  // yacht hull lofted from U sections: sheer rising to the bow, raked stem with overhang, counter stern
+  const yachtHull = (L, B, F) => { const N = 18, prof = [];
+    const sec = i => { const s = i/N; // 0 stern .. 1 bow
+      const hb = B/2 * (s < .12 ? .78 + .22*(s/.12) : s < .55 ? 1 : Math.pow(Math.max(0, 1 - Math.pow((s-.55)/.45, 1.6)), .55));
+      const yd = F * (1.0 + .3*Math.pow((s-.4)*1.6, 2)), zc = (s-.5)*L, rake = (y) => (y/F) * (s > .78 ? (s-.78)/.22*1.1 : s < .1 ? -(.1-s)/.1*.5 : 0);
+      const pts = [[hb, yd], [hb*.97, yd*.55], [hb*.8, 0], [hb*.5, -.3], [0, -.5]];
+      return pts.map(([x, y]) => [x, y, zc + rake(Math.max(y, 0))]); };
+    for (let i = 0; i <= N; i++) prof.push(sec(i));
+    for (let i = 0; i < N; i++) { const a = prof[i], b = prof[i+1];
+      for (let j = 0; j < 4; j++) for (const sd of [1, -1]) { const p = q => [sd*q[0], q[1], q[2]];
+        if (sd > 0) quad(p(a[j]), p(b[j]), p(b[j+1]), p(a[j+1])); else quad(p(b[j]), p(a[j]), p(a[j+1]), p(b[j+1])); }
+      quad([-a[0][0], a[0][1], a[0][2]], [-b[0][0], b[0][1], b[0][2]], [b[0][0], b[0][1], b[0][2]], [a[0][0], a[0][1], a[0][2]]); }
+    const t = prof[0]; for (let j = 0; j < 4; j++) { quad([t[j][0], t[j][1], t[j][2]], [-t[j][0], t[j][1], t[j][2]], [-t[j+1][0], t[j+1][1], t[j+1][2]], [t[j+1][0], t[j+1][1], t[j+1][2]]); } };
+  // prism with sloped sides: coachroofs and wheelhouses read rounder than boxes
+  const prism = (x, y, z, wb, wt, h, len) => { const z0 = z - len/2, z1 = z + len/2;
+    quad([x-wb/2,y,z1],[x+wb/2,y,z1],[x+wt/2,y+h,z1],[x-wt/2,y+h,z1]); quad([x+wb/2,y,z0],[x-wb/2,y,z0],[x-wt/2,y+h,z0],[x+wt/2,y+h,z0]);
+    quad([x-wb/2,y,z0],[x-wb/2,y,z1],[x-wt/2,y+h,z1],[x-wt/2,y+h,z0]); quad([x+wb/2,y,z1],[x+wb/2,y,z0],[x+wt/2,y+h,z0],[x+wt/2,y+h,z1]);
+    quad([x-wt/2,y+h,z1],[x+wt/2,y+h,z1],[x+wt/2,y+h,z0],[x-wt/2,y+h,z0]); };
   const shape = (kind, x, y, z) => { const r = 1.1;
     if (kind === 'ball') { const pr = []; for (let i = 0; i <= 8; i++) { const a = -Math.PI/2 + i/8*Math.PI; pr.push([r*Math.cos(a), r*Math.sin(a)]); } lathe(pr, x, y, z, 12); }
     else if (kind === 'cone') lathe([[0,-r],[r,r]], x, y, z);
@@ -477,7 +495,7 @@ function builder(){
     else if (kind === 'cyl') lathe([[0,-r*1.3],[r*.6,-r*1.3],[r*.6,r*1.3],[0,r*1.3]], x, y, z, 12); };
   const buf = () => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW); return { b, n:v.length/6 }; };
   const lbuf = () => { if (!lv.length) return null; const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lv), gl.STATIC_DRAW); return { b, n:lv.length/6, lines:true }; };
-  return { tri, quad, box, lathe, hull, shape, buf, lbuf, line, v };
+  return { tri, quad, box, lathe, hull, yachtHull, prism, shape, buf, lbuf, line, v };
 }
 const meshCache = {};
 // A vessel model: hull+house (grey), masts (dark), sails (white), shapes (black). Masts auto-grow under every light or shape.
@@ -487,8 +505,9 @@ function model(type, variant){
   const d = V[type], m = M[(d.modelV && d.modelV[variant]) || d.model];
   const lights = d.lights(variant, true), shapes = d.shapes ? d.shapes(variant) : [];
   const H = builder(), Mst = builder(), S = builder(), Sh = builder();
-  H.hull(m.L, m.B, m.F, m.flare);
-  if (m.house) { const [z, len, h] = m.house; H.box(0, m.F, z*m.L, m.B*.72, h, len); if (m.L > 50) { H.box(0, m.F + h, z*m.L, m.B*.5, 2.5, len*.5); H.box(0, m.F + h - .35, z*m.L, m.B*.98, .35, Math.min(len*.4, 4)); } } // bridge wings carry the sidelights
+  if (m.sail) H.yachtHull(m.L, m.B, m.F); else H.hull(m.L, m.B, m.F, m.flare);
+  if (m.house && m.sail) { const [z, len, h] = m.house; H.prism(0, m.F + .05, z*m.L, m.B*.7, m.B*.5, h, len); H.prism(0, m.F + .05, (z - .02)*m.L - len*.62, m.B*.5, m.B*.4, h*.6, len*.25); }
+  else if (m.house) { const [z, len, h] = m.house; H.box(0, m.F, z*m.L, m.B*.72, h, len); if (m.L > 50) { H.box(0, m.F + h, z*m.L, m.B*.5, 2.5, len*.5); H.box(0, m.F + h - .35, z*m.L, m.B*.98, .35, Math.min(len*.4, 4)); } } // bridge wings carry the sidelights
   if (m.crane) { Mst.box(0, m.F, -.05*m.L, 1.2, 14, 1.2); Mst.box(0, m.F + 13, .1*m.L, .6, .6, .3*m.L); }
   const posts = {};
   for (const l of [...lights.filter(l => l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl'), ...shapes]) {
@@ -507,10 +526,10 @@ function model(type, variant){
     Mst.box(0, F + .6, -.47*L, hw*1.6, .06, .06); Mst.box(-hw*.8, F, -.47*L, .06, .65, .06); Mst.box(hw*.8, F, -.47*L, .06, .65, .06);
     const rail = []; for (let i = 0; i <= 4; i++) { const t = i/4, z = (-.42 + .8*t)*L, x = hw*(t < .55 ? .92 : .92 - (t-.55)*1.4); rail.push([x, z]); Mst.box(x, F, z, .05, .62, .05); Mst.box(-x, F, z, .05, .62, .05); }
     for (let i = 0; i < 4; i++) for (const sd of [1, -1]) Mst.line([sd*rail[i][0], F + .6, rail[i][1]], [sd*rail[i+1][0], F + .6, rail[i+1][1]]);
-    const [hz, hl, hh] = m.house; for (const sd of [1, -1]) Mst.box(sd*m.B*.36, F + hh*.45, hz*L, .06, hh*.4, hl*.7); // window strip
+    const [hz, hl, hh] = m.house; for (const sd of [1, -1]) Mst.box(sd*m.B*.31, F + .05 + hh*.5, hz*L, .06, hh*.36, hl*.72); // window strip on the sloped side
     Mst.box(0, F, -.25*L, m.B*.6, .3, .06); Mst.box(-m.B*.3, F, -.2*L, .06, .3, .16*L); Mst.box(m.B*.3, F, -.2*L, .06, .3, .16*L);
     // spars and standing rigging
-    Mst.box(0, 0, mz, .22, mh, .22); if (variant !== 'own') Mst.box(0, 2.1, mz - 2.5, .16, .16, 5.2);
+    Mst.box(0, 0, mz, .22, mh, .22); if (variant !== 'own') Mst.box(-.15, 2.35, mz - 2.2, .16, .16, 4.5);
     Mst.box(0, mh*.55, mz, 3.2, .08, .08); // spreaders
     Mst.line([0, mh, mz], [0, F + .3, .5*L]); Mst.line([0, mh, mz], [0, F + .4, -.49*L]);
     for (const sd of [1, -1]) { Mst.line([0, mh, mz], [sd*1.6, mh*.55, mz]); Mst.line([sd*1.6, mh*.55, mz], [sd*hw*.9, F, mz]); Mst.line([0, mh*.55, mz], [sd*hw*.9, F, mz + .6]); }
@@ -519,7 +538,7 @@ function model(type, variant){
       const sail = (luff0, luff1, clew, belly) => { const N = 6, K = 5, P = (u, w) => { const lx = luff0[0] + (luff1[0]-luff0[0])*u, ly = luff0[1] + (luff1[1]-luff0[1])*u, lz = luff0[2] + (luff1[2]-luff0[2])*u;
           const cx = clew[0], cy = clew[1], cz = clew[2]; const x = lx + (cx-lx)*w*(1-u), y = ly + (cy-ly)*w*(1-u), z = lz + (cz-lz)*w*(1-u); return [x + belly*Math.sin(Math.PI*w)*(1-u)*(.3+.7*(1-u)), y, z]; };
         for (let i = 0; i < N; i++) for (let j = 0; j < K; j++) { const u0 = i/N, u1 = (i+1)/N, w0 = j/K, w1 = (j+1)/K; S.quad(P(u0,w0), P(u0,w1), P(u1,w1), P(u1,w0)); } };
-      sail([0,2.4,mz], [0,mh-.6,mz], [0,2.4,mz-5.0], -1.2); sail([0,mh-.8,mz], [0,F+.4,.5*L], [0,1.7,mz-1.8], -1.4); } }
+      sail([0,2.6,mz], [0,mh-.7,mz], [-.35,2.5,mz-4.3], -1.0); sail([0,mh-1.0,mz], [0,F+.5,.5*L], [-1.15,1.5,mz-2.6], -1.5); } }
   for (const [k, along, h, x] of shapes) Sh.shape(k, x, h, along*m.L);
   // ships carry lit accommodation windows at night: dim, warm, never part of the answer
   const windows = [];
@@ -545,7 +564,7 @@ const ENV = {
   day:  { zen:[.33,.52,.82], hor:[.76,.8,.84], sea:[.1,.24,.34], fogD:.00042, amb:[.45,.47,.5], sunC:[.7,.68,.62], amp:.18, mode:1 },
   fog:  { zen:[.66,.68,.7], hor:[.6,.62,.64], sea:[.36,.4,.43], fogD:.02, amb:[.5,.5,.5], sunC:[.3,.3,.3], amp:.25, mode:2 },
 };
-const DAYCOL = { hull:[.36,.37,.39], house:[.8,.8,.77], mast:[.2,.2,.2], sail:[.93,.93,.9], shape:[.02,.02,.02], barge:[.3,.22,.18], yacht:[.9,.9,.88], spar:[.55,.56,.58], rig:[.3,.3,.32] };
+const DAYCOL = { hull:[.36,.37,.39], house:[.8,.8,.77], mast:[.2,.2,.2], sail:[.93,.93,.9], shape:[.02,.02,.02], barge:[.3,.22,.18], yacht:[.92,.91,.87], spar:[.55,.56,.58], rig:[.3,.3,.32] };
 
 // ---- scene state
 const scn = { mode:'night', vessels:[], t:0, timeScale:1, fogD:0, targetFogD:0, binos:false, bearing:0, track:false, ownSpd:0, ownHdg:0, busy:false };
