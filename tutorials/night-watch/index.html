@@ -40,7 +40,10 @@
 .timer.hot{color:var(--bad);font-weight:600}
 .prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(20px,3vw,24px);line-height:1.35;margin:8px 0 14px;text-wrap:balance}
 .scene{position:relative;margin-bottom:12px;border:1px solid var(--rule);background:#060b14;aspect-ratio:16/9;max-height:420px;overflow:hidden;border-radius:2px}
-@media (min-width:900px){.scene{--w:min(1100px,100vw - 32px);width:var(--w);margin-left:calc((680px - var(--w))/2);max-height:620px}}
+@media (min-width:900px){.scene{--w:calc(100vw - 40px);width:var(--w);margin-left:calc((680px - var(--w))/2);max-height:min(74vh,960px)}}
+.q:fullscreen{overflow:auto;background:var(--paper);color:var(--ink);padding:12px 24px;margin:0}
+.q:fullscreen .scene{width:auto;margin-left:0;max-height:none;aspect-ratio:auto;height:64vh}
+.q:fullscreen .prompt{max-width:40em}
 .scene canvas{width:100%;height:100%;display:block}
 .hud{position:absolute;left:10px;top:8px;font:500 11px "IBM Plex Mono",monospace;letter-spacing:.06em;color:#c7d2dc;text-shadow:0 1px 2px #000;pointer-events:none;text-transform:uppercase}
 .hud.day{color:#1c2a38;text-shadow:0 1px 0 #fff8}
@@ -123,7 +126,7 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
   <div class="body" id="conceptBody"></div>
 </details>
 
-<section class="q" aria-label="Question">
+<section class="q" id="qsec" aria-label="Question">
   <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
   <p class="prompt" id="prompt"></p>
   <div class="scene" id="scene" role="img" aria-label="View from the cockpit">
@@ -134,6 +137,7 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
   </div>
   <div class="tools" id="tools">
     <button class="iconbtn" id="binos" type="button" aria-pressed="false">Binoculars <kbd>B</kbd></button>
+    <button class="iconbtn" id="full" type="button">Fullscreen <kbd>F</kbd></button>
     <button class="iconbtn" id="play" type="button" hidden>▶ Replay <kbd>P</kbd></button>
     <button class="iconbtn" id="vis" type="button" hidden aria-pressed="false">Show signal as dots</button>
     <button class="iconbtn" id="bear" type="button" hidden>Take a bearing <kbd>C</kbd></button>
@@ -176,14 +180,18 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
     <p>Sidelights and sternlight with <strong>no masthead light</strong>: sail. Under 20 m she may combine them in one tricolour at the masthead. Optional red over green all-round at the masthead, never with a tricolour. Motor-sailing: power-driven lights, cone point down by day. Power under 12 m: one all-round white plus sidelights. Under 7 m and under 7 knots: all-round white, plus sidelights if practicable. Sailing under 7 m, or under oars: the same lights if practicable, otherwise a torch ready to show in time.</p>
     <h4>Underway, making way, at anchor</h4>
     <p><strong>Underway</strong> means not anchored, moored or aground, even if stopped. <strong>Making way</strong> means moving through the water. Masthead lights go with underway (power, towing, constrained by draught). Sidelights on a hampered vessel (fishing, NUC, RAM) go with making way. A pilot vessel keeps her sidelights whenever underway. At anchor, a restricted vessel adds anchor lights; a fishing vessel never does. Under 7 m at anchor clear of channels and anchorages, no light needed; under 12 m aground, no aground lights needed.</p>
+    <h4>Buoys by night · IALA A</h4>
+    <p><strong>Lateral</strong>: red to port and green to starboard when entering, any rhythm. <strong>Fl(2+1)</strong> red or green: preferred channel, treat as the plain mark of that colour. <strong>Cardinals</strong> are white and quick: continuous north, Q(3) east, Q(6)+LFl south, Q(9) west, the count round a clock face; pass on the named side. <strong>Fl(2) white</strong>: isolated danger, water all round. <strong>Iso, Oc, LFl 10s, Mo(A) white</strong>: safe water. <strong>Yellow</strong>: special, see the chart. <strong>Al Bu/Y</strong>: new wreck, keep clear.</p>
     <h4>Risk of collision · Rule 7</h4>
     <p>Hand-bearing compass on her lights, then again a minute or two later, at least three times. <strong>Steady bearing and closing range: collision course.</strong> Bearing drawing forward, toward your bow: she passes ahead. Drawing aft: she passes astern. Big ships and tows can still hit you with a slowly changing bearing.</p>
+    <h4>Who gives way · Rules 12–18</h4>
+    <p><strong>Overtaking</strong> (coming up from abaft her beam, you see only her sternlight): keep clear, either side. <strong>Head-on</strong>, two power-driven: both to starboard. <strong>Crossing</strong>, two power-driven: the one with the other on her starboard side gives way, alters to starboard and passes astern; the other stands on. <strong>Sail against sail</strong>: port tack gives way; same tack, windward gives way. <strong>Pecking order</strong>: power gives way to sail, both give way to fishing, and everyone to NUC and RAM. <strong>Stand-on</strong>: hold course and speed, watch, and act yourself if she does not, but not to port for a vessel on your port side.</p>
     <h4>Sound · Rules 34, 35</h4>
     <p>In sight: ● starboard, ●● port, ●●● astern, ●●●●● doubt. Narrow channel: ▬▬● / ▬▬●● I will overtake on your starboard / port, ▬●▬● agreed, ▬ blind bend. In fog every two minutes: ▬ power making way, ▬▬ power stopped, ▬●● everyone hampered (sailing included), ▬●●● last vessel of a tow. Intervals are maxima. At least every minute: bell 5 s at anchor (gong aft too if 100 m+), three strokes, bell, three strokes aground. Fishing or working at anchor: ▬●●, not the bell. Pilot may add ●●●●. Whistle from 12 m, bell from 20 m, gong from 100 m.</p>
     <h4>Ship's log</h4>
     <div class="log" id="log"></div>
     <h4>Keys</h4>
-    <p><kbd>1</kbd>–<kbd>5</kbd> pick an answer, <kbd>Enter</kbd> moves on, <kbd>P</kbd> replays a signal, <kbd>B</kbd> binoculars, <kbd>C</kbd> takes a compass bearing. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
+    <p><kbd>1</kbd>–<kbd>5</kbd> pick an answer, <kbd>Enter</kbd> moves on, <kbd>P</kbd> replays a signal, <kbd>B</kbd> binoculars, <kbd>C</kbd> takes a compass bearing, <kbd>F</kbd> fullscreen. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
   </div>
 </details>
 
@@ -221,9 +229,15 @@ const STAGES = [
   { id:'detail', kind:'drill', title:'The second look', gen: genDetail,
     intro:'Once you know what she is, the rest of her lights answer the next question: how long is she, is she making way, how long is the tow, which side is safe? A second masthead light means 50 m or more, and how far apart the two mastheads look tells you how broad her aspect is. Sidelights only appear when a hampered vessel is actually moving through the water.',
     ex:'Two mastheads wide apart → beam-on\nTwo mastheads nearly in line → almost head-on\nStack but no sidelights → stopped in the water\nThree mastheads in a line → tow over 200 m\nTwo greens one side → pass that side' },
+  { id:'buoys', kind:'drill', title:'Buoys by night', gen: genBuoy,
+    intro:'Not every light out there is a vessel. A buoy has no sidelights and no aspect, only a colour and a rhythm, and you must watch it long enough to count. Red or green in any rhythm are the lateral marks; two flashes then one means the channel divides. Cardinals are white and quick, and the count is a clock face. Two white flashes is an isolated danger; a white light that is on more than it is off is safe water; yellow marks something on the chart, not the channel.',
+    ex:'Fl R · Q R · Fl(2) R → port hand, leave to port entering\nFl(2+1) G → preferred channel to port\nQ(3) 10s → east cardinal, pass east of it\nQ(6)+LFl 15s → south cardinal\nFl(2) W → isolated danger\nIso · Oc · LFl 10s · Mo(A) → safe water' },
   { id:'bearing', kind:'drill', title:'Steady bearing', gen: genBearing,
     intro:'Knowing what she is does not tell you whether you will hit her. For that you take her bearing with the hand-bearing compass, wait, and take it again. If the bearing does not change and the range is closing, you are on a collision course (Rule 7). If it draws forward, toward your bow, she passes ahead. If it draws aft she passes astern. Take at least three bearings before you decide; two can lie.',
     ex:'047° · 047° · 046°  → steady, collision course\n047° · 041° · 034° on the starboard bow → drawing forward, passes ahead\n047° · 053° · 061° on the starboard bow → drawing aft, passes astern' },
+  { id:'action', kind:'drill', title:'Who gives way', gen: genAction,
+    intro:'Steady bearing, closing range. Now you have to act, and the Rules decide who. Two power-driven vessels: head-on, both go to starboard; crossing, the one with the other on her starboard side gives way and avoids crossing ahead. Anything overtaking keeps clear. Power gives way to sail; everyone gives way to fishing vessels, vessels not under command and vessels restricted in their ability to manoeuvre. Between sailing vessels, port tack gives way to starboard tack, and on the same tack windward gives way to leeward. The stand-on vessel holds course and speed, watches, and acts herself if the other does not. After you answer, watch what your choice does.',
+    ex:'She is on our starboard bow, showing red → we give way: starboard, pass astern\nShe is on our port bow, showing green → stand on, watch her\nBoth sidelights and a masthead, dead ahead → both alter to starboard\nA sternlight alone, and we are gaining → we are overtaking: keep clear\nUnder sail on port tack, she is on starboard tack → we give way' },
   { id:'shapes', kind:'drill', title:'Day shapes', gen: genShapes,
     intro:'By day the same vessels hoist black shapes where best seen. Balls, cones, a cylinder, a diamond. The tow and the tug each hang a diamond when the tow is long, and a dredger shows balls on the foul side and diamonds on the clear side.',
     ex:'Ball → anchor\nCone point down → motor-sailing\nTwo cones point to point → fishing\nBall diamond ball → restricted\nCylinder → constrained by draught' },
@@ -309,6 +323,7 @@ const M = {
   bigship: hullOf(160, 24, 8, [-.38, 20, 15]),
   midship: hullOf(70, 12, 4, [-.34, 12, 8]),
   dredger: hullOf(60, 14, 3.5, [-.34, 10, 7], { crane:true }),
+  buoy:    hullOf(3, 2.2, .9, null, { buoy:true }),
 };
 // shapes: [kind, along, height, across]
 const V = {
@@ -383,12 +398,43 @@ const V = {
              lights:() => [['w','ar', .38, 12, 0], ['r','ar', -.05, 15, 0], ['r','ar', -.05, 12.5, 0]],
              shapes:() => [['ball', -.05, 16, 0], ['ball', -.05, 13.5, 0], ['ball', -.05, 11, 0]],
              tell:'Anchor light plus two all-round reds: aground. Three balls by day, one more than not under command.' },
+  buoy:    { name:'Buoy', short:'a buoy', model:'buoy', spd:0, fog:'', buoy:true, anchored:true, lights:() => [], tell:'' },
   towed:   { name:'Vessel being towed', short:'being towed', model:'barge', spd:3, fog:'Lsss',
              lights:() => [...SIDES(10, 3, .3), ...STERN(2.5)], shapes:v => v === 'long' ? [['diamond', 0, 8, 0]] : [] },
 };
-const LCOL = { r:[1,.22,.14], g:[.25,1,.42], w:[1,.86,.6], y:[1,.8,.18], win:[1,.78,.48] };
-const LSIZE = { mh:1.35, ar:1, fl:1, sg:.8, sr:.8, st:.8, tw:.8, win:.55, deck:.75 };
+const LCOL = { r:[1,.22,.14], g:[.25,1,.42], w:[1,.86,.6], y:[1,.8,.18], b:[.3,.5,1], win:[1,.78,.48] };
+const LSIZE = { mh:1.35, ar:1, fl:1, sg:.8, sr:.8, st:.8, tw:.8, ch:1.1, win:.55, deck:.75 };
 const ARC_NAME = { mh:'masthead light', sg:'green sidelight', sr:'red sidelight', st:'sternlight', tw:'yellow towing light' };
+// IALA A marks. chars are standard light characters; the parser below turns them into an on/off sequence.
+const BUOYS = {
+  port:    { name:'Port-hand lateral mark', chars:['Fl R 4s','Fl(2) R 6s','Q R','Fl R 2.5s'], pass:'Leave it to port', tell:'A red light in any rhythm but two-plus-one: a port-hand mark. Entering from seaward, leave it to port.' },
+  stbd:    { name:'Starboard-hand lateral mark', chars:['Fl G 4s','Fl(2) G 6s','Q G','Fl G 2.5s'], pass:'Leave it to starboard', tell:'A green light in any rhythm but two-plus-one: a starboard-hand mark. Entering from seaward, leave it to starboard.' },
+  prefS:   { name:'Preferred channel to starboard', chars:['Fl(2+1) R 10s'], pass:'Leave it to port', tell:'Red, two flashes then one: a modified port-hand mark where the channel divides. The main channel lies to starboard of it, so treat it as a port mark and leave it to port.' },
+  prefP:   { name:'Preferred channel to port', chars:['Fl(2+1) G 10s'], pass:'Leave it to starboard', tell:'Green, two flashes then one: a modified starboard-hand mark where the channel divides. The main channel lies to port of it; treat it as a starboard mark.' },
+  N:       { name:'North cardinal', chars:['VQ','Q'], pass:'Pass north of it', tell:'White, quick or very quick and never stopping: north cardinal, twelve o\'clock, continuous. Safe water lies north of it.' },
+  E:       { name:'East cardinal', chars:['VQ(3) 5s','Q(3) 10s'], pass:'Pass east of it', tell:'Three quick flashes: east cardinal, three o\'clock. Pass east of it.' },
+  S:       { name:'South cardinal', chars:['VQ(6)+LFl 10s','Q(6)+LFl 15s'], pass:'Pass south of it', tell:'Six quick flashes and a long one: south cardinal, six o\'clock. The long flash is there so you never confuse six with nine. Pass south of it.' },
+  W:       { name:'West cardinal', chars:['VQ(9) 10s','Q(9) 15s'], pass:'Pass west of it', tell:'Nine quick flashes: west cardinal, nine o\'clock. Pass west of it.' },
+  danger:  { name:'Isolated danger mark', chars:['Fl(2) W 5s','Fl(2) W 10s'], pass:'Keep clear: the danger is right under it, water all round', tell:'White, groups of two: isolated danger. Two flashes by night, two balls by day. The danger is small and the buoy sits on it; pass at a distance on either side.' },
+  safe:    { name:'Safe water mark', chars:['Iso W 4s','Oc W 4s','LFl W 10s','Mo(A) W 8s'], pass:'Pass either side: safe water all round', tell:'White, and lit longer than it is dark: isophase, occulting, one long flash every ten seconds or Morse A. Safe water: a landfall or mid-channel mark.' },
+  special: { name:'Special mark', chars:['Fl Y 5s','Fl(4) Y 10s','Fl Y 2.5s'], pass:'Not a navigation mark: look it up on the chart', tell:'A yellow light: a special mark. Spoil ground, a pipeline, a racing mark, a firing range. It says nothing about the channel; the chart says what it is.' },
+  wreck:   { name:'Emergency wreck marking buoy', chars:['Al BuY 3s'], pass:'Keep well clear: a new wreck', tell:'Alternating blue and yellow, a second of each: a new wreck that is not on your chart yet. Keep well clear.' },
+};
+const COLNAME = { r:'red', g:'green', w:'white', y:'yellow', b:'blue and yellow' };
+function charSeq(str){
+  const m = str.match(/^(VQ|Q|LFl|Fl|Iso|Oc|Mo\(A\)|Al)(?:\((\d+)(?:\+(\d+))?\))?(\+LFl)?\s*(R|G|W|Y|BuY)?\s*(?:([\d.]+)s)?$/);
+  const [, kind, n, n2, lfl, col, per] = m; const c = col === 'BuY' ? 'b' : (col || 'w').toLowerCase(); let seq = [], T = per ? +per : 0;
+  const qp = kind === 'VQ' ? .5 : 1; // one quick flash per second, very quick twice that
+  if (kind === 'Q' || kind === 'VQ') { const k = n ? +n : 0; if (!k) { T = qp; seq = [[0, qp*.4, c]]; } else { for (let i = 0; i < k; i++) seq.push([i*qp, qp*.4, c]); if (lfl) seq.push([k*qp + .5, 2, c]); } }
+  else if (kind === 'Fl') { const k = n ? +n : 1; for (let i = 0; i < k; i++) seq.push([i, .5, c]); if (n2) for (let i = 0; i < +n2; i++) seq.push([k + 1 + i, .5, c]); T ||= 4; }
+  else if (kind === 'LFl') { seq = [[0, 2, c]]; T ||= 10; }
+  else if (kind === 'Iso') { T ||= 4; seq = [[0, T/2, c]]; }
+  else if (kind === 'Oc') { T ||= 4; seq = [[0, T*.75, c]]; }
+  else if (kind === 'Mo(A)') { T ||= 8; seq = [[0, .5, c], [1.2, 1.8, c]]; }
+  else if (kind === 'Al') { T ||= 3; seq = [[0, 1, 'b'], [1.5, 1, 'y']]; }
+  return { T, seq, c };
+}
+const charOn = (ch, t) => { const u = t % ch.T; for (const [s0, l, c] of ch.seq) if (u >= s0 && u < s0 + l) return c; return null; };
 
 // ---- WebGL renderer
 const cv = $('gl');
@@ -507,7 +553,7 @@ function model(type, variant){
   const d = V[type], m = M[(d.modelV && d.modelV[variant]) || d.model];
   const lights = d.lights(variant, true), shapes = d.shapes ? d.shapes(variant) : [];
   const H = builder(), Mst = builder(), S = builder(), Sh = builder();
-  if (m.sail) H.yachtHull(m.L, m.B, m.F); else H.hull(m.L, m.B, m.F, m.flare);
+  if (m.sail) H.yachtHull(m.L, m.B, m.F); else if (m.buoy) H.lathe([[0,-.3],[1.1,-.3],[1.1,.9],[.55,1.1],[.55,2.6],[.3,3],[.3,3.4],[0,3.4]], 0, 0, 0, 10); else H.hull(m.L, m.B, m.F, m.flare);
   if (m.house && m.sail) { const [z, len, h] = m.house; H.prism(0, m.F + .05, z*m.L, m.B*.7, m.B*.5, h, len); H.prism(0, m.F + .05, (z - .02)*m.L - len*.62, m.B*.5, m.B*.4, h*.6, len*.25); }
   else if (m.house) { const [z, len, h] = m.house; H.box(0, m.F, z*m.L, m.B*.72, h, len); if (m.L > 50) { H.box(0, m.F + h, z*m.L, m.B*.5, 2.5, len*.5); H.box(0, m.F + h - .35, z*m.L, m.B*.98, .35, Math.min(len*.4, 4)); } } // bridge wings carry the sidelights
   if (m.crane) { Mst.box(0, m.F, -.05*m.L, 1.2, 14, 1.2); Mst.box(0, m.F + 13, .1*m.L, .6, .6, .3*m.L); }
@@ -569,12 +615,12 @@ const ENV = {
 const DAYCOL = { hull:[.36,.37,.39], house:[.8,.8,.77], mast:[.2,.2,.2], sail:[.93,.93,.9], shape:[.02,.02,.02], barge:[.3,.22,.18], yacht:[.92,.91,.87], spar:[.55,.56,.58], rig:[.3,.3,.32] };
 
 // ---- scene state
-const scn = { mode:'night', vessels:[], t:0, timeScale:1, fogD:0, targetFogD:0, binos:false, bearing:0, track:false, ownSpd:0, ownHdg:0, busy:false };
+const scn = { mode:'night', vessels:[], t:0, timeScale:1, fogD:0, targetFogD:0, binos:false, bearing:0, track:false, ownSpd:0, ownHdg:0, ownTurn:0, busy:false };
 let lastT = 0;
 function setScene(spec){
-  scn.mode = spec.mode; scn.vessels = spec.vessels; scn.timeScale = 1; scn.track = !!spec.track; scn.trackFree = !!spec.track; scn.ownSpd = spec.ownSpd || 0; scn.ownHdg = spec.ownHdg || 0; scn.busy = false;
+  scn.mode = spec.mode; scn.vessels = spec.vessels; scn.timeScale = 1; scn.track = !!spec.track; scn.trackFree = !!spec.track; scn.ownSpd = spec.ownSpd || 0; scn.ownHdg = spec.ownHdg || 0; scn.ownTurn = 0; scn.busy = false;
   scn.fogD = scn.targetFogD = ENV[spec.mode].fogD;
-  for (const v of scn.vessels) { v.hdg = norm(v.hdg); v.turnTo = null; v.spdMul = 1; }
+  for (const v of scn.vessels) { v.hdg = norm(v.hdg); v.turnTo = null; v.spdMul ??= 1; }
   $('scene').classList.toggle('day', spec.mode !== 'night');
   $('hud').className = 'hud' + (spec.mode === 'night' ? '' : ' day'); $('hint').className = 'hint' + (spec.mode === 'night' ? '' : ' day');
   $('hud').textContent = spec.hud || '';
@@ -594,6 +640,7 @@ function arcVis(kind, rb){
   return inArc(112.5, 247.5);
 }
 function worldLights(v){ const d = V[v.type], m = model(v.type, v.variant).m, f = fwd(v.hdg), s = stbd(v.hdg), rb = relBearing(v), out = [];
+  if (d.buoy) { v.ch ??= charSeq(v.char || BUOYS[v.variant].chars[0]); const c = charOn(v.ch, scn.t); if (c) out.push({ x:v.x, y:3.3, z:v.z, col:LCOL[c], vis:.85, kind:'ch', c }); return out; }
   for (const [col, kind, along, h, across, dim] of d.lights(v.variant, v.making)) {
     let vis = arcVis(kind, rb); if (kind === 'fl') vis *= (Math.sin(scn.t * 12.6) > .2 ? 1 : 0);
     if (!vis) continue;
@@ -606,6 +653,7 @@ function worldLights(v){ const d = V[v.type], m = model(v.type, v.variant).m, f 
   return out;
 }
 function seen(v){ const rb = relBearing(v), count = {};
+  if (V[v.type].buoy) return `a ${COLNAME[v.ch ? v.ch.c : 'w']} light, ${v.char || BUOYS[v.variant].chars[0]}`;
   for (const [col, kind, , , , dim] of V[v.type].lights(v.variant, v.making)) { if (arcVis(kind, rb) < .5 || dim) continue;
     const k = kind === 'ar' || kind === 'fl' ? { r:'red', g:'green', w:'white', y:'yellow' }[col] + (kind === 'fl' ? ' flashing' : ' all-round') : ARC_NAME[kind]; count[k] = (count[k] || 0) + 1; }
   return Object.entries(count).map(([k, n]) => n > 1 ? `${n} ${k.replace('light', 'lights')}` : k).join(', ') || 'nothing at all';
@@ -623,6 +671,9 @@ function frameInner(now){
   const dt = Math.min(.1, (now - lastT)/1000 || 0); lastT = now;
   scn.t += dt;
   const sim = dt * scn.timeScale;
+  // our own alteration: the bow stays on screen, so the world swings the other way about us
+  if (scn.ownTurn) { const d = Math.sign(scn.ownTurn) * Math.min(Math.abs(scn.ownTurn), 3 * sim); scn.ownTurn -= d; scn.ownHdg = norm(scn.ownHdg + d);
+    const c = Math.cos(rad(d)), sn = Math.sin(rad(d)); for (const v of scn.vessels) { const x = v.x*c + v.z*sn, z = v.z*c - v.x*sn; v.x = x; v.z = z; v.hdg = norm(v.hdg - d); if (v.turnTo != null) v.turnTo = norm(v.turnTo - d); } }
   for (const v of scn.vessels) {
     if (v.turnTo != null) { const d = ((v.turnTo - v.hdg + 540) % 360) - 180; v.hdg = Math.abs(d) < .5 ? v.turnTo : norm(v.hdg + Math.sign(d) * Math.min(Math.abs(d), 4 * sim)); }
     const f = fwd(v.hdg), sp = V[v.type].spd * v.spdMul;
@@ -913,6 +964,78 @@ function genSound(){
     choices: opts, answer: opts.indexOf(s.name), explain: SOUND_TELL[s.pat] + (fog ? ` The bearing of the sound is all you have, and in fog it lies. Slow down, post a lookout, sound your own signal. Under 12 m you need not sound these, but must make some efficient signal at least every two minutes.` : ''), after, lift: fog,
     rule:'Rule 34 in sight: one starboard, two port, three astern, five doubt. Rule 35 fog: prolonged is power making way; prolonged plus two short is anyone hampered, sailing vessels included; bells at anchor.' };
 }
+// her headings (scene frame) that put her relative velocity straight down the line of sight: usually two, crossing or being overtaken
+function collisionHdgs(v, sh, own){
+  const out = [];
+  for (let H = 0; H < 360; H += 1) { const f = fwd(H), rx = f[0]*sh, rz = f[2]*sh + own, len = Math.hypot(rx, rz);
+    const err = Math.acos(clamp((-v.x*rx - v.z*rz) / (len * v.range), -1, 1)); if (err < rad(1.5) && !out.some(h => Math.abs(((h - H + 540) % 360) - 180) < 10)) out.push(H); }
+  return out;
+}
+const WIND = ['north','north-east','east','south-east','south','south-west','west','north-west'];
+const ACTS = ['Stand on: hold course and speed, and watch her', 'Give way: alter course to starboard', 'Alter course to port', 'We are overtaking: keep clear on whichever side is open until well past her'];
+function genAction(){
+  const c = DEV.get('case') || pick(['xstbd','xstbd','xport','xport','headon','overtake','sailgw','hamp','hamp','wesail','headsail','sailsail','sailsail']);
+  const weSail = ['wesail','headsail','sailsail'].includes(c) || (c === 'hamp' && Math.random() < .5);
+  const own = weSail ? 2.6 : 3.1, windI = rnd(0, 7), windDeg = windI * 45;
+  const offWind = (h, w) => Math.abs(((w - h + 540) % 360) - 180) >= 45;
+  let ownHdg, v, type, answer, explain, sea, after = null, tries = 0;
+  for (;;) {
+    if (++tries > 400) break;
+    ownHdg = rnd(0, 359); if (weSail && !offWind(ownHdg, windDeg)) continue;
+    type = c === 'headon' || c === 'xstbd' || c === 'xport' ? pick(['power','power','power50']) : c === 'overtake' ? pick(['power','sail']) : c === 'hamp' ? pick(['trawl','fish','nuc','ram']) : c === 'wesail' || c === 'headsail' ? pick(['power','power50']) : 'sail';
+    const spdMul = c === 'overtake' ? .45 : 1, sh = V[type].spd * spdMul;
+    const side = c === 'xstbd' || c === 'sailgw' || c === 'hamp' || c === 'wesail' ? 1 : c === 'xport' ? -1 : c === 'headon' || c === 'headsail' || c === 'overtake' ? 0 : pick([1, -1]);
+    v = place(type, { range:rndf(850, 1100), bearing: side ? side * rndf(12, 40) : rndf(-3, 3), making:true }); v.spdMul = spdMul;
+    const want = c === 'headon' || c === 'headsail' ? 0 : c === 'overtake' ? 1 : side > 0 ? 3 : 2; // aspect we need her to show
+    const H = collisionHdgs(v, sh, own).find(h => { v.hdg = h; return aspectOf(v) === want; });
+    if (H == null) continue; v.hdg = H;
+    if (c === 'headon' || c === 'headsail') v.hdg = norm(v.b + 180 + rndf(-1.5, 1.5));
+    const her = `${V[type].name.toLowerCase().replace('vessel', 'vessel')}`;
+    if (c === 'xstbd') { answer = 1; explain = `Two power-driven vessels crossing and she is on our starboard side, showing us her red: we are the give-way vessel. Alter early and boldly to starboard and pass under her stern; never cross ahead of her.`; sea = 'you stood on with a ship on your starboard bow. She expected you to turn, and by the time she realised you would not, she could not.'; }
+    else if (c === 'xport') { answer = 0; explain = `She is on our port bow showing green, so she has us on her starboard side: she gives way, we stand on. Hold course and speed so she can plan round us, and watch her bearing. If she does nothing, we may act, and then we must not turn to port for a vessel on our port side.`; sea = 'you altered when you were the stand-on vessel, just as she altered for you, and the two turns cancelled out.'; after = () => { v.turnTo = norm(v.hdg + 45); }; }
+    else if (c === 'headon') { answer = 1; explain = `Both sidelights and her masthead lights nearly in line: a power-driven vessel meeting us head-on. Rule 14: each alters course to starboard so that we pass port to port. Make it big enough to be seen on her bridge.`; sea = 'you turned to port for a ship coming head-on and she turned to starboard, as the Rules told her to. You met in the middle.'; after = () => { v.turnTo = norm(v.hdg + 30); }; }
+    else if (c === 'overtake') { answer = 3; explain = `Only her sternlight, and we are closing on her: we are coming up from more than 22.5° abaft her beam, so we are overtaking (Rule 13). The overtaking vessel keeps clear, on whichever side is open, until finally past and clear. Sail or power makes no difference here.`; sea = 'you assumed the boat ahead would move for you. She had no idea you were there.'; }
+    else if (c === 'sailgw') { answer = 1; explain = `Sidelights and no masthead light: she is under sail, and we are under power. Rule 18: a power-driven vessel keeps out of the way of a sailing vessel. She is on our starboard bow showing red, so a bold alteration to starboard passes astern of her.`; sea = 'you motored on and made a yacht under sail tack out of your way. She was the stand-on vessel and you were the collision.'; }
+    else if (c === 'hamp') { answer = 1; explain = `${V[type].tell.split('.')[0]}. She is hampered, and Rule 18 puts her above both sail and power: whoever we are, we keep clear. She is on our starboard bow, so alter to starboard and pass astern, well clear of her gear.`; sea = RISK[type]; }
+    else if (c === 'wesail') { answer = 0; explain = `We are under sail and she is a power-driven vessel: she keeps out of our way (Rule 18), even though she is on our starboard bow. Hold course and speed so her alteration works, and watch her. If she does not act in time, we act too, and not to port.`; sea = 'you tacked away from a ship that was already turning for you and put yourself back under her bow.'; after = () => { v.turnTo = norm(v.hdg + 40); }; }
+    else if (c === 'headsail') { answer = 0; explain = `Head-on, but Rule 14 is for two power-driven vessels. We are under sail and she is under power, so Rule 18 applies: she keeps clear, we stand on and watch. Keep steering a steady course so she can see what we are doing.`; sea = 'you altered to starboard as if you were a motor boat, into the side she had chosen to pass on.'; after = () => { v.turnTo = norm(v.hdg + 35); }; }
+    else { // sail against sail: tacks first, then windward
+      const herTrue = norm(ownHdg + v.hdg), herBrg = norm(ownHdg + v.b);
+      if (!offWind(herTrue, windDeg)) continue;
+      const weStbd = norm(windDeg - ownHdg) < 180, herStbd = norm(windDeg - herTrue) < 180;
+      const sheWindward = Math.abs(((herBrg - windDeg + 540) % 360) - 180) < 80;
+      const weGive = weStbd !== herStbd ? !weStbd : !sheWindward;
+      if (weGive && side < 0) continue; // give way with her on our port bow would mean turning to port to pass astern: keep it clean
+      const tacks = `The wind is ${WIND[windI]}. We are on ${weStbd ? 'starboard' : 'port'} tack; from her heading she is on ${herStbd ? 'starboard' : 'port'} tack.`;
+      if (weStbd !== herStbd) { answer = weGive ? 1 : 0; explain = `${tacks} Different tacks, so the vessel on port tack keeps out of the way (Rule 12): ${weGive ? 'that is us. Bear away to starboard and pass astern of her.' : 'that is her. We stand on and watch.'}`; }
+      else { answer = weGive ? 1 : 0; explain = `${tacks} Same tack, so the windward vessel keeps clear (Rule 12): ${weGive ? 'she is to leeward of us, so we give way. Bear away to starboard and pass astern.' : 'she is to windward of us, so she gives way and we stand on.'}`; }
+      sea = weGive ? 'you held on as the give-way yacht and she had to crash tack under your bow.' : 'you altered when you had right of way and lost the wind, the course and the race.';
+      if (!weGive) after = () => { v.turnTo = norm(v.hdg + 40); };
+    }
+    break;
+  }
+  const kn = (own * 1.94).toFixed(0);
+  return { label:'Who gives way', prompt:`We are ${weSail ? `under sail, ${kn} knots, wind from the ${WIND[windI]}` : `motoring at ${kn} knots`}, course ${fmtB(ownHdg)}. Her bearing has been steady for three readings. What do we do?`,
+    scene:{ mode:'night', vessels:[v], hud:`${HOUR()} · ${weSail ? `under sail · wind ${WIND[windI]}` : 'under power'} · our course ${fmtB(ownHdg)}`, ownSpd:own, ownHdg, track:true },
+    choices:ACTS, answer, risk:null, sea, explain,
+    // after the answer, do what was chosen: the world swings for our own alteration, and a give-way vessel that was going to act still acts
+    after:i => { if (i === 1) scn.ownTurn = 60; else if (i === 2) scn.ownTurn = -60; else if (i === 3) scn.ownTurn = 40; if (after) after(); },
+    rule:'Rule 13 overtaking keeps clear. Rule 14 head-on, both to starboard. Rule 15 crossing: she is on your starboard side, you give way, do not cross ahead. Rule 12 sail: port tack gives way, then windward. Rule 18: power gives way to sail, everyone to fishing, NUC and RAM. Rule 17: stand-on holds course and speed, and acts if the other does not.' };
+}
+function genBuoy(){
+  const ids = Object.keys(BUOYS), id = DEV.get('buoy') || pick(ids), B = BUOYS[id], ch = pick(B.chars);
+  const v = place('buoy', { variant:id, range:rndf(320, 620), bearing:rndf(-20, 20) }); v.char = ch;
+  const askPass = Math.random() < .4;
+  const pool = shuffle(ids.filter(x => x !== id && (!askPass || BUOYS[x].pass !== B.pass)));
+  let opts, answer;
+  if (askPass) { opts = shuffle([...new Set([B.pass, ...pool.map(x => BUOYS[x].pass)])].slice(0, 5)); answer = opts.indexOf(B.pass); }
+  else { const names = shuffle([id, ...pool.slice(0, 4)]); opts = names.map(x => BUOYS[x].name); answer = names.indexOf(id); }
+  return { label:'Buoys by night', prompt: askPass ? 'Entering from seaward, direction of buoyage with us. Which side of that light do we pass?' : 'A light ahead and no vessel under it. Watch its rhythm. What is it?',
+    scene:{ mode:'night', vessels:[v], hud:`${HOUR()} · entering harbour, buoyage direction ahead · light ${(v.range/1852).toFixed(1)} nm` },
+    choices:opts, answer, risk:null, sea: askPass ? 'you put the mark on the wrong side and found what it was guarding.' : 'you steered for the wrong side of a mark you had misread.',
+    explain:`${B.tell} This one shows ${ch}.`,
+    rule:'IALA A. Laterals: red to port, green to starboard entering; two-plus-one means the channel divides. Cardinals: white, quick or very quick, clock face: 3 east, 6 plus a long flash south, 9 west, continuous north. Fl(2) white: isolated danger. White and more light than dark: safe water. Yellow: special. Blue and yellow: wreck.' };
+}
 function genBearing(){
   const own = 2.6, ownHdg = rnd(0, 359), type = pick(['power','power','power50','sail','trawl']), sh = Math.min(V[type].spd, 5);
   let v, kind, drift, cpa, tries = 0;
@@ -921,10 +1044,8 @@ function genBearing(){
     kind = pick(['collide','collide','ahead','astern']);
     v = place(type, { range:rndf(900, 1150), bearing:pick([1,-1]) * rndf(9, 18), making:true });
     // heading that puts her relative velocity straight down the line of sight, then bend it for the passing cases
-    let best = 0, bestErr = 1e9;
-    for (let H = 0; H < 360; H += 1) { const f = fwd(H), rx = f[0]*sh, rz = f[2]*sh + own, len = Math.hypot(rx, rz);
-      const err = Math.acos(clamp((-v.x*rx - v.z*rz) / (len * v.range), -1, 1)); if (err < bestErr) { bestErr = err; best = H; } }
-    if (bestErr > rad(2)) continue;
+    const best = collisionHdgs(v, sh, own)[0];
+    if (best == null) continue;
     v.hdg = norm(best + (kind === 'collide' ? rndf(-1, 1) : pick([1,-1]) * rndf(18, 40)));
     const f = fwd(v.hdg), rx = f[0]*sh, rz = f[2]*sh + own, vv = rx*rx + rz*rz, tStar = -(v.x*rx + v.z*rz) / vv;
     cpa = tStar > 0 ? Math.hypot(v.x + rx*tStar, v.z + rz*tStar) : v.range;
@@ -946,7 +1067,7 @@ function genBearing(){
       : `Her bearing drew aft, away from our bow, on the ${side} side. She will pass astern of us. ${aspectTell(v)}`,
     rule:'Rule 7: risk of collision exists if the compass bearing of an approaching vessel does not appreciably change. Take at least three bearings. Steady and closing: risk. Forward: ahead. Aft: astern. A big ship or a tow at close range can hit you even with a changing bearing.' };
 }
-const DRILLS = [genAspect, genSailPower, genStack, genStack, genDetail, genBearing, genShapes, genSound];
+const DRILLS = [genAspect, genSailPower, genStack, genStack, genDetail, genBuoy, genBearing, genAction, genShapes, genSound];
 
 // ---- render
 function ask(){
@@ -974,6 +1095,7 @@ function finish(i, revealed){
   if (q.bearing && q.bearings.length < 3) q.explain = `<strong>You decided on ${q.bearings.length} bearing${q.bearings.length === 1 ? '' : 's'}. Three is the minimum.</strong> ` + q.explain;
   const seenLine = v && scn.mode === 'night' && v.type !== 'towed' ? `<div class="seen">Seen from here: ${seen(v)}.</div>` : '';
   const sea = !ok && !revealed && q.bearing ? `<div class="sea">At sea: ${q.answer === 0 ? 'you held on across a steady bearing. Watch her come.' : 'you altered for a vessel that was already passing clear, and turned a safe pass into a close-quarters situation.'}</div>`
+    : !ok && !revealed && q.sea ? `<div class="sea">At sea: ${q.sea}</div>`
     : !ok && !revealed && q.risk && RISK[q.risk] ? `<div class="sea">At sea: ${RISK[q.risk]}</div>`
     : !ok && !revealed && q.fine ? `<div class="sea">At sea: you set up to pass her on the wrong side. Watch her now.</div>` : '';
   const fb = $('fb');
@@ -989,7 +1111,7 @@ function finish(i, revealed){
   // let the scene play out: fog lifts, she manoeuvres, time runs fast so her track shows
   if (q.lift) scn.targetFogD = .0008;
   scn.track = true;
-  if (q.after) q.after();
+  if (q.after) q.after(revealed ? q.answer : i);
   const sp = v ? V[v.type].spd || 1 : 1;
   scn.timeScale = v ? clamp((v.range - 120) / (sp * 5), 1, q.after ? 3 : 5) : 1; setTimeout(() => { scn.timeScale = 1; }, 5000);
   if (v && V[v.type].spd && !q.after) { $('hint').textContent = 'Watch her track: the next few minutes, sped up'; $('hint').classList.add('show'); }
@@ -1078,6 +1200,8 @@ $('chips').addEventListener('click', e => { const b = e.target.closest('.chip');
 $('play').addEventListener('click', () => { if (q.sound) horn(q.sound.pat, q.sound); });
 $('vis').addEventListener('click', () => { store.visualSig = !store.visualSig; save(); renderStatus(); if (q.sound && store.visualSig) $('sig').textContent = notation(q.sound.pat); else if (!answered) $('sig').textContent = ''; });
 $('bear').addEventListener('click', takeBearing);
+$('full').hidden = !document.fullscreenEnabled;
+$('full').addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else $('qsec').requestFullscreen().catch(() => {}); });
 $('binos').addEventListener('click', () => { scn.binos = !scn.binos; $('binos').classList.toggle('on', scn.binos); $('binos').setAttribute('aria-pressed', String(scn.binos)); });
 $('next').addEventListener('click', next);
 $('skip').addEventListener('click', () => { if (!answered) finish(q.answer, true); });
@@ -1089,6 +1213,7 @@ document.addEventListener('keydown', e => {
   if (/^[1-5]$/.test(e.key) && !answered && q.choices[+e.key-1] != null) { e.preventDefault(); return finish(+e.key-1, false); }
   if ((e.key === 'p' || e.key === 'P') && q.sound) horn(q.sound.pat, q.sound);
   if (e.key === 'b' || e.key === 'B') $('binos').click();
+  if (e.key === 'f' || e.key === 'F') $('full').click();
   if (e.key === 'c' || e.key === 'C') takeBearing();
 });
 document.addEventListener('visibilitychange', () => { lastT = performance.now(); });
@@ -1104,7 +1229,7 @@ function initReview(){
   stage = STAGES[0]; answered = true; q = { choices:[] };
   for (const id of ['concept','chips','skip','next','progress','stepper']) $(id).hidden = true;
   $('qtype').textContent = 'Model review'; $('prompt').textContent = 'Every vessel, every variant, any heading. Watch which lights show and tell me what looks wrong.';
-  const VARS = { sail:['plain','tri','rg'], tow:['short','long'], towed:['short','long'], anchor:['small','mid','big'], fish:['plain','gear','anchored'], trawl:['plain','big'], ram:['plain','anchored'], pilot:['plain','anchored'] };
+  const VARS = { buoy:Object.keys(BUOYS), sail:['plain','tri','rg'], tow:['short','long'], towed:['short','long'], anchor:['small','mid','big'], fish:['plain','gear','anchored'], trawl:['plain','big'], ram:['plain','anchored'], pilot:['plain','anchored'] };
   const types = Object.keys(V).filter(k => k !== 'towed');
   const opt = (arr, sel) => arr.map(([v, l]) => `<option value="${v}" ${v === sel ? 'selected' : ''}>${l}</option>`).join('');
   const st = { type: DEV.get('type') || 'power', variant: DEV.get('variant') || 'plain', mode: DEV.get('mode') || 'night', hdg: +(DEV.get('hdg') ?? 135), range: +(DEV.get('range') ?? 300), bearing: +(DEV.get('bearing') ?? 0), making: DEV.get('making') !== '0', moving: DEV.get('moving') === '1' };
@@ -1123,6 +1248,7 @@ function initReview(){
       `<label class="chk"><input id="rvMoving" type="checkbox" ${st.moving ? 'checked' : ''}> let her move</label>` +
       `<div class="seen" id="rvSeen"></div>`;
     const variant = st.variant === 'plain' || st.variant === 'small' ? undefined : st.variant;
+    if (st.type === 'buoy' && !(st.variant in BUOYS)) st.variant = 'port';
     const v = place(st.type, { variant, making: st.making, range: st.range, bearing: st.bearing }); v.hdg = norm(st.bearing + st.hdg);
     const vessels = st.type === 'tow' ? withTow(v) : [v];
     setScene({ mode: st.mode, vessels, hud: `review · ${st.type}${variant ? ' ' + variant : ''} · rel hdg ${st.hdg}° · ${st.range} m` });
