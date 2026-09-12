@@ -58,13 +58,6 @@
 .given .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .given .v{font-size:22px;font-weight:500}
 .given.t .v{color:var(--ink)}.given.m .v{color:var(--magenta)}.given.c .v{color:var(--brass)}
-.rulepick{display:none;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-.rulepick.show{display:flex}
-.rulepick .lbl{font-size:13px;color:var(--ink-2);font-style:italic;font-family:"Libre Caslon Text",serif;margin-right:4px}
-.chip{font:600 13px "Source Sans 3",sans-serif;padding:8px 12px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:20px}
-.chip:hover{border-color:var(--ink-2)}
-.chip.picked{border-color:var(--good);background:var(--good-soft)}
-.chip.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s}
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .answer{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
 .answer input{font-family:"IBM Plex Mono",monospace;font-size:34px;font-weight:500;width:150px;padding:8px 14px;border:1.5px solid var(--ink-2);background:var(--paper);color:var(--ink);letter-spacing:.08em;border-radius:2px}
@@ -142,11 +135,6 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
   <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
   <p class="prompt" id="prompt"></p>
   <div class="givens" id="givens"></div>
-  <div class="rulepick" id="rulepick">
-    <span class="lbl">Call the rule to the helm:</span>
-    <button class="chip" type="button" data-dir="down">Down the ladder · West is best</button>
-    <button class="chip" type="button" data-dir="up">Up the ladder · CADET, add East</button>
-  </div>
   <form class="answer" id="form" autocomplete="off">
     <input id="ans" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="000" aria-label="Your answer in degrees">
     <span class="unit" id="unit">°C</span>
@@ -226,9 +214,10 @@ const STAGES = [
   { id:'s8', kind:'passage', title:'Passage with card', cfg:{card:true},
     intro:'Same passage, but deviation now comes from the card. Look it up by the magnetic heading you have just worked out.' },
   { id:'s9', kind:'watch', title:'Quick convert', cfg:{},
-    intro:'Ninety seconds, everything mixed, no chart. The exam gives you about a minute per conversion.' },
+    intro:'Twelve conversions, everything mixed, no chart. One minute each, which is about what the exam allows. Run out of time and the question counts as wrong.' },
 ];
-const GATE = { drill:'8 of your last 10', passage:'arrive with at most one correction', watch:'12 right, at most 1 wrong' };
+const GATE = { drill:'8 of your last 10', passage:'arrive with at most one correction', watch:'12 questions, a minute each, at most 1 wrong' };
+const WATCH_N = 12, WATCH_SECS = 60;
 for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
 
 // ---- sound (WebAudio, tiny)
@@ -296,9 +285,9 @@ function genPassageQ(){
     if (pas.useCard) { rows = pas.card; const M = norm(T + V); const row = rows.reduce((best, r) => Math.abs(sgnDeg(r.m, M)) < Math.abs(sgnDeg(best.m, M)) ? r : best); D = row.dev; skills.push('lookup'); }
     else D = genDeviation(V);
     const M = norm(T + V), C = norm(T + V + D);
-    skills.push('t2c','rule'); if (Math.sign(V) !== Math.sign(D)) skills.push('mixed');
+    skills.push('t2c'); if (Math.sign(V) !== Math.sign(D)) skills.push('mixed');
     if (Math.abs(sgnDeg(T,M)) !== Math.abs(norm(T)-norm(M)) || Math.abs(sgnDeg(M,C)) !== Math.abs(norm(M)-norm(C))) skills.push('wrap');
-    q = { m:'passage', down:true, T, M, C, V, D, rows, skills, unitFrom:'T', unitTo:'C', from:T, target:C, needRule:true, hand:false, leg, a, b,
+    q = { m:'passage', down:true, T, M, C, V, D, rows, skills, unitFrom:'T', unitTo:'C', from:T, target:C, hand:false, leg, a, b,
       qtype:`Leg ${leg+1} of ${p.wps.length-1} · course to steer`,
       prompt:`${leg===0 ? `Slip from ${p.name.split(' to ')[0]}. ` : ''}Next waypoint bears ${pad(T)}°T on the chart, ${distNm(a,b).toFixed(1)} nm. What course do you give the helm on the steering compass?`,
       givens:[['Variation', fmtErr(V)], pas.useCard ? ['Deviation','see card',true] : ['Deviation', fmtErr(D)]] };
@@ -308,9 +297,9 @@ function genPassageQ(){
     const mark = p.marks.reduce((best, mk) => Math.hypot(mk.x-mid[0], mk.y-mid[1]) < Math.hypot(best.x-mid[0], best.y-mid[1]) ? mk : best);
     const Tb = bearingBetween(mid, [mark.x, mark.y]), Mb = norm(Tb + V);
     const dTrap = genDeviation(V);
-    skills.push('m2t','hand','rule');
+    skills.push('m2t','hand');
     if (Math.abs(sgnDeg(Tb,Mb)) !== Math.abs(norm(Tb)-norm(Mb))) skills.push('wrap');
-    q = { m:'passage', down:false, T:Tb, M:Mb, C:Mb, V, D:0, rows:null, skills, unitFrom:'M', unitTo:'T', from:Mb, target:Tb, needRule:true, hand:true, leg, a, b, mark, mid,
+    q = { m:'passage', down:false, T:Tb, M:Mb, C:Mb, V, D:0, rows:null, skills, unitFrom:'M', unitTo:'T', from:Mb, target:Tb, hand:true, leg, a, b, mark, mid,
       qtype:`Leg ${leg+1} of ${p.wps.length-1} · fix`,
       prompt:`Halfway along the leg you take a hand-bearing compass bearing of ${mark.name}: ${pad(Mb)}°M. What do you plot on the chart?`,
       givens:[['Variation', fmtErr(V)], ['Steering compass dev.', fmtErr(dTrap)]] };
@@ -318,46 +307,6 @@ function genPassageQ(){
   render();
 }
 
-function render(){
-  answered = false; rulePicked = null;
-  const passage = q.m === 'passage';
-  $('legs').hidden = !passage;
-  if (passage) {
-    $('legs').innerHTML = pas.p.wps.slice(1).map((_,i) => `<span class="leg ${i < pas.leg ? (pas.results[i] ? 'done' : 'bad') : i === pas.leg ? 'now' : ''}"></span>`).join('') +
-      `<span class="strikes">${pas.p.name} · strikes <b>${'✕'.repeat(pas.strikes)}${'·'.repeat(3-pas.strikes)}</b></span>`;
-  }
-  $('qtype').textContent = q.qtype;
-  $('prompt').textContent = q.prompt;
-  $('givens').innerHTML = `<div class="given ${q.unitFrom.toLowerCase()}"><div class="k">Given · °${q.unitFrom}</div><div class="v mono">${pad(q.from)}</div></div>` +
-    q.givens.map(([k,v,soft]) => `<div class="given"><div class="k">${k}</div><div class="v ${soft?'serif':'mono'}" ${soft?'style="font-size:15px;font-style:italic"':''}>${v}</div></div>`).join('');
-  $('unit').textContent = '°' + q.unitTo;
-  $('rulepick').className = 'rulepick' + (q.needRule ? ' show' : '');
-  document.querySelectorAll('.chip').forEach(c => c.className = 'chip');
-  $('ans').disabled = q.needRule; $('ans').value = '';
-  if (!q.needRule) $('ans').focus();
-  $('fb').className = 'feedback'; $('fb').innerHTML = '';
-  $('check').textContent = 'Check';
-  renderCard(null);
-  if (passage) drawChart(null); else drawRose(q.T, q.V, q.D, null);
-}
-
-function renderCard(hiRow){
-  const el = $('devcard');
-  if (!q.rows) { el.hidden = true; return; }
-  el.hidden = false;
-  el.innerHTML = `<table><caption>Deviation card · S/Y <em>Persistence</em> · swung ${new Date().getFullYear()}</caption>
-  <thead><tr><th>Ship's head °C</th><th>Deviation</th><th>Ship's head °M</th></tr></thead><tbody>` +
-  q.rows.map(r => `<tr class="${hiRow && hiRow.c === r.c ? 'hi':''}"><td class="mono">${pad(r.c)}</td><td class="mono">${fmtErr(r.dev)}</td><td class="mono">${pad(r.m)}</td></tr>`).join('') + `</tbody></table>`;
-}
-
-// ---- rule chips
-$('rulepick').addEventListener('click', e => {
-  const b = e.target.closest('.chip'); if (!b || answered || rulePicked) return;
-  const want = q.down ? 'down' : 'up';
-  if (b.dataset.dir === want) { b.classList.add('picked'); rulePicked = true; $('ans').disabled = false; $('ans').focus();  }
-  else { b.classList.add('wrong');  const fb = $('fb'); fb.className = 'feedback show no';
-    fb.innerHTML = `<h3>Other way.</h3><p>${q.down ? 'Chart → compass is <em>down</em> the ladder (T→M→C): West is best, add westerly errors.' : 'Compass → chart is <em>up</em> the ladder (C→M→T): CADET, add easterly errors.'}</p>`; }
-});
 
 // ---- drawing: chart (passage)
 const svg = $('roseSvg');
@@ -418,7 +367,7 @@ const drawRoseInto = (el, V, D) => drawRose(45, V, D, null, el);
 
 
 // ---- state
-let stage = null, q = null, card = null, answered = false, watch = null, pas = null, rulePicked = null;
+let stage = null, q = null, card = null, answered = false, watch = null, pas = null;
 const mode = () => stage.kind === 'drill' ? 'drill' : stage.kind;
 
 function genVariation(cfg = {}){ const lo = cfg.varMin ?? 1, hi = cfg.varMax ?? 12; return rnd(lo,hi) * (Math.random() < .5 ? 1 : -1); }
@@ -459,13 +408,13 @@ function genDrill(){
       : (isBearing ? `You take a bearing of ${mark}: ${pad(from)}°${unitFrom}. What do you plot on the chart?` : `The helm is steering ${pad(from)}°${unitFrom}. What ${ctx} do you plot on the chart?`);
     if (m === 'dev') givens.push(['Deviation', fmtErr(D)]); if (m === 'card') givens.push(['Deviation','see card',true]);
   }
-  q = { m, down, T, M, C, V, D, rows, unitFrom, unitTo, from, target: down ? (twoStep ? C : M) : T, needRule:false, hand, prompt, givens,
+  q = { m, down, T, M, C, V, D, rows, unitFrom, unitTo, from, target: down ? (twoStep ? C : M) : T, hand, prompt, givens,
     qtype: down ? `Chart → ${twoStep?'compass':'magnetic'}` : `${twoStep?'Compass':hand?'Hand-bearing':'Magnetic'} → chart` };
   render();
 }
 
 function render(){
-  answered = false; rulePicked = null;
+  answered = false;
   const passage = q.m === 'passage';
   $('chartbox').hidden = !passage;
   if (passage) {
@@ -478,10 +427,8 @@ function render(){
   $('givens').innerHTML = `<div class="given ${q.unitFrom.toLowerCase()}"><div class="k">Given · °${q.unitFrom}</div><div class="v mono">${pad(q.from)}</div></div>` +
     q.givens.map(([k,v,soft]) => `<div class="given"><div class="k">${k}</div><div class="v ${soft?'serif':'mono'}" ${soft?'style="font-size:15px;font-style:italic"':''}>${v}</div></div>`).join('');
   $('unit').textContent = '°' + q.unitTo;
-  $('rulepick').className = 'rulepick' + (q.needRule ? ' show' : '');
-  document.querySelectorAll('.chip').forEach(c => c.className = 'chip');
-  $('ans').disabled = q.needRule; $('ans').value = '';
-  if (!q.needRule) $('ans').focus();
+  $('ans').value = '';
+  $('ans').focus();
   $('fb').className = 'feedback'; $('fb').innerHTML = '';
   $('check').textContent = 'Check';
   renderCard(null);
@@ -515,7 +462,7 @@ function finish(a, shortForm, revealed){
   let rule = q.down ? 'Going down (chart → compass): West is best, East is least. Add W, subtract E.' : 'Going up (compass → chart): CADET, Compass ADd East to get True. Add E, subtract W.';
   if (q.hand) rule += ' Hand-bearing compass: variation only. The steering-compass deviation was a decoy.';
   const err = revealed ? 0 : sgnDeg(a, q.target);
-  const title = revealed ? `Worked answer: ${pad(q.target)}°`
+  const title = revealed ? (watch && watch.timedOut ? `Time. It's ${pad(q.target)}°.` : `Worked answer: ${pad(q.target)}°`)
     : ok ? pick(['Spot on.','Aye, correct.','Clean.','That would pass.','Steady as she goes.','Helm answers.']) + (shortForm ? ' Write it as three figures next time.' : '')
     : `Not quite. It's ${pad(q.target)}°, you were ${Math.abs(err)}° ${err > 0 ? 'high' : 'low'}.`;
   let extra = '';
@@ -533,7 +480,8 @@ function finish(a, shortForm, revealed){
 
   const credit = ok && !revealed;
   if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); if (watch) watch.score++; }
-  else { store.streak = 0; if (watch && !revealed) watch.miss++; }
+  else { store.streak = 0; if (watch) watch.miss++; }
+  if (watch) { clearTimeout(watch.t); watch.used += WATCH_SECS - watch.left; watch.left = 0; watchTimer(); }
   if (credit && store.streak % 10 === 0) pop(`${store.streak} in a row`);
 
   if (q.m === 'passage') {
@@ -579,15 +527,21 @@ function pop(t){ const p = $('pop'); p.textContent = t; p.classList.add('show');
 
 // ---- watch mode
 function startWatch(){
-  watch = { left: 90, score: 0, miss: 0 };
-  const tick = () => { $('timer').textContent = `${watch.left}s · ${watch.score} right · ${watch.miss} wrong`; if (watch.left-- <= 0) endWatch(); else watch.t = setTimeout(tick, 1000); };
+  watch = { asked: 0, left: 0, used: 0, score: 0, miss: 0, timedOut: false, t: null };
+}
+// one countdown per question; the clock starts when the question is shown
+function armWatch(){
+  watch.asked++; watch.left = WATCH_SECS; watch.timedOut = false;
+  const tick = () => { watchTimer(); if (watch.left <= 0) { watch.timedOut = true; finish(q.target, false, true); } else { watch.left--; watch.t = setTimeout(tick, 1000); } };
   tick();
 }
+function watchTimer(){ $('timer').textContent = `${watch.asked}/${WATCH_N} · ${watch.left}s · ${watch.score} right · ${watch.miss} wrong`; }
+const mmss = s => `${Math.floor(s/60)}m ${String(s%60).padStart(2,'0')}s`;
 function endWatch(){
   clearTimeout(watch.t); const w = watch; watch = null; $('timer').textContent = '';
-  const passed = w.score >= 12 && w.miss <= 1;
+  const passed = w.asked >= WATCH_N && w.miss <= 1;
   const fb = $('fb'); fb.className = 'feedback show ' + (passed ? 'ok' : '');
-  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} correct, ${w.miss} wrong in 90 seconds. ${passed ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Speed comes with reps.' : 'Slow down and say the rule out loud each time.'}</p>`;
+  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} of ${w.asked} correct in ${mmss(w.used)}. ${passed ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Accuracy comes with reps.' : 'Slow down and say the rule out loud each time.'}</p>`;
   if (passed && stage.kind === 'watch') completeStage();
   save(); renderStatus();
   answered = true; $('check').textContent = 'Again ›';
@@ -635,7 +589,7 @@ function setStage(i){
   stage = STAGES[i];
   renderConcept();
   if (stage.kind === 'passage') { pas = null; startPassage(); }
-  else { card = makeCard(); if (stage.kind === 'watch') startWatch(); genDrill(); }
+  else { card = makeCard(); if (stage.kind === 'watch') startWatch(); genDrill(); if (watch) armWatch(); }
   renderStatus(); renderLog();
 }
 function renderLog(){
@@ -649,12 +603,12 @@ function renderLog(){
 // ---- wiring
 function next(){
   if (stage.kind === 'passage') { if (!pas || pas.done) startPassage(); else { pas.leg++; genPassageQ(); } }
-  else if (stage.kind === 'watch' && !watch) { startWatch(); genDrill(); }
+  else if (stage.kind === 'watch') { if (watch && watch.asked >= WATCH_N) return endWatch(); if (!watch) startWatch(); genDrill(); armWatch(); }
   else genDrill();
 }
 $('stepper').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) return setStage(+d.dataset.i); const n = e.target.closest('[data-step]'); if (n) setStage(idx() + +n.dataset.step); });
-$('form').addEventListener('submit', e => { e.preventDefault(); if (answered) next(); else if (!$('ans').disabled) check(); });
-$('skip').addEventListener('click', () => { if (!answered) { rulePicked = true; $('ans').disabled = false; finish(q.target, false, true); } });
+$('form').addEventListener('submit', e => { e.preventDefault(); if (answered) next(); else check(); });
+$('skip').addEventListener('click', () => { if (!answered) finish(q.target, false, true); });
 $('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) bell(); });
 document.addEventListener('keydown', e => { if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); } });
 $('ans').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g,'').slice(0,3); });
