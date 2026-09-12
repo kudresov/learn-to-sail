@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Night Sim · Learn to Sail</title>
+<meta name="description" content="Conn a sailing yacht at night in real time. Feel the no-go zone, take repeated bearings on a light to find a steady bearing, and keep clear of a starboard-tack boat before she is close enough to hit you.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../shared/site.css">
+<style>
+.col{max-width:680px;margin:0 auto}
+.tut-head{padding-block:22px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tut-head h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:24px;margin:0}
+.tut-head .streak{font-size:13px;color:var(--ink-3)}
+.tut-head .streak b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.poc{margin-top:14px;border:1px dashed var(--brass);color:var(--ink-2);background:var(--brass-soft);padding:9px 13px;font-size:13.5px}
+.poc b{color:var(--brass)}
+.stepper{display:flex;align-items:center;gap:10px;padding-block:16px 4px;flex-wrap:wrap}
+.stepper .dots{display:flex;gap:6px;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;padding:0;cursor:pointer}
+.stepper .dot.done{background:var(--good);border-color:var(--good)}
+.stepper .dot.now{background:var(--magenta);border-color:var(--magenta);transform:scale(1.3)}
+.stepper .dot.locked{border-color:var(--rule);cursor:not-allowed}
+.stepper .name{font:italic 400 17px "Libre Caslon Text",Georgia,serif}
+.stepper .name small{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:8px;font-style:normal}
+.stepper .nav{margin-left:auto;display:flex;gap:4px}
+.stepper .nav button{font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:4px 9px;cursor:pointer;border-radius:2px}
+.stepper .nav button:disabled{opacity:.35;cursor:default}
+.concept{border:1px solid var(--rule);border-left:4px solid var(--magenta);background:var(--paper);margin-top:14px}
+.concept summary{list-style:none;cursor:pointer;padding:12px 16px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);display:flex;justify-content:space-between}
+.concept summary::after{content:"show";font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.concept[open] summary::after{content:"hide"}
+.concept .body{padding:0 16px 16px;font-size:15px}
+.concept p{margin:0 0 8px;max-width:42em}
+.concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;color:var(--ink-2);white-space:pre-line}
+.concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.q{margin-top:22px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
+.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(19px,3vw,23px);line-height:1.35;margin:8px 0 14px;text-wrap:balance}
+.scene{position:relative;margin-bottom:10px;border:1px solid var(--rule);background:#060b14;aspect-ratio:16/9;max-height:440px;overflow:hidden;border-radius:2px}
+@media (min-width:900px){.scene{--w:calc(100vw - 40px);width:var(--w);margin-left:calc((680px - var(--w))/2);max-height:min(74vh,960px)}}
+.q:fullscreen{overflow:auto;background:var(--paper);color:var(--ink);padding:12px 24px;margin:0}
+.q:fullscreen .scene{width:auto;margin-left:0;max-height:none;aspect-ratio:auto;height:66vh}
+.q:fullscreen .prompt{max-width:40em}
+.scene canvas{width:100%;height:100%;display:block;cursor:grab}
+.scene canvas:active{cursor:grabbing}
+.hud{position:absolute;left:10px;top:44px;font:500 12px/1.75 "IBM Plex Mono",monospace;letter-spacing:.05em;color:#c7d2dc;text-shadow:0 1px 3px #000;pointer-events:none;text-transform:uppercase;white-space:pre}
+.hud b{color:#fff;font-weight:600}
+.hud .warn{color:#ff9c8e}
+.clock{position:absolute;right:10px;top:44px;font:600 12px "IBM Plex Mono",monospace;letter-spacing:.06em;color:#c7d2dc;text-shadow:0 1px 3px #000;pointer-events:none;text-align:right}
+.clock .rate{color:#f0669b}
+.task{position:absolute;left:10px;right:10px;bottom:8px;font:13px "Source Sans 3",sans-serif;color:#dbe4ea;text-shadow:0 1px 3px #000;pointer-events:none;text-align:center}
+.task b{color:#fff}
+/* beats the .scene canvas rule that stretches the scene canvas to fill */
+.scene canvas.tape{position:absolute;left:0;right:0;top:0;height:38px;width:100%;pointer-events:none;cursor:default}
+.card{width:76px;height:76px;flex:0 0 auto;align-self:center}
+@media (max-width:520px){.card{width:60px;height:60px}}
+.nogl[hidden]{display:none}.nogl{position:absolute;inset:0;display:grid;place-items:center;padding:20px;text-align:center;color:#c7d2dc;font-size:15px}
+.tools{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.tools .spacer{flex:1}
+.iconbtn{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-3);padding:5px 9px;cursor:pointer;border-radius:2px;min-height:30px}
+.iconbtn.on{border-color:var(--magenta);color:var(--magenta)}
+.iconbtn:disabled{opacity:.4;cursor:default}
+.helm{display:flex;gap:8px;align-items:stretch;margin-bottom:12px;flex-wrap:wrap}
+.helm button{font:600 15px "Source Sans 3",sans-serif;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);padding:0 14px;min-height:44px;cursor:pointer;border-radius:2px}
+.helm button:hover:not(:disabled){border-color:var(--ink-2)}
+.helm button:disabled{opacity:.4;cursor:default}
+.helm .wide{flex:1;min-width:104px}
+.helm .set{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-3);display:flex;align-items:center;gap:8px;padding:0 4px}
+.helm .set b{font-size:17px;color:var(--ink);font-weight:500}
+.blog{border:1px solid var(--rule);background:var(--paper);padding:10px 13px;margin-bottom:12px;font-size:14px}
+.blog h4{margin:0 0 6px;font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.blog .rows{font-family:"IBM Plex Mono",monospace;font-size:14px;line-height:1.65;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.blog .rows b{color:var(--ink);font-weight:600}
+.blog .rows i{color:var(--magenta);font-style:normal}
+.blog .none{color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 14px "Source Sans 3",sans-serif;padding:10px 14px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:22px;min-height:44px;display:flex;align-items:center;gap:8px;text-align:left}
+.chip:hover:not(:disabled){border-color:var(--ink-2)}
+.chip:disabled{cursor:default;opacity:.7}
+.chip.picked{border-color:var(--good);background:var(--good-soft);opacity:1}
+.chip.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s;opacity:1}
+.chip kbd{opacity:.7}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink)}
+button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
+.feedback.show{display:block}
+.feedback.ok{border-color:var(--good);background:var(--good-soft)}
+.feedback.no{border-color:var(--bad);background:var(--bad-soft)}
+.feedback h3{margin:0 0 8px;font:700 15px "Source Sans 3",sans-serif}
+.feedback p{margin:6px 0 0;font-size:15px;max-width:44em}
+.feedback .rule{font-size:13px;color:var(--ink-2);margin-top:8px;font-style:italic}
+.axes{margin:10px 0 0;padding:0;list-style:none;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6}
+.axes li{display:grid;grid-template-columns:18px 108px 1fr;gap:8px;padding:3px 0;align-items:baseline}
+.axes li .m{font-weight:600}
+.axes li.y .m{color:var(--good)}.axes li.n .m{color:var(--bad)}
+.axes li .why{grid-column:2/4;font-family:"Source Sans 3",sans-serif;font-size:14px;color:var(--ink-2);padding-bottom:4px}
+.progress{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);flex-wrap:wrap}
+.progress .last{display:flex;gap:5px}
+.progress .last i{width:14px;height:14px;border-radius:3px;background:var(--rule);display:block}
+.progress .last i.y{background:var(--good)}.progress .last i.n{background:var(--bad)}
+.progress .cleared{color:var(--good);font-weight:600}
+.more{margin-top:28px;background:var(--paper);border:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 18px;font:italic 400 17px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
+.more[open] summary::after{content:"−"}
+.more .body{padding:0 18px 18px;font-size:15px}
+.more h4{margin:14px 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.more p{margin:0 0 6px;max-width:42em}
+kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
+.pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
+.pop.show{opacity:1;transform:translate(-50%,0)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="pop" id="pop"></div>
+<div class="col">
+<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Night Sim</a></div><button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button></nav>
+
+<header class="tut-head">
+  <h1>Night Sim</h1>
+  <span class="streak">clean runs <b id="clean">0</b> · contacts <b id="hits">0</b></span>
+</header>
+
+<p class="poc"><b>Proof of concept.</b> Three stages of the ladder, open water only, to test whether conning a boat in real time teaches this better than a quiz does. The boat is a 12&nbsp;m sloop under sail; everything is magnetic, no variation applied.</p>
+
+<div class="stepper" id="stepper"></div>
+
+<details class="concept" id="concept">
+  <summary>The idea</summary>
+  <div class="body" id="conceptBody"></div>
+</details>
+
+<section class="q" id="qsec" aria-label="Simulator">
+  <div class="qhead"><span class="qtype" id="qtype"></span></div>
+  <p class="prompt" id="prompt"></p>
+  <div class="scene" id="scene" role="img" aria-label="View from the cockpit at night">
+    <canvas id="gl"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="clock" id="clock"></div>
+    <canvas class="tape" id="tape"></canvas>
+    <div class="task" id="task"></div>
+    <div class="nogl" id="nogl" hidden>This simulator needs WebGL, which your browser has switched off. The question-and-answer version of this material lives in <a href="../night-watch/">Night Watch</a>.</div>
+  </div>
+  <div class="helm" id="helmrow">
+    <button type="button" id="pt10" title="Ten degrees to port">‹‹ 10°</button>
+    <button type="button" id="pt1" title="One degree to port">‹ 1°</button>
+    <canvas class="card" id="card" aria-hidden="true" title="Steering compass. The card swings with north; the lubber line at the top is the boat's head. Magenta pin: ordered helm. Brass pin: where the wind is from."></canvas>
+    <span class="set">helm <b id="helmset">000°</b></span>
+    <button type="button" id="sb1" title="One degree to starboard">1° ›</button>
+    <button type="button" id="sb10" title="Ten degrees to starboard">10° ››</button>
+    <button type="button" class="wide" id="tack">Tack <kbd>T</kbd></button>
+  </div>
+  <div class="tools">
+    <button class="iconbtn" id="bear" type="button">Take a bearing <kbd>C</kbd></button>
+    <button class="iconbtn" id="binos" type="button" aria-pressed="false">Binoculars <kbd>B</kbd></button>
+    <button class="iconbtn" id="rate" type="button">Time ×1 <kbd>Space</kbd></button>
+    <span class="spacer"></span>
+    <button class="iconbtn" id="full" type="button">Fullscreen <kbd>F</kbd></button>
+    <button class="iconbtn" id="restart" type="button">New run <kbd>R</kbd></button>
+  </div>
+  <div class="blog" id="blog" hidden>
+    <h4>Hand bearing compass</h4>
+    <div class="rows" id="bearings"></div>
+  </div>
+  <div class="chips" id="chips" role="group" aria-label="Answers"></div>
+  <div class="actions">
+    <button class="btn" type="button" id="next" hidden>Next ›</button>
+  </div>
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<details class="more">
+  <summary>The rules, in one breath</summary>
+  <div class="body">
+    <h4>Sailing · no-go zone</h4>
+    <p>A yacht cannot sail closer than about 35–40° to the true wind. Inside that she stalls, in irons. To get upwind you beat: close-hauled on one tack, then through the eye of the wind onto the other. <strong>Tacking costs you speed and thirty seconds</strong>, which is why it is never a reflex answer to a collision risk.</p>
+    <h4>Risk of collision · Rule 7</h4>
+    <p>Take her bearing with the hand bearing compass, wait, take it again, at least three times. <strong>A bearing that does not change while the range closes means you will hit her.</strong> Drawing forward, toward your bow: she passes ahead. Drawing aft: she passes astern. Two bearings can lie; three rarely do.</p>
+    <h4>Sailing vessel against sailing vessel · Rule 12</h4>
+    <p>Different tacks: <strong>the port-tack boat keeps clear</strong>. Same tack: the windward boat keeps clear. If you are on port tack and cannot tell which tack she is on, assume she is on starboard and keep clear. You are on the tack opposite to the side your mainsail is on — wind on your port side is port tack.</p>
+    <h4>Action to avoid collision · Rule 8</h4>
+    <p>Any alteration must be <strong>positive, made in good time, and large enough to be obvious</strong> to the other vessel, by eye or on her radar. A succession of small alterations is the classic mistake: the bearing barely changes and she cannot read what you are doing. Pass at a safe distance and check that it is working until she is finally past and clear.</p>
+    <h4>On port tack, bear away</h4>
+    <p>The standard answer is to <strong>bear away and pass astern of her</strong>. You turn away from the wind, which speeds you up, opens the range fast, and shows her your stern — an unmistakable signal. Tacking away is legal but slow, and tacking across her bow is how people get hit.</p>
+    <h4>Keys</h4>
+    <p><kbd>←</kbd>/<kbd>→</kbd> helm one degree, with <kbd>Shift</kbd> ten. <kbd>T</kbd> tack, <kbd>C</kbd> take a bearing, <kbd>B</kbd> binoculars, <kbd>Space</kbd> change time rate, <kbd>,</kbd>/<kbd>.</kbd> look round the horizon, <kbd>0</kbd> look forward, <kbd>R</kbd> new run, <kbd>Enter</kbd> continue, <kbd>F</kbd> fullscreen. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
+  </div>
+</details>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="../../">More tutorials</a></footer>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const norm = d => ((d % 360) + 360) % 360;
+const sgnAng = d => ((d % 360) + 540) % 360 - 180;          // -180..180
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const rndf = (a,b) => a + Math.random()*(b-a);
+const pick = a => a[rnd(0,a.length-1)];
+const rad = d => d * Math.PI/180;
+const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+const KN = 0.5144;                                          // knots to m/s
+const NM = 1852;
+const fmtB = b => String(Math.round(norm(b))).padStart(3,'0') + '°';
+const fmtR = m => m >= 300 ? (m/NM).toFixed(2) + ' nm' : Math.round(m) + ' m';
+const mmss = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+const DEV = new URLSearchParams(location.search);
+
+// ---- persistence
+const KEY = 'lts:night-sim:v1';
+let store = { stages:{}, clean:0, hits:0, muted:false };
+try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
+
+// ---- stages
+const STAGES = [
+  { id:'helm', title:'Helm and tack', type:'Stage one · the boat', gate:'one clean run', need:1, of:1,
+    prompt:'Steer the course you are given, then tack onto the other one.',
+    intro:'Before you can keep out of anybody’s way you have to be able to put the boat where you want it. The wind is the constraint: a yacht will not sail closer than about 35° to it, and the closer you point the slower you go. Watch the wind angle in the corner as you steer. Take her up toward the wind and she slows; bear away and she accelerates. Tacking takes you through the dead zone, so you lose most of your speed and it takes half a minute to get it back. That cost is the reason a tack is rarely the right answer when something is coming at you.',
+    ex:'TWA 45° port tack   → close-hauled, wind over the port bow\nTWA under 35°       → in irons, she stalls\nTWA 90°             → a beam reach, fastest point of sail\nTack                → mirror your heading about the wind' },
+  { id:'bearing', title:'Steady bearing', type:'Stage two · risk of collision', gate:'3 of your last 4', need:3, of:4,
+    prompt:'A light is out there. Hold your course, take her bearing three or four times, and say what she is going to do.',
+    intro:'You cannot see range at night, and you cannot see her course. All you have is a bearing and how it changes. Hold your own course steady — a bearing taken from a turning boat tells you nothing — and use the hand bearing compass every minute or so. If the bearing stays the same while she gets brighter and bigger, you are on a collision course. If it draws forward, toward your bow, she is going to pass ahead of you. If it draws aft, she passes astern. Speed the clock up between bearings; it drops back to real time when she gets close.',
+    ex:'047° · 047° · 046° · 047°   → steady: you will hit her\n047° · 041° · 035°          → drawing forward: she passes ahead\n047° · 053° · 060°          → drawing aft: she passes astern' },
+  { id:'giveway', title:'Port tack gives way', type:'Stage three · the conn', gate:'3 clean of your last 4', need:3, of:4,
+    prompt:'You are close-hauled on port tack. Somewhere out there is another yacht. Find her, work out whether she matters, and keep clear of her.',
+    intro:'Sidelights and a sternlight with no masthead light above them: another sailing vessel. Rule 12 decides between you — on different tacks, the port-tack boat keeps clear, and you are on port. Seeing her red light means you are looking at her port side, so the wind is on her starboard side: she is on starboard tack, she stands on, and she will not move. The standard answer is to bear away and pass astern of her. Turning away from the wind speeds you up, opens the range quickly, and shows her your stern so she can read your intention. Make it early and make it big: Rule 8 wants an alteration large enough to be obvious, not a nibble.',
+    ex:'She shows red      → her port side → starboard tack → she stands on\nBear away (starboard) → speed up, pass astern → right\nA 15° nibble        → bearing barely changes → Rule 8(b) says no\nTack away           → slow, and you may cross her bow → no' },
+];
+for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
+
+// ---- audio
+let actx = null;
+const ctx = () => { actx ??= new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; };
+for (const ev of ['pointerdown','keydown']) addEventListener(ev, () => { if (actx && actx.state === 'suspended') actx.resume(); }, { passive:true });
+function tone(seq){
+  if (store.muted) return;
+  try { const a = ctx(); let t = a.currentTime;
+    for (const [f, d, type] of seq) { const o = a.createOscillator(), g = a.createGain();
+      o.type = type || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(a.destination); o.start(t); o.stop(t + d); t += d * 0.8; }
+  } catch(e) {}
+}
+const ding = () => tone([[1568,.3],[2093,.45]]);
+const thud = () => tone([[110,.25,'triangle'],[82,.35,'triangle']]);
+const fanfare = () => tone([[784,.18],[988,.18],[1175,.18],[1568,.5]]);
+const clack = () => tone([[320,.07,'square'],[240,.09,'square']]);
+// five short blasts: Rule 34(d), "I do not understand your intentions"
+function horn(n, pan = 0){
+  if (store.muted) return;
+  try { const a = ctx(); let t = a.currentTime + .05;
+    const out = a.createGain(); out.gain.value = .9;
+    const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1300;
+    if (a.createStereoPanner) { const p = a.createStereoPanner(); p.pan.value = clamp(pan,-1,1); out.connect(p).connect(a.destination); } else out.connect(a.destination);
+    lp.connect(out);
+    for (let i = 0; i < n; i++) { for (const det of [0,1.7]) { const o = a.createOscillator(), g = a.createGain();
+        o.type = 'sawtooth'; o.frequency.value = 430 + det;
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(.1, t + .07); g.gain.setValueAtTime(.1, t + .88); g.gain.linearRampToValueAtTime(0.0001, t + 1);
+        o.connect(g).connect(lp); o.start(t); o.stop(t + 1.05); } t += 1.3; }
+  } catch(e) {}
+}
+
+// ---- vessels. lights: [colour, arc kind, along (-.5 stern .. .5 bow of L), height m, across m (+stbd)]
+const SIDES = (B, h, z = .12) => [['g','sg', z, h, B*.48], ['r','sr', z, h, -B*.48]];
+const STERN = h => [['w','st', -.49, h, 0]];
+const M = {
+  yacht:   { L:12, B:3.8, F:1.05, house:[.02,4.4,.5], sail:true, mast:[.1,16], flare:.32 },
+  coaster: { L:38, B:8, F:2.6, house:[-.3,8,6] },
+  ship:    { L:120, B:18, F:6, house:[-.36,16,12] },
+};
+const V = {
+  sail:    { name:'Sailing vessel', model:'yacht', lights:() => [...SIDES(1.3, 1.75, .44), ...STERN(1.2)] },
+  power:   { name:'Power-driven vessel under 50 m', model:'coaster', lights:() => [['w','mh', .22, 13, 0], ...SIDES(8, 5, -.3), ...STERN(4)] },
+  power50: { name:'Power-driven vessel, 50 m or more', model:'ship', lights:() => [['w','mh', .28, 20, 0], ['w','mh', -.06, 29, 0], ...SIDES(18, 9, -.36), ...STERN(7)] },
+};
+const LCOL = { r:[1,.22,.14], g:[.25,1,.42], w:[1,.86,.6], win:[1,.78,.48] };
+const LSIZE = { mh:1.4, ar:1.1, sg:1.05, sr:1.05, st:.95, win:.55 };
+
+// ---- WebGL
+const cv = $('gl');
+let gl = null;
+try { gl = cv.getContext('webgl', { antialias:true, alpha:false, powerPreference:'low-power' }); } catch(e) {}
+if (!gl) { $('nogl').hidden = false; $('hud').hidden = true; $('clock').hidden = true; }
+
+function prog(vs, fs){
+  const sh = (t, s) => { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o), s); return o; };
+  const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) console.error(gl.getProgramInfoLog(p));
+  const u = {}, a = {};
+  for (let i = 0; i < gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS); i++) { const n = gl.getActiveUniform(p, i).name.replace('[0]',''); u[n] = gl.getUniformLocation(p, n); }
+  for (let i = 0; i < gl.getProgramParameter(p, gl.ACTIVE_ATTRIBUTES); i++) { const n = gl.getActiveAttrib(p, i).name; a[n] = gl.getAttribLocation(p, n); }
+  return { p, u, a };
+}
+const P = '#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n';
+const SKY = gl && prog(`attribute vec2 p;varying vec2 v;void main(){v=p;gl_Position=vec4(p,.9999,1.);}`,
+`${P}varying vec2 v;uniform vec3 uR,uU,uF,uZen,uHor,uMoon;uniform float uTan,uAsp,uT;
+float hash(vec3 p){p=fract(p*.3183+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+void main(){vec3 d=normalize(uF+uR*v.x*uTan*uAsp+uU*v.y*uTan);float e=max(d.y,0.);vec3 c=mix(uHor,uZen,pow(e,.55));c=mix(c,uHor*1.25,exp(-e*22.)*.7);
+vec3 g=floor(d*700.);float h=hash(g);float s=step(.9985,h)*smoothstep(0.,.12,e)*(.85+.15*sin(uT*1.2+h*50.));c+=vec3(s*.9);
+float m=max(dot(d,uMoon),0.);c+=vec3(1.,.96,.82)*(smoothstep(.99975,.9999,m)*.9+pow(m,400.)*.3+pow(m,12.)*.04);
+if(d.y<0.)c=uHor;gl_FragColor=vec4(c,1.);}`);
+const SEA = gl && prog(`attribute vec2 p;uniform mat4 uVP;uniform float uTv,uAmp;varying vec3 vW;varying float vD;
+void main(){float r=length(p);float a=uAmp*clamp(1.-r/700.,0.,1.);float y=a*(sin(p.x*.09+uTv*1.2)+sin(p.y*.06-uTv*.9)+.6*sin((p.x+p.y)*.14+uTv*1.8));vW=vec3(p.x,y,p.y);vD=r;gl_Position=uVP*vec4(vW,1.);}`,
+`${P}varying vec3 vW;varying float vD;uniform vec3 uSea,uHor,uFogC,uEye;uniform float uFogD,uT;uniform vec4 uL[16];uniform vec3 uLC[16];uniform int uLN;
+void main(){vec3 Vv=normalize(uEye-vW);float fr=pow(1.-max(Vv.y,0.),4.);vec3 c=mix(uSea,uHor,fr*.9);
+for(int i=0;i<16;i++){if(i>=uLN)break;vec2 lp=uL[i].xy;vec2 d=uEye.xz-lp;float len=length(d);d/=len;vec2 w=vW.xz-lp;float al=dot(w,d);float pe=abs(w.x*d.y-w.y*d.x);
+if(al>0.&&al<len){float sg=uL[i].w*(1.+al/len*1.3);float k=exp(-pe*pe/(sg*sg))*pow(1.-al/len,1.4)*uL[i].z;float sh=.3+.7*abs(sin(al*1.9+uT*2.6+sin(vW.x*.9+uT)*1.2))*(.6+.4*abs(sin(al*.37-uT*.8)));c+=uLC[i]*k*sh;}}
+float f=1.-exp(-vD*uFogD);c=mix(c,uFogC,f);gl_FragColor=vec4(c,1.);}`);
+const MESH = gl && prog(`attribute vec3 p,n;uniform mat4 uVP,uM;uniform vec3 uEye;varying vec3 vN,vL;varying float vD;
+void main(){vec4 w=uM*vec4(p,1.);vN=normalize((uM*vec4(n,0.)).xyz);vL=p;vD=length(w.xyz-uEye);gl_Position=uVP*w;}`,
+`${P}varying vec3 vN,vL;varying float vD;uniform vec3 uCol,uSunD,uAmb,uSunC,uFogC;uniform float uFogD;
+void main(){vec3 c=uCol;float d=max(dot(normalize(vN),uSunD),0.);c*=uAmb+uSunC*d;float f=1.-exp(-vD*uFogD);gl_FragColor=vec4(mix(c,uFogC,f),1.);}`);
+const PTS = gl && prog(`attribute vec3 p,c;attribute float s,k;uniform mat4 uVP;uniform float uHaloV,uPx;varying vec3 vC;varying float vA;
+void main(){vec4 cp=uVP*vec4(p,1.);gl_Position=cp;float d=max(cp.w,1.);float px=clamp(2400./d,5.,9.5)*uPx*k;gl_PointSize=px*(1.+uHaloV*7.);vC=c;vA=s;}`,
+`${P}varying vec3 vC;varying float vA;uniform float uHalo;
+void main(){float d=length(gl_PointCoord-.5)*2.;if(d>1.)discard;float a=uHalo>.5?exp(-d*d*5.)*.13*(1.-d):smoothstep(1.,.25,d)*1.15;gl_FragColor=vec4(vC*a*vA,1.);}`);
+
+const m4 = {
+  persp:(fov,a,n,f) => { const t = 1/Math.tan(fov/2), r = 1/(n-f); return [t/a,0,0,0, 0,t,0,0, 0,0,(n+f)*r,-1, 0,0,2*n*f*r,0]; },
+  mul:(a,b) => { const o = new Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k*4+j]*b[i*4+k]; o[i*4+j] = s; } return o; },
+  rotX:a => { const c = Math.cos(a), s = Math.sin(a); return [1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]; },
+  rotZ:a => { const c = Math.cos(a), s = Math.sin(a); return [c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1]; },
+  rotY:a => { const c = Math.cos(a), s = Math.sin(a); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]; },
+  tr:(x,y,z) => [1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1],
+  T3:m => [m[0],m[4],m[8],0, m[1],m[5],m[9],0, m[2],m[6],m[10],0, 0,0,0,1],
+};
+
+// geometry builder: interleaved position + normal
+function builder(){
+  const v = [], lv = [];
+  const line = (a, b) => { lv.push(a[0],a[1],a[2],0,0,0, b[0],b[1],b[2],0,0,0); };
+  const tri = (a,b,c) => { const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+    let nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx; const l=Math.hypot(nx,ny,nz)||1; nx/=l;ny/=l;nz/=l;
+    for (const p of [a,b,c]) v.push(p[0],p[1],p[2],nx,ny,nz); };
+  const quad = (a,b,c,d) => { tri(a,b,c); tri(a,c,d); };
+  const box = (x,y,z,sx,sy,sz) => { const x0=x-sx/2,x1=x+sx/2,y0=y,y1=y+sy,z0=z-sz/2,z1=z+sz/2;
+    quad([x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]); quad([x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0]);
+    quad([x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0]); quad([x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1]);
+    quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0]); };
+  const hull = (L, B, F, flare = .06) => { const N = 14, st = [];
+    for (let i = 0; i <= N; i++) { const s = i/N; const hb = B/2 * (s < .35 ? .88 + .12*(s/.35) : Math.sqrt(Math.max(0, 1 - Math.pow((s-.35)/.65, 2))));
+      const y = F * (1 + .35*Math.pow((s-.45)*2, 2)); st.push({ z:(s-.5)*L, hb:Math.max(hb, .02), y }); }
+    const k = 1 - flare;
+    for (let i = 0; i < N; i++) { const a = st[i], b = st[i+1];
+      quad([-a.hb*k,-.4,a.z],[-b.hb*k,-.4,b.z],[-b.hb,b.y,b.z],[-a.hb,a.y,a.z]); quad([b.hb*k,-.4,b.z],[a.hb*k,-.4,a.z],[a.hb,a.y,a.z],[b.hb,b.y,b.z]);
+      quad([-a.hb,a.y,a.z],[-b.hb,b.y,b.z],[b.hb,b.y,b.z],[a.hb,a.y,a.z]); }
+    const s0 = st[0]; quad([s0.hb*k,-.4,s0.z],[-s0.hb*k,-.4,s0.z],[-s0.hb,s0.y,s0.z],[s0.hb,s0.y,s0.z]); };
+  const yachtHull = (L, B, F) => { const N = 18, prof = [];
+    const sec = i => { const s = i/N;
+      const hb = B/2 * (s < .12 ? .78 + .22*(s/.12) : s < .55 ? 1 : Math.pow(Math.max(0, 1 - Math.pow((s-.55)/.45, 1.6)), .55));
+      const yd = F * (1.0 + .3*Math.pow((s-.4)*1.6, 2)), zc = (s-.5)*L, rake = y => (y/F) * (s > .78 ? (s-.78)/.22*1.1 : s < .1 ? -(.1-s)/.1*.5 : 0);
+      const pts = [[hb, yd], [hb*.97, yd*.55], [hb*.8, 0], [hb*.5, -.3], [0, -.5]];
+      return pts.map(([x, y]) => [x, y, zc + rake(Math.max(y, 0))]); };
+    for (let i = 0; i <= N; i++) prof.push(sec(i));
+    for (let i = 0; i < N; i++) { const a = prof[i], b = prof[i+1];
+      for (let j = 0; j < 4; j++) for (const sd of [1,-1]) { const p = q => [sd*q[0], q[1], q[2]];
+        if (sd > 0) quad(p(a[j]), p(b[j]), p(b[j+1]), p(a[j+1])); else quad(p(b[j]), p(a[j]), p(a[j+1]), p(b[j+1])); }
+      quad([-a[0][0],a[0][1],a[0][2]], [-b[0][0],b[0][1],b[0][2]], [b[0][0],b[0][1],b[0][2]], [a[0][0],a[0][1],a[0][2]]); }
+    const t = prof[0]; for (let j = 0; j < 4; j++) quad([t[j][0],t[j][1],t[j][2]], [-t[j][0],t[j][1],t[j][2]], [-t[j+1][0],t[j+1][1],t[j+1][2]], [t[j+1][0],t[j+1][1],t[j+1][2]]); };
+  const prism = (x, y, z, wb, wt, h, len) => { const z0 = z - len/2, z1 = z + len/2;
+    quad([x-wb/2,y,z1],[x+wb/2,y,z1],[x+wt/2,y+h,z1],[x-wt/2,y+h,z1]); quad([x+wb/2,y,z0],[x-wb/2,y,z0],[x-wt/2,y+h,z0],[x+wt/2,y+h,z0]);
+    quad([x-wb/2,y,z0],[x-wb/2,y,z1],[x-wt/2,y+h,z1],[x-wt/2,y+h,z0]); quad([x+wb/2,y,z1],[x+wb/2,y,z0],[x+wt/2,y+h,z0],[x+wt/2,y+h,z1]);
+    quad([x-wt/2,y+h,z1],[x+wt/2,y+h,z1],[x+wt/2,y+h,z0],[x-wt/2,y+h,z0]); };
+  const buf = () => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW); return { b, n:v.length/6 }; };
+  const lbuf = () => { if (!lv.length) return null; const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lv), gl.STATIC_DRAW); return { b, n:lv.length/6, lines:true }; };
+  return { tri, quad, box, hull, yachtHull, prism, buf, lbuf, line, v };
+}
+const meshCache = {};
+// variant 'own' drops the boom and sails: from the helm you look past them, and they would fill the screen
+function model(type, variant){
+  const key = type + ':' + (variant || '');
+  if (meshCache[key]) return meshCache[key];
+  const d = V[type], m = M[d.model], lights = d.lights();
+  const H = builder(), Mst = builder(), S = builder();
+  if (m.sail) H.yachtHull(m.L, m.B, m.F); else H.hull(m.L, m.B, m.F, m.flare);
+  if (m.house && m.sail) { const [z, len, h] = m.house; H.prism(0, m.F + .05, z*m.L, m.B*.7, m.B*.5, h, len); H.prism(0, m.F + .05, (z - .02)*m.L - len*.62, m.B*.5, m.B*.4, h*.6, len*.25); }
+  else if (m.house) { const [z, len, h] = m.house; H.box(0, m.F, z*m.L, m.B*.72, h, len); if (m.L > 50) { H.box(0, m.F + h, z*m.L, m.B*.5, 2.5, len*.5); H.box(0, m.F + h - .35, z*m.L, m.B*.98, .35, Math.min(len*.4, 4)); } }
+  const posts = {};
+  for (const l of lights.filter(l => l[1] === 'ar' || l[1] === 'mh')) { const k = l[2].toFixed(2); posts[k] = Math.max(posts[k] || 0, l[3]); }
+  for (const k in posts) { const along = +k, top = posts[k] - .25, w = m.L > 50 ? .9 : .35; Mst.box(0, 0, along*m.L, w, top, w); }
+  const lb = m.L > 50 ? .7 : m.L > 15 ? .45 : .25;
+  for (const [, kind, along, h, x] of lights) { if (kind === 'sg' || kind === 'sr') Mst.box(x, h - lb/2, along*m.L, lb, lb, lb*1.4); else Mst.box(x || 0, h - lb/2, along*m.L, lb, lb, lb); }
+  if (m.sail) {
+    const mz = m.mast[0]*m.L, mh = m.mast[1], F = m.F, L = m.L, hw = m.B/2;
+    Mst.box(0, F + .55, .44*L, 1.45, .06, .06); Mst.box(-.62, F, .44*L, .06, .6, .06); Mst.box(.62, F, .44*L, .06, .6, .06);
+    Mst.box(0, F + .6, -.47*L, hw*1.6, .06, .06); Mst.box(-hw*.8, F, -.47*L, .06, .65, .06); Mst.box(hw*.8, F, -.47*L, .06, .65, .06);
+    const rail = []; for (let i = 0; i <= 4; i++) { const t = i/4, z = (-.42 + .8*t)*L, x = hw*(t < .55 ? .92 : .92 - (t-.55)*1.4); rail.push([x, z]); Mst.box(x, F, z, .05, .62, .05); Mst.box(-x, F, z, .05, .62, .05); }
+    for (let i = 0; i < 4; i++) for (const sd of [1,-1]) Mst.line([sd*rail[i][0], F + .6, rail[i][1]], [sd*rail[i+1][0], F + .6, rail[i+1][1]]);
+    const [hz, hl, hh] = m.house; for (const sd of [1,-1]) Mst.box(sd*m.B*.31, F + .05 + hh*.5, hz*L, .06, hh*.36, hl*.72);
+    Mst.box(0, F, -.25*L, m.B*.6, .3, .06); Mst.box(-m.B*.3, F, -.2*L, .06, .3, .16*L); Mst.box(m.B*.3, F, -.2*L, .06, .3, .16*L);
+    Mst.box(0, 0, mz, .22, mh, .22); if (variant !== 'own') Mst.box(-.15, 2.35, mz - 2.2, .16, .16, 4.5);
+    Mst.box(0, mh*.55, mz, 3.2, .08, .08);
+    Mst.line([0, mh, mz], [0, F + .3, .5*L]); Mst.line([0, mh, mz], [0, F + .4, -.49*L]);
+    for (const sd of [1,-1]) { Mst.line([0, mh, mz], [sd*1.6, mh*.55, mz]); Mst.line([sd*1.6, mh*.55, mz], [sd*hw*.9, F, mz]); Mst.line([0, mh*.55, mz], [sd*hw*.9, F, mz + .6]); }
+    if (variant !== 'own') {
+      const sail = (luff0, luff1, clew, belly) => { const N = 6, K = 5, Pf = (u, w) => {
+          const lx = luff0[0] + (luff1[0]-luff0[0])*u, ly = luff0[1] + (luff1[1]-luff0[1])*u, lz = luff0[2] + (luff1[2]-luff0[2])*u;
+          const x = lx + (clew[0]-lx)*w*(1-u), y = ly + (clew[1]-ly)*w*(1-u), z = lz + (clew[2]-lz)*w*(1-u);
+          return [x + belly*Math.sin(Math.PI*w)*(1-u)*(.3+.7*(1-u)), y, z]; };
+        for (let i = 0; i < N; i++) for (let j = 0; j < K; j++) { const u0 = i/N, u1 = (i+1)/N, w0 = j/K, w1 = (j+1)/K; S.quad(Pf(u0,w0), Pf(u0,w1), Pf(u1,w1), Pf(u1,w0)); } };
+      sail([0,2.6,mz], [0,mh-.7,mz], [-.35,2.5,mz-4.3], -1.0); sail([0,mh-1.0,mz], [0,F+.5,.5*L], [-1.15,1.5,mz-2.6], -1.5); } }
+  const windows = [];
+  if (m.house && m.L > 45) { const [z, len, h] = m.house; for (let i = -1; i <= 1; i++) for (const side of [-1,1]) windows.push([side*m.B*.37, m.F + h*.65, z*m.L + i*len*.3]); }
+  return meshCache[key] = { hull:H.buf(), mast:Mst.buf(), rig:Mst.lbuf(), sail:S.v.length ? S.buf() : null, m, windows };
+}
+
+let seaBuf, skyBuf, ptBuf;
+if (gl) {
+  const s = [], R = 48, K = 80, r = i => 2 * Math.exp(i * 0.096);
+  for (let i = 0; i < K; i++) for (let j = 0; j <= R; j++) { const a = j/R*Math.PI*2, r0 = r(i), r1 = r(i+1);
+    s.push(r0*Math.cos(a), r0*Math.sin(a), r1*Math.cos(a), r1*Math.sin(a)); }
+  seaBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, seaBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(s), gl.STATIC_DRAW);
+  skyBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  ptBuf = gl.createBuffer();
+  gl.enable(gl.DEPTH_TEST);
+}
+const seaStrips = []; if (gl) for (let i = 0; i < 80; i++) seaStrips.push(i * 49 * 2);
+const ENV = { zen:[.008,.012,.028], hor:[.05,.075,.12], sea:[.012,.02,.032], fogD:.00045, amb:[1,1,1], sunC:[.9,.9,1.1], hull:[.016,.02,.028], amp:.16 };
+
+// ---- world. x east, z north-negative: heading 000 is -z, matching fwd() below
+const fwd = h => [Math.sin(rad(h)), 0, -Math.cos(rad(h))];
+const stbd = h => [Math.cos(rad(h)), 0, Math.sin(rad(h))];
+const W = {
+  t:0, rate:1, running:false, over:false, windFrom:0,
+  own:{ x:0, z:0, hdg:0, helm:0, spd:0 },
+  ships:[], look:0, binos:false, blown:false,
+};
+// one boat, one polar: knots against true wind angle. Flat water, about 14 kn of breeze.
+const POLAR = [[0,0],[20,.2],[30,1.4],[35,3.4],[40,4.6],[45,5.2],[50,5.6],[60,6.0],[75,6.4],[90,6.5],[110,6.4],[135,5.7],[150,5.1],[165,4.6],[180,4.3]];
+function polar(twa){
+  twa = Math.abs(twa);
+  for (let i = 1; i < POLAR.length; i++) { const [a0,s0] = POLAR[i-1], [a1,s1] = POLAR[i];
+    if (twa <= a1) return s0 + (s1-s0) * (twa-a0)/(a1-a0); }
+  return POLAR[POLAR.length-1][1];
+}
+const twaSigned = hdg => sgnAng(W.windFrom - hdg);          // negative: wind on the port side
+const twaOf = hdg => Math.abs(twaSigned(hdg));
+const tackOf = hdg => twaSigned(hdg) < 0 ? 'port' : 'starboard';
+const heelOf = v => { if (!v.sail) return 0; const t = twaSigned(v.hdg);
+  return (t < 0 ? -1 : 1) * rad(17) * Math.sin(rad(clamp(Math.abs(t), 0, 180))) * clamp(v.spd/6, 0, 1.1); };
+const HELM_RATE = 8, ACC_UP = .34, ACC_DN = .95;             // deg/s, kn/s
+
+function stepOwn(dt){
+  const o = W.own, d = sgnAng(o.helm - o.hdg);
+  if (d) o.hdg = norm(o.hdg + clamp(d, -HELM_RATE*dt, HELM_RATE*dt));
+  const want = polar(twaOf(o.hdg)), dv = want - o.spd;
+  o.spd += clamp(dv, -ACC_DN*dt, ACC_UP*dt);
+  const f = fwd(o.hdg); o.x += f[0]*o.spd*KN*dt; o.z += f[2]*o.spd*KN*dt;
+}
+function stepShip(v, dt){
+  if (v.turnTo != null) { const d = sgnAng(v.turnTo - v.hdg);
+    if (Math.abs(d) < .4) { v.hdg = v.turnTo; v.turnTo = null; } else v.hdg = norm(v.hdg + Math.sign(d)*Math.min(Math.abs(d), 5*dt)); }
+  if (v.sail) { const want = polar(twaOf(v.hdg)); v.spd += clamp(want - v.spd, -ACC_DN*dt, ACC_UP*dt); }
+  const f = fwd(v.hdg); v.x += f[0]*v.spd*KN*dt; v.z += f[2]*v.spd*KN*dt;
+}
+const rangeTo = v => Math.hypot(v.x - W.own.x, v.z - W.own.z);
+const bearingTo = v => norm(Math.atan2(v.x - W.own.x, -(v.z - W.own.z)) * 180/Math.PI);
+// relative bearing of the eye from her bow, 0..360 clockwise: tells us which of her arcs we are in
+const relBearingFrom = v => norm(bearingTo(v) + 180 - v.hdg);
+const velOf = v => { const f = fwd(v.hdg); return [f[0]*v.spd*KN, f[2]*v.spd*KN]; };
+// closest point of approach if nobody alters from here
+function cpaOf(v){
+  const o = W.own, r = [v.x-o.x, v.z-o.z], vo = velOf(o), vt = velOf(v), rv = [vt[0]-vo[0], vt[1]-vo[1]];
+  const vv = rv[0]*rv[0] + rv[1]*rv[1];
+  if (vv < 1e-6) return { t:0, d:Math.hypot(r[0],r[1]), ahead:false };
+  const t = -(r[0]*rv[0] + r[1]*rv[1]) / vv;
+  const tc = Math.max(t, 0), px = r[0] + rv[0]*tc, pz = r[1] + rv[1]*tc;
+  const relB = sgnAng(Math.atan2(px, -pz)*180/Math.PI - o.hdg);
+  return { t, d:Math.hypot(px, pz), ahead:Math.abs(relB) < 90 };
+}
+
+// ---- arcs and lights (Annex I: full inside the arc, dying within 3° outside, so arcs overlap rather than gap)
+function arcVis(kind, rb){
+  const inArc = (a0, a1) => { const x = norm(rb - a0), w = norm(a1 - a0); if (x <= w) return 1; return Math.max(0, 1 - Math.min(x - w, 360 - x)/3); };
+  if (kind === 'ar') return 1;
+  if (kind === 'mh') return inArc(247.5, 112.5);
+  if (kind === 'sg') return inArc(0, 112.5);
+  if (kind === 'sr') return inArc(247.5, 360);
+  return inArc(112.5, 247.5);
+}
+// e is the ship in eye coordinates: x to starboard, -z ahead, our own bow fixed on screen
+function egoLights(e){
+  const d = V[e.type], mo = model(e.type, e.variant), f = fwd(e.hdg), s = stbd(e.hdg), rb = norm(Math.atan2(-e.x, e.z)*180/Math.PI - e.hdg), out = [];
+  for (const [col, kind, along, h, across] of d.lights()) {
+    const vis = arcVis(kind, rb); if (!vis) continue;
+    const z = along*mo.m.L;
+    out.push({ x:e.x + f[0]*z + s[0]*across, y:h, z:e.z + f[2]*z + s[2]*across, col:LCOL[col], vis:vis*(kind === 'mh' ? 1.1 : kind === 'ar' ? .85 : .95), kind });
+  }
+  for (const [x, y, z] of mo.windows) out.push({ x:e.x + f[0]*z + s[0]*x, y, z:e.z + f[2]*z + s[2]*x, col:LCOL.win, vis:.2, kind:'win' });
+  return out;
+}
+const ARC_NAME = { mh:'masthead light', sg:'green sidelight', sr:'red sidelight', st:'sternlight' };
+function seenOf(v){
+  const rb = relBearingFrom(v), count = {};
+  for (const [col, kind] of V[v.type].lights()) { if (arcVis(kind, rb) < .5) continue;
+    const k = ARC_NAME[kind]; count[k] = (count[k] || 0) + 1; }
+  return Object.entries(count).map(([k,n]) => n > 1 ? `${n} ${k.replace('light','lights')}` : k).join(', ') || 'nothing at all';
+}
+
+function resize(){ const dpr = Math.min(devicePixelRatio || 1, 2), w = Math.round(cv.clientWidth*dpr), h = Math.round(cv.clientHeight*dpr);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; } }
+
+let lastT = 0;
+function frame(now){ requestAnimationFrame(frame); if (!gl) return; try { frameInner(now); } catch(e) { console.error(e); } }
+function frameInner(now){
+  const dt = Math.min(.1, (now - lastT)/1000 || 0); lastT = now;
+  W.wall = (W.wall || 0) + dt;
+  if (W.running && !W.over) {
+    // fixed sim step, so the physics and the scoring never depend on the frame rate
+    let acc = dt * W.rate; let guard = 0;
+    while (acc > 1e-4 && guard++ < 400) { const h = Math.min(acc, 1/30); acc -= h;
+      stepOwn(h); for (const v of W.ships) stepShip(v, h); W.t += h; tick(h); }
+  }
+  resize();
+  const o = W.own, c = Math.cos(rad(o.hdg)), s = Math.sin(rad(o.hdg));
+  const ego = v => ({ ...v, x:(v.x-o.x)*c + (v.z-o.z)*s, z:-(v.x-o.x)*s + (v.z-o.z)*c, hdg:norm(v.hdg - o.hdg) });
+  const ships = W.ships.map(ego);
+  const asp = cv.width/cv.height, fov = rad(W.binos ? 9 : 50);
+  const eye = [1.45, 2.9, 4.9];                              // at the helm, starboard side of the cockpit
+  const heel = heelOf({ ...o, sail:true });
+  // she heels to leeward, so the camera bolted to her deck rolls the same way and the horizon tilts the other
+  const pitch = rad(.5)*Math.sin(W.wall*.45), roll = -heel + rad(.6)*Math.sin(W.wall*.31 + 1);
+  const Rc = m4.mul(m4.rotY(-rad(W.look)), m4.mul(m4.rotX(pitch), m4.rotZ(roll)));
+  const view = m4.mul(m4.T3(Rc), m4.tr(-eye[0], -eye[1], -eye[2]));
+  const VP = m4.mul(m4.persp(fov, asp, .5, 8000), view);
+  gl.viewport(0, 0, cv.width, cv.height);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.disable(gl.DEPTH_TEST); gl.useProgram(SKY.p);
+  gl.bindBuffer(gl.ARRAY_BUFFER, skyBuf); gl.enableVertexAttribArray(SKY.a.p); gl.vertexAttribPointer(SKY.a.p, 2, gl.FLOAT, false, 0, 0);
+  gl.uniform3f(SKY.u.uR, Rc[0], Rc[1], Rc[2]); gl.uniform3f(SKY.u.uU, Rc[4], Rc[5], Rc[6]); gl.uniform3f(SKY.u.uF, -Rc[8], -Rc[9], -Rc[10]);
+  gl.uniform1f(SKY.u.uTan, Math.tan(fov/2)); gl.uniform1f(SKY.u.uAsp, asp); gl.uniform1f(SKY.u.uT, W.wall);
+  gl.uniform3fv(SKY.u.uZen, ENV.zen); gl.uniform3fv(SKY.u.uHor, ENV.hor);
+  const mb = rad(norm(-o.hdg - 40)); gl.uniform3f(SKY.u.uMoon, Math.sin(mb)*.82, .28, -Math.cos(mb)*.82);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.enable(gl.DEPTH_TEST);
+  const fogA = d => Math.exp(-d * ENV.fogD * .8);
+  const lights = [];
+  for (const e of ships) for (const l of egoLights(e)) { l.vis *= fogA(Math.hypot(l.x, l.z)); if (l.vis > .01) lights.push(l); }
+  lights.push({ x:-.62, y:1.5, z:-5.3, col:LCOL.r, vis:.3, own:true, kind:'sr' }, { x:.62, y:1.5, z:-5.3, col:LCOL.g, vis:.3, own:true, kind:'sg' });
+  const uL = [], uLC = []; let ln = 0;
+  uL.push(Math.sin(mb)*2600, -Math.cos(mb)*2600, .05, 4); uLC.push(.6,.58,.5); ln++;
+  for (const l of lights) { if (ln >= 16) break; if (l.own || l.kind === 'win') continue;
+    uL.push(l.x, l.z, l.vis*.55*(l.kind === 'mh' ? 1.3 : 1), .65); uLC.push(...l.col); ln++; }
+  gl.useProgram(SEA.p);
+  gl.bindBuffer(gl.ARRAY_BUFFER, seaBuf); gl.enableVertexAttribArray(SEA.a.p); gl.vertexAttribPointer(SEA.a.p, 2, gl.FLOAT, false, 0, 0);
+  gl.uniformMatrix4fv(SEA.u.uVP, false, VP); gl.uniform1f(SEA.u.uT, W.wall); gl.uniform1f(SEA.u.uTv, W.wall); gl.uniform1f(SEA.u.uAmp, ENV.amp);
+  gl.uniform3fv(SEA.u.uSea, ENV.sea); gl.uniform3fv(SEA.u.uHor, ENV.hor); gl.uniform3fv(SEA.u.uFogC, ENV.hor); gl.uniform3fv(SEA.u.uEye, eye);
+  gl.uniform1f(SEA.u.uFogD, ENV.fogD); gl.uniform1i(SEA.u.uLN, ln);
+  if (ln) { gl.uniform4fv(SEA.u.uL, uL); gl.uniform3fv(SEA.u.uLC, uLC); }
+  for (const off of seaStrips) gl.drawArrays(gl.TRIANGLE_STRIP, off, 98);
+  gl.useProgram(MESH.p);
+  gl.uniformMatrix4fv(MESH.u.uVP, false, VP); gl.uniform3fv(MESH.u.uEye, eye); gl.uniform3fv(MESH.u.uFogC, ENV.hor); gl.uniform1f(MESH.u.uFogD, ENV.fogD);
+  gl.uniform3f(MESH.u.uSunD, .4, .8, .45); gl.uniform3fv(MESH.u.uAmb, ENV.amb); gl.uniform3fv(MESH.u.uSunC, ENV.sunC);
+  const drawMesh = (mesh, col) => { if (!mesh) return; gl.uniform3fv(MESH.u.uCol, col);
+    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.b); gl.enableVertexAttribArray(MESH.a.p); gl.vertexAttribPointer(MESH.a.p, 3, gl.FLOAT, false, 24, 0);
+    gl.enableVertexAttribArray(MESH.a.n); gl.vertexAttribPointer(MESH.a.n, 3, gl.FLOAT, false, 24, 12);
+    gl.drawArrays(mesh.lines ? gl.LINES : gl.TRIANGLES, 0, mesh.n); };
+  for (const e of ships) {
+    const mo = model(e.type, e.variant), f = fwd(e.hdg), sv = stbd(e.hdg), hl = heelOf(e), ch = Math.cos(hl), sh = Math.sin(hl);
+    gl.uniformMatrix4fv(MESH.u.uM, false, [sv[0]*ch,sh,sv[2]*ch,0, -sv[0]*sh,ch,-sv[2]*sh,0, f[0],0,f[2],0, e.x,0,e.z,1]);
+    drawMesh(mo.hull, ENV.hull); drawMesh(mo.mast, ENV.hull); drawMesh(mo.rig, ENV.hull); drawMesh(mo.sail, [.03,.035,.045]);
+  }
+  const drawLights = ls => {
+    if (!ls.length) return;
+    const arr = new Float32Array(ls.length * 8);
+    ls.forEach((l, i) => { const tw = .92 + .08*Math.sin(W.wall*7 + i*3.1); arr.set([l.x, l.y, l.z, ...l.col, l.vis*tw, LSIZE[l.kind] || 1], i*8); });
+    gl.useProgram(PTS.p); gl.depthMask(false); gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.bindBuffer(gl.ARRAY_BUFFER, ptBuf); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(PTS.a.p); gl.vertexAttribPointer(PTS.a.p, 3, gl.FLOAT, false, 32, 0);
+    gl.enableVertexAttribArray(PTS.a.c); gl.vertexAttribPointer(PTS.a.c, 3, gl.FLOAT, false, 32, 12);
+    gl.enableVertexAttribArray(PTS.a.s); gl.vertexAttribPointer(PTS.a.s, 1, gl.FLOAT, false, 32, 24);
+    gl.enableVertexAttribArray(PTS.a.k); gl.vertexAttribPointer(PTS.a.k, 1, gl.FLOAT, false, 32, 28);
+    gl.uniformMatrix4fv(PTS.u.uVP, false, VP); gl.uniform1f(PTS.u.uPx, (devicePixelRatio || 1) * (W.binos ? 1.6 : 1));
+    gl.uniform1f(PTS.u.uHalo, 1); gl.uniform1f(PTS.u.uHaloV, 1); gl.drawArrays(gl.POINTS, 0, ls.length);
+    gl.uniform1f(PTS.u.uHalo, 0); gl.uniform1f(PTS.u.uHaloV, 0); gl.drawArrays(gl.POINTS, 0, ls.length);
+    gl.disable(gl.BLEND); gl.depthMask(true); gl.enable(gl.DEPTH_TEST);
+  };
+  drawLights(lights.filter(l => !l.own));
+  const own = model('sail', 'own');
+  gl.useProgram(MESH.p); gl.uniformMatrix4fv(MESH.u.uM, false, [1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1]);
+  drawMesh(own.hull, [.045,.05,.06]); drawMesh(own.mast, [.035,.04,.05]); drawMesh(own.rig, [.03,.035,.045]);
+  drawLights(lights.filter(l => l.own));
+  drawHud();
+}
+if (gl) requestAnimationFrame(frame);
+
+function drawHud(){
+  const o = W.own, t = twaSigned(o.hdg), irons = Math.abs(t) < 32;
+  put('hud', `HDG <b>${fmtB(o.hdg)}</b>   SPD <b>${o.spd.toFixed(1)}</b> KN\nWIND <b>${fmtB(W.windFrom)}</b>   TWA <b>${Math.round(Math.abs(t))}°</b> ${tackOf(o.hdg)} tack`
+    + (W.look ? `\nLOOKING <b>${fmtB(o.hdg + W.look)}</b>${W.binos ? '  (BINOS)' : ''}` : '')
+    + (irons ? `\n<span class="warn">▲ IN IRONS — BEAR AWAY</span>` : ''));
+  put('clock', `${mmss(W.t)}<br><span class="rate">×${W.rate}</span>`);
+  put('helmset', fmtB(o.helm));
+  drawTape(); drawCard();
+}
+
+// ---- compasses. two views of the same number: the tape reads off the horizon you are
+// looking at, the card is the bulkhead compass swinging under a fixed lubber line.
+const tapeC = $('tape'), cardC = $('card');
+const fitC = (el, h) => { const dpr = Math.min(devicePixelRatio || 1, 2),
+    w = Math.round(el.clientWidth*dpr), hh = Math.round((h ?? el.clientHeight)*dpr);
+  if (el.width !== w || el.height !== hh) { el.width = w; el.height = hh; }
+  const c = el.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0);
+  c.clearRect(0,0,el.width,el.height); return c; };
+const letterOf = b => ({0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW'})[norm(b)];
+
+function drawTape(){
+  if (!tapeC.clientWidth) return;
+  const w = tapeC.clientWidth, h = 38, c = fitC(tapeC, h), Y = 24;
+  const o = W.own, view = norm(o.hdg + W.look);
+  // the tape spans exactly the horizontal field of view, so a light on screen sits under its own bearing
+  const fov = rad(W.binos ? 9 : 50), asp = cv.width/cv.height;
+  const span = 2 * Math.atan(Math.tan(fov/2) * asp) * 180/Math.PI;
+  const ppd = w/span, at = b => w/2 + sgnAng(b - view)*ppd;
+  const g = c.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, 'rgba(4,9,16,.66)'); g.addColorStop(1, 'rgba(4,9,16,0)');
+  c.fillStyle = g; c.fillRect(0, 0, w, h);
+  c.textAlign = 'center'; c.lineWidth = 1;
+  const F = n => c.font = `600 ${n}px "IBM Plex Mono",ui-monospace,monospace`;
+  const step = span > 30 ? 5 : 2;
+  for (let i = -Math.ceil(span/step/2) - 1; i <= Math.ceil(span/step/2) + 1; i++) {
+    const b = norm(Math.round(view/step)*step + i*step), x = at(b);
+    if (x < -24 || x > w + 24) continue;
+    const maj = b % 10 === 0, card = b % 45 === 0;
+    c.strokeStyle = maj ? 'rgba(215,226,236,.95)' : 'rgba(160,178,192,.6)';
+    c.lineWidth = maj ? 1.4 : 1;
+    c.beginPath(); c.moveTo(x, Y); c.lineTo(x, Y - (maj ? 9 : 5)); c.stroke();
+    if (maj) { c.fillStyle = card ? '#f0669b' : '#c7d2dc'; F(card ? 11 : 10);
+      c.fillText(card ? letterOf(b) : String(b/10).padStart(2,'0'), x, Y - 13); }
+  }
+  // a marker off the end of the tape still matters: pin it to the edge with the side it lies on
+  const mark = (b, col, txt) => {
+    const d = sgnAng(b - view), off = Math.abs(d) > span/2 - .5;
+    const x = clamp(at(b), 9, w - 9);
+    c.fillStyle = col;
+    c.beginPath(); c.moveTo(x, Y + 9); c.lineTo(x - 5, Y + 1); c.lineTo(x + 5, Y + 1); c.closePath(); c.fill();
+    F(9); c.fillText(off ? (d < 0 ? '‹' + txt : txt + '›') : txt, x, h - 1); };
+  mark(W.windFrom, '#d6b25a', 'WIND');
+  if (Math.abs(sgnAng(o.helm - o.hdg)) > 0.6) mark(o.helm, '#f0669b', 'ORDER');
+  if (W.look) mark(o.hdg, '#ffffff', 'HEAD');
+  c.strokeStyle = '#fff'; c.lineWidth = 1.5;           // lubber line: dead ahead of the eye
+  c.beginPath(); c.moveTo(w/2, Y - 15); c.lineTo(w/2, Y + 10); c.stroke();
+}
+
+let TOK = null;
+const tok = () => { if (TOK) return TOK; const cs = getComputedStyle(document.documentElement);
+  const g = n => cs.getPropertyValue(n).trim();
+  return TOK = { ink:g('--ink'), ink2:g('--ink-2'), ink3:g('--ink-3'), rule:g('--rule'),
+                 paper:g('--paper'), magenta:g('--magenta'), brass:g('--brass') }; };
+try { matchMedia('(prefers-color-scheme:dark)').addEventListener('change', () => { TOK = null; }); } catch {}
+
+function drawCard(){
+  if (!cardC.clientWidth) return;
+  const s = cardC.clientWidth, c = fitC(cardC, s), R = s/2 - 1, T = tok(), o = W.own;
+  c.translate(s/2, s/2);
+  c.fillStyle = T.paper; c.beginPath(); c.arc(0, 0, R, 0, 7); c.fill();
+  c.strokeStyle = T.rule; c.lineWidth = 1; c.stroke();
+  c.save();
+  c.rotate(rad(-o.hdg));                        // the card stays with north; the boat turns under it
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  for (let b = 0; b < 360; b += 10) {
+    const a = rad(b), sn = Math.sin(a), cs2 = -Math.cos(a), maj = b % 30 === 0;
+    c.strokeStyle = maj ? T.ink2 : T.ink3; c.lineWidth = maj ? 1.2 : .8;
+    c.beginPath(); c.moveTo(sn*(R-2), cs2*(R-2)); c.lineTo(sn*(R-(maj?8:5)), cs2*(R-(maj?8:5))); c.stroke();
+  }
+  for (let b = 0; b < 360; b += 90) {
+    const a = rad(b), r = R - 14;
+    c.fillStyle = b === 0 ? T.magenta : T.ink2;
+    c.font = `600 ${Math.round(s*.17)}px "IBM Plex Mono",ui-monospace,monospace`;
+    c.save(); c.translate(Math.sin(a)*r, -Math.cos(a)*r); c.rotate(rad(o.hdg));
+    c.fillText(letterOf(b), 0, 0); c.restore();
+  }
+  c.restore();
+  const pin = (rel, col, len) => { const a = rad(rel);
+    c.strokeStyle = col; c.lineWidth = 2; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(Math.sin(a)*(R-1), -Math.cos(a)*(R-1));
+    c.lineTo(Math.sin(a)*(R-len), -Math.cos(a)*(R-len)); c.stroke(); };
+  pin(sgnAng(W.windFrom - o.hdg), T.brass, 9);
+  if (Math.abs(sgnAng(o.helm - o.hdg)) > 0.6) pin(sgnAng(o.helm - o.hdg), T.magenta, 12);
+  c.strokeStyle = T.ink; c.lineWidth = 2;           // lubber line: the boat's head, fixed
+  c.beginPath(); c.moveTo(0, -R); c.lineTo(0, -R + 10); c.stroke();
+  c.beginPath(); c.arc(0, 0, 2, 0, 7); c.fillStyle = T.ink; c.fill();
+}
+
+// ---- run state. one object per attempt; tick() runs inside the fixed sim step
+let stage = 0, S = null;
+function tick(dt){ if (W.over) return; if (S && S.tick) S.tick(dt); }
+// Slow the clock once as she closes, then leave it alone: re-applying it every substep
+// would fight the learner the moment they asked for more speed again.
+function easeRate(r, at, to){ this.eased ??= {}; if (r > at || this.eased[at]) return; this.eased[at] = true; if (W.rate > to) setRate(to); }
+// the sim ticks up to 240 times a second at ×8, so every readout is written only when it actually changes
+const memo = {};
+const put = (id, html) => { if (memo[id] === html) return; memo[id] = html; $(id).innerHTML = html; };
+const setTask = html => put('task', html);
+const pop = t => { const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2200); };
+const panOf = v => clamp(Math.sin(rad(sgnAng(bearingTo(v) - W.own.hdg))), -1, 1);
+
+function resetWorld(){
+  W.t = 0; W.rate = 1; W.running = true; W.over = false; W.ships = []; W.look = 0; W.binos = false; W.blown = false;
+  $('binos').classList.remove('on'); $('binos').setAttribute('aria-pressed','false');
+  $('fb').className = 'feedback'; $('fb').innerHTML = ''; $('next').hidden = true; $('chips').innerHTML = '';
+  $('bearings').innerHTML = ''; $('blog').hidden = true;
+  for (const b of ['pt10','pt1','sb1','sb10','tack','bear']) $(b).disabled = false;
+  renderRate();
+}
+const settle = (o, hdg) => { o.hdg = o.helm = norm(hdg); o.spd = polar(twaOf(o.hdg)); };
+
+// ---- stage one: helm and tack
+function buildHelm(){
+  resetWorld();
+  W.windFrom = rnd(0, 359);
+  const A = norm(W.windFrom + rndf(42, 48)), B = norm(W.windFrom - rndf(42, 48));
+  settle(W.own, norm(A + pick([-28, 30, -35, 34])));         // start off the mark, so the first job is to settle her
+  W.own.spd = polar(twaOf(W.own.hdg));
+  S = { kind:'helm', A, B, phase:0, hold:0,
+    tick(dt){
+      const want = this.phase === 0 ? this.A : this.B, off = Math.abs(sgnAng(W.own.hdg - want));
+      if (off < 5 && W.own.spd > 3.2) this.hold += dt; else this.hold = 0;
+      if (this.hold >= 15) {
+        if (this.phase === 0) { this.phase = 1; this.hold = 0; ding(); pop('Settled. Now tack.'); }
+        else { finish(true); }
+      }
+      this.paint(off);
+    },
+    paint(off){
+      const want = this.phase === 0 ? this.A : this.B;
+      const bar = '▮'.repeat(Math.round(this.hold/1.5)) + '▯'.repeat(10 - Math.round(this.hold/1.5));
+      setTask(`${this.phase === 0 ? 'Settle on' : 'Tack, then settle on'} <b>${fmtB(want)}</b> — ${off < 5 ? 'holding' : `${Math.round(off)}° off`} · <span class="mono">${bar}</span>`);
+    } };
+  setTask(`Settle on <b>${fmtB(S.A)}</b>`);
+}
+
+// ---- stage two: steady bearing
+function buildBearing(){
+  resetWorld();
+  W.windFrom = rnd(0, 359);
+  settle(W.own, norm(W.windFrom + rndf(95, 115)));           // a broad reach: easy to hold while you concentrate on her
+  const o = W.own, vo = velOf(o), type = pick(['power','power','power50']);
+  let v = null;
+  for (let i = 0; i < 200 && !v; i++) {
+    const T = rndf(400, 680), b = rndf(-80, 80), R = rndf(2100, 3300);
+    const px = o.x + Math.sin(rad(o.hdg + b))*R, pz = o.z - Math.cos(rad(o.hdg + b))*R;
+    const cx = o.x + vo[0]*T, cz = o.z + vo[1]*T;            // where we will be at the meeting
+    const vx = (cx - px)/T, vz = (cz - pz)/T, sp = Math.hypot(vx, vz)/KN;
+    if (sp < 5 || sp > 13) continue;
+    const rv = [vx - vo[0], vz - vo[1]], rl = Math.hypot(rv[0], rv[1]) || 1;
+    const miss = pick([rndf(-140,140), rndf(-140,140), rndf(750,1500), rndf(-1500,-750)]);
+    const ex = -rv[1]/rl*miss, ez = rv[0]/rl*miss;           // slide her sideways to open the CPA, course and speed unchanged
+    const c = { type, x:px + ex, z:pz + ez, hdg:norm(Math.atan2(vx, -vz)*180/Math.PI), spd:sp, sail:false };
+    if (Math.abs(sgnAng(Math.atan2(c.x - o.x, -(c.z - o.z))*180/Math.PI - o.hdg)) > 95) continue;  // keep her findable from the cockpit
+    v = c;
+  }
+  v ??= { type:'power', x:o.x + 2600, z:o.z - 600, hdg:300, spd:8, sail:false };
+  W.ships = [v];
+  S = { kind:'bearing', v, bearings:[], answered:false,
+    tick(){
+      const r = rangeTo(v);
+      this.ease(r, 1300, 4); this.ease(r, 500, 2);
+      if (r < 280 && !this.answered) { W.over = true; W.running = false; finish(false, 'tooslow'); }
+      setTask(this.bearings.length >= 3 ? 'Now call it.'
+        : W.t < 20 ? 'Sweep the horizon — drag the view, or <kbd>,</kbd> and <kbd>.</kbd>'
+        : `Take at least <b>three</b> bearings — <kbd>C</kbd>`);
+    } };
+  S.ease = easeRate; setRate(8);
+  $('blog').hidden = false; renderBearings();
+  setTask('Sweep the horizon for her light — drag, or <kbd>,</kbd> and <kbd>.</kbd> — then take a bearing with <kbd>C</kbd>');
+}
+
+// ---- stage three: port tack gives way
+function buildGiveway(){
+  resetWorld();
+  W.windFrom = rnd(0, 359);
+  const twaU = rndf(42, 48), twaH = rndf(42, 48);
+  settle(W.own, norm(W.windFrom + twaU));                    // wind on our port side: port tack, we keep clear
+  const o = W.own, hHdg = norm(W.windFrom - twaH), hSpd = polar(twaH);
+  const vo = velOf(o), vt = velOf({ hdg:hHdg, spd:hSpd });
+  const T = rndf(470, 600), dx = (vo[0]-vt[0])*T, dz = (vo[1]-vt[1])*T, dl = Math.hypot(dx, dz) || 1;
+  const miss = rndf(-90, 90), ex = -dz/dl*miss, ez = dx/dl*miss;
+  const v = { type:'sail', x:o.x + dx + ex, z:o.z + dz + ez, hdg:hHdg, spd:hSpd, sail:true };
+  W.ships = [v];
+  S = { kind:'giveway', v, bearings:[],
+    enc:{ hdg0:o.hdg, tcpa0:cpaOf(v).t, minR:Infinity, minT:0, astern:false, alterT:null, alterR:null, dir:0, maxAlter:0, contact:false, across0:null, crossed:false },
+    tick(dt){
+      const e = this.enc, r = rangeTo(v), alter = sgnAng(W.own.hdg - e.hdg0);
+      e.maxAlter = Math.max(e.maxAlter, Math.abs(alter));
+      if (e.alterT == null && Math.abs(alter) >= 10) { e.alterT = W.t; e.alterR = r; e.dir = Math.sign(alter); }
+      if (r < e.minR) { e.minR = r; e.minT = W.t; const rb = relBearingFrom(v); e.astern = rb > 112.5 && rb < 247.5; }
+      // crossing her track while still ahead of her bow is the error, not the direction you turned:
+      // a big bear-away is still forward of her beam at the closest point, and it is the better conn
+      { const fh = fwd(v.hdg), sh = stbd(v.hdg), dx = W.own.x - v.x, dz = W.own.z - v.z;
+        const along = dx*fh[0] + dz*fh[2], across = dx*sh[0] + dz*sh[2];
+        e.across0 ??= Math.sign(across) || 1;
+        if (along > 0 && Math.sign(across) !== e.across0 && r < 1200) e.crossed = true; }
+      this.ease(r, 1400, 4); this.ease(r, 500, 2);
+      // Rule 34(d): she cannot read your intentions, so she asks
+      if (r < 800 && e.maxAlter < 10 && !W.blown) { W.blown = true; horn(5, panOf(v)); pop('Five short blasts.'); }
+      if (r < 28 && !e.contact) { e.contact = true; W.over = true; W.running = false; thud(); finish(false); return; }
+      if (!e.contact && e.minR < Infinity && r > Math.max(e.minR*1.4, 500) && W.t > 90) { W.over = true; W.running = false; finish(null); return; }
+      if (W.t > 1500) { W.over = true; W.running = false; finish(null); return; }
+      setTask(e.maxAlter < 10 ? (W.t < 25 ? 'Sweep the horizon — drag the view, or <kbd>,</kbd> and <kbd>.</kbd>' : 'Find her, read her lights, take bearings, then act.') : `Altered <b>${Math.round(Math.abs(alter))}° to ${alter > 0 ? 'starboard' : 'port'}</b> — watch it work.`);
+    } };
+  S.ease = easeRate; setRate(8);
+  setTask('Sweep the horizon — drag the view, or <kbd>,</kbd> and <kbd>.</kbd> Something is out there.');
+}
+
+const BUILD = { helm:buildHelm, bearing:buildBearing, giveway:buildGiveway };
+
+// ---- hand bearing compass
+function takeBearing(){
+  if (!S || !S.bearings || W.over) return;
+  const v = S.v; if (!v) return;
+  const last = S.bearings[S.bearings.length-1];
+  if (last && W.t - last.t < 20) { pop('Give her a moment to move.'); return; }
+  S.bearings.push({ t:W.t, b:bearingTo(v) });
+  clack(); $('blog').hidden = false; renderBearings();
+  if (S.kind === 'bearing' && S.bearings.length >= 3 && !$('chips').children.length) askBearing();
+}
+function renderBearings(){
+  const rows = $('bearings');
+  if (!S || !S.bearings || !S.bearings.length) { rows.innerHTML = '<span class="none">no bearing taken yet — press C</span>'; return; }
+  rows.innerHTML = S.bearings.map((r, i) => {
+    const prev = S.bearings[i-1], d = prev ? sgnAng(r.b - prev.b) : 0;
+    const trend = !prev ? '' : Math.abs(d) < 1 ? ' <i>steady</i>' : d > 0 ? ` drawing aft ${Math.abs(Math.round(d))}°` : ` drawing forward ${Math.abs(Math.round(d))}°`;
+    return `${mmss(r.t)}  <b>${fmtB(r.b)}</b>${trend}`;
+  }).join('<br>');
+}
+
+// ---- stage two answer
+const CALLS = [
+  { k:'steady', label:'Steady bearing — she will hit us' },
+  { k:'ahead',  label:'Drawing forward — she passes ahead' },
+  { k:'astern', label:'Drawing aft — she passes astern' },
+];
+function truthNow(v){ const c = cpaOf(v); return c.t <= 0 ? 'astern' : c.d < 400 ? 'steady' : c.ahead ? 'ahead' : 'astern'; }
+function askBearing(){
+  const box = $('chips'); box.innerHTML = '';
+  CALLS.forEach((c, i) => { const b = document.createElement('button');
+    b.className = 'chip'; b.type = 'button'; b.innerHTML = `<kbd>${i+1}</kbd> ${c.label}`;
+    b.onclick = () => answerBearing(c.k); box.appendChild(b); });
+}
+function answerBearing(k){
+  if (!S || S.answered) return;
+  S.answered = true; S.pickK = k; S.truth = truthNow(S.v); S.cpa = cpaOf(S.v);
+  W.over = true; W.running = false;
+  [...$('chips').children].forEach((b, i) => { b.disabled = true;
+    if (CALLS[i].k === S.truth) b.classList.add('picked'); else if (CALLS[i].k === k) b.classList.add('wrong'); });
+  finish(k === S.truth);
+}
+
+// ---- verdicts
+const BARS = { cpa:350, ttg:200, bold:30 };
+function givewayAxes(e){
+  const A = [];
+  A.push({ ok:e.minR >= BARS.cpa && !e.contact, name:'CPA', got:e.contact ? 'contact' : fmtR(e.minR), bar:fmtR(BARS.cpa),
+    why:e.contact ? 'You hit her. Everything below is why.' : e.minR >= BARS.cpa ? 'You passed at a distance you would be happy with on a dark night.' : 'Too close. Rule 8(d) wants a safe passing distance, not a near miss you got away with.' });
+  const ttg = e.alterT == null ? 0 : Math.max(0, e.tcpa0 - e.alterT);  // measured against when she would have hit you, not when she actually passed
+  A.push({ ok:e.alterT != null && ttg >= BARS.ttg, name:'Timeliness', got:e.alterT == null ? 'never acted' : `${mmss(ttg)} to spare`, bar:`${mmss(BARS.ttg)}`,
+    why:e.alterT == null ? 'You never altered at all. On port tack against a starboard-tack boat, doing nothing is the one thing you may not do.'
+      : ttg >= BARS.ttg ? `Early: you moved at ${fmtR(e.alterR)}, with the whole encounter still ahead of you and room to change your mind.`
+      : `Late. You moved at ${fmtR(e.alterR)}, ${mmss(ttg)} before she was closest. Rule 8(a) wants action in ample time — leaving it removes your options and hers.` });
+  A.push({ ok:e.maxAlter >= BARS.bold, name:'Boldness', got:`${Math.round(e.maxAlter)}°`, bar:`${BARS.bold}°`,
+    why:e.maxAlter >= BARS.bold ? 'Big enough that she could see what you were doing.' : 'Too small to read. Rule 8(b): an alteration must be large enough to be readily apparent to another vessel watching visually or by radar.' });
+  // Rule 12 does not say how you keep clear, only that you do. The real error is crossing ahead of her.
+  const crossed = e.crossed;
+  A.push({ ok:!crossed, name:'Direction', got:e.dir === 0 ? 'never turned' : crossed ? 'crossed ahead' : e.astern ? 'passed astern' : 'opened the range', bar:'never ahead',
+    why:crossed && e.dir === 0 ? 'You held your course across the bow of a boat that was entitled to hold hers.'
+      : crossed ? 'You crossed ahead of her. Rule 15 puts the instinct best: avoid crossing ahead of the other vessel. Go under her stern, where a mistake costs you nothing.'
+      : e.dir > 0 && e.astern ? 'You bore away and went under her stern: the standard answer, and the one she can read from her cockpit.'
+      : e.dir < 0 ? 'You kept clear by turning up into the wind, and it worked. It is legal — Rule 12 does not prescribe the method — but a tack costs you most of your speed, and a tack that goes wrong leaves you stopped in her path. Bearing away astern is the standard answer because it speeds you up and she can see what you are doing.'
+      : 'You kept clear and never crossed ahead of her.' });
+  return A;
+}
+function renderAxes(A){
+  return '<ul class="axes">' + A.map(a => `<li class="${a.ok ? 'y' : 'n'}"><span class="m">${a.ok ? '✓' : '✗'}</span><span>${a.name}</span><span>${a.got} <span style="color:var(--ink-3)">(bar ${a.bar})</span></span><span class="why">${a.why}</span></li>`).join('') + '</ul>';
+}
+
+// ---- end of a run
+function finish(ok, why){
+  W.over = true; W.running = false;
+  for (const b of ['pt10','pt1','sb1','sb10','tack','bear']) $(b).disabled = true;
+  const st = STAGES[stage], fb = $('fb');
+  let clean = ok;
+  if (st.id === 'helm') {
+    fb.className = 'feedback show ok';
+    fb.innerHTML = `<h3>She is yours.</h3><p>You settled her on both tacks and took her through the wind. Notice what the tack cost: speed down to about a knot and a half, half a minute to build it back. That is why "just tack away" is rarely the answer when something is bearing down on you.</p>`
+      + `<p class="rule">Close-hauled is about 45° off the true wind. Inside 35° she stalls — in irons — and you have no steerage until she pays off and picks up speed again.</p>`;
+    fanfare();
+  } else if (st.id === 'bearing') {
+    const c = S.cpa || cpaOf(S.v), tru = S.truth || truthNow(S.v);
+    const name = { steady:'a steady bearing and a collision course', ahead:'a bearing drawing forward — she passes ahead', astern:'a bearing drawing aft — she passes astern' }[tru];
+    fb.className = 'feedback show ' + (why === 'tooslow' ? 'no' : ok ? 'ok' : 'no');
+    fb.innerHTML = `<h3>${why === 'tooslow' ? 'She is on top of you and you are still deciding.' : ok ? 'Right.' : 'Not what she was doing.'}</h3>`
+      + `<p>It was <strong>${name}</strong>. Closest approach ${fmtR(c.d)}, ${c.t > 0 ? `${mmss(c.t)} from the moment you called it` : 'already past'}. She was ${V[S.v.type].name.toLowerCase()} — you could see ${seenOf(S.v)}.</p>`
+      + `<p class="rule">Rule 7(d): a steady compass bearing with a closing range means risk of collision exists. Take three or more; two can lie, especially on a vessel that is turning.</p>`;
+    (ok && why !== 'tooslow') ? ding() : thud();
+    clean = ok && why !== 'tooslow';
+  } else {
+    const e = S.enc, A = givewayAxes(e);
+    clean = A.every(a => a.ok);
+    fb.className = 'feedback show ' + (clean ? 'ok' : 'no');
+    const head = e.contact ? `Contact at ${mmss(e.minT)}.` : clean ? 'Clean.' : 'You got past her, but not well.';
+    fb.innerHTML = `<h3>${head}</h3>`
+      + `<p>She was a sailing vessel on <strong>starboard tack</strong>, and you were on port. Rule 12(a)(i): you keep clear. You saw ${seenOf(S.v)}${W.blown ? ', and she gave you five short blasts because she could not tell what you were doing' : ''}.</p>`
+      + renderAxes(A)
+      + (S.bearings.length > 1 ? `<p class="rule">Your bearings: ${S.bearings.map(r => fmtB(r.b)).join(' · ')}.</p>` : `<p class="rule">You took ${S.bearings.length ? 'one bearing' : 'no bearings'}. The compass is how you know the alteration is working.</p>`)
+      + `<p class="rule">Rule 8: positive, in ample time, and big enough to be obvious. Rule 15’s instinct applies here too — go under her stern, never across her bow.</p>`;
+    clean ? fanfare() : thud();
+    if (e.contact) { store.hits++; }
+  }
+  if (clean) store.clean++;
+  recordStage(st, clean);
+  $('next').hidden = false; $('next').focus();
+  setTask('');
+}
+
+function recordStage(st, ok){
+  const s = store.stages[st.id];
+  s.recent.push(ok ? 1 : 0); if (s.recent.length > st.of) s.recent.shift();
+  const hit = s.recent.filter(Boolean).length;
+  if (hit >= st.need && !s.done) { s.done = true; pop('Stage cleared.'); }
+  save(); renderProgress(); renderStepper(); renderHead();
+}
+
+// ---- chrome
+const unlocked = i => i === 0 || DEV.has('dev') || store.stages[STAGES[i-1].id].done;
+function renderStepper(){
+  const st = STAGES[stage];
+  $('stepper').innerHTML = `<div class="dots">${STAGES.map((s, i) =>
+    `<button class="dot ${store.stages[s.id].done ? 'done' : ''} ${i === stage ? 'now' : ''} ${unlocked(i) ? '' : 'locked'}" data-i="${i}" title="${s.title}" aria-label="${s.title}"></button>`).join('')}</div>`
+    + `<span class="name"><small>Stage ${stage+1}</small>${st.title}</span>`
+    + `<span class="nav"><button id="prev" ${stage === 0 ? 'disabled' : ''}>‹ Prev</button><button id="fwd" ${stage === STAGES.length-1 || !unlocked(stage+1) ? 'disabled' : ''}>Next ›</button></span>`;
+  for (const d of $('stepper').querySelectorAll('.dot')) d.onclick = () => { const i = +d.dataset.i; if (unlocked(i)) setStage(i); else pop('Clear the stage before it first.'); };
+  $('prev').onclick = () => setStage(stage-1); $('fwd').onclick = () => setStage(stage+1);
+}
+function renderConcept(){
+  const st = STAGES[stage];
+  $('conceptBody').innerHTML = `<p>${st.intro}</p><p class="ex">${st.ex}</p><p class="gate">Unlocks the next stage: ${st.gate}.</p>`;
+  $('qtype').textContent = st.type;
+  $('prompt').textContent = st.prompt;
+}
+function renderProgress(){
+  const st = STAGES[stage], s = store.stages[st.id];
+  const dots = Array.from({ length:st.of }, (_, i) => { const r = s.recent[i]; return `<i class="${r === 1 ? 'y' : r === 0 ? 'n' : ''}"></i>`; }).join('');
+  $('progress').innerHTML = `<span class="last">${dots}</span><span>${s.done ? '<b class="cleared">cleared</b> · ' : ''}${st.gate}</span>`;
+}
+function renderHead(){ $('clean').textContent = store.clean; $('hits').textContent = store.hits; }
+function renderRate(){ $('rate').innerHTML = `Time ×${W.rate} <kbd>Space</kbd>`; $('rate').classList.toggle('on', W.rate > 1); }
+function setRate(r){ W.rate = r; renderRate(); }
+
+function setStage(i){
+  stage = clamp(i, 0, STAGES.length-1);
+  renderStepper(); renderConcept();
+  BUILD[STAGES[stage].id]();
+  if (DEV.has('look')) W.look = norm(+DEV.get('look') || 0);
+  renderProgress(); renderHead(); renderBearings();
+  $('blog').hidden = STAGES[stage].id === 'helm';
+  $('concept').open = !store.stages[STAGES[stage].id].recent.length;
+}
+function again(){ BUILD[STAGES[stage].id](); renderBearings(); $('blog').hidden = STAGES[stage].id === 'helm'; }
+function onNext(){
+  const st = STAGES[stage];
+  if (store.stages[st.id].done && stage < STAGES.length-1) setStage(stage+1); else again();
+}
+
+// ---- controls
+const helm = d => { if (W.over) return; W.own.helm = norm(W.own.helm + d); drawHud(); };
+function doTack(){
+  if (W.over) return;
+  const o = W.own, before = tackOf(o.hdg);
+  o.helm = norm(2*W.windFrom - o.hdg);
+  pop(twaOf(o.hdg) > 100 ? 'Gybing.' : 'Tacking — lee ho.');
+  clack(); S && S.onTack && S.onTack(before);
+}
+$('pt10').onclick = () => helm(-10); $('pt1').onclick = () => helm(-1);
+$('sb1').onclick = () => helm(1); $('sb10').onclick = () => helm(10);
+$('tack').onclick = doTack;
+$('bear').onclick = takeBearing;
+$('binos').onclick = () => { W.binos = !W.binos; $('binos').classList.toggle('on', W.binos); $('binos').setAttribute('aria-pressed', String(W.binos)); };
+$('rate').onclick = () => setRate(W.rate >= 16 ? 1 : W.rate*2);
+$('restart').onclick = again;
+$('next').onclick = onNext;
+$('full').onclick = () => { const s = $('qsec'); document.fullscreenElement ? document.exitFullscreen() : s.requestFullscreen && s.requestFullscreen(); };
+$('mute').onclick = () => { store.muted = !store.muted; save(); $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted)); $('mute').classList.toggle('on', store.muted); };
+$('mute').textContent = store.muted ? 'Sound off' : 'Sound on';
+
+// look around: drag the view, or the comma and full stop keys
+let drag = null;
+cv.addEventListener('pointerdown', e => { drag = { x:e.clientX, look:W.look }; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove', e => { if (!drag) return; W.look = norm(drag.look - (e.clientX - drag.x) * .25); });
+cv.addEventListener('pointerup', () => { drag = null; });
+cv.addEventListener('pointercancel', () => { drag = null; });
+
+addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea')) return;
+  const k = e.key.toLowerCase();
+  if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault();
+    const i = stage + (e.key === 'ArrowRight' ? 1 : -1);
+    if (i >= 0 && i < STAGES.length && unlocked(i)) setStage(i); return; }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); helm(e.shiftKey ? -10 : -1); return; }
+  if (e.key === 'ArrowRight') { e.preventDefault(); helm(e.shiftKey ? 10 : 1); return; }
+  if (k === 't') { e.preventDefault(); doTack(); return; }
+  if (k === 'c') { takeBearing(); return; }
+  if (k === 'b') { $('binos').click(); return; }
+  if (k === 'r') { again(); return; }
+  if (k === 'f') { $('full').click(); return; }
+  if (k === ',') { W.look = norm(W.look - 10); return; }
+  if (k === '.') { W.look = norm(W.look + 10); return; }
+  if (k === '0') { W.look = 0; return; }
+  if (e.key === ' ') { e.preventDefault(); $('rate').click(); return; }
+  if (e.key === 'Enter') { if (!$('next').hidden) { e.preventDefault(); onNext(); } return; }
+  if (/^[123]$/.test(e.key)) { const c = $('chips').children[+e.key - 1]; if (c && !c.disabled) c.click(); }
+});
+
+setStage(clamp(+(DEV.get('stage') || 0) || 0, 0, STAGES.length-1));
+})();
+</script>
+</body>
+</html>
