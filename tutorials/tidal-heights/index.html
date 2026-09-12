@@ -242,7 +242,7 @@ const STAGES = [
   { id:'h9', kind:'watch', title:'Tide watch', cfg:{}, fig:null,
     intro:'Twelve questions, everything mixed, ninety seconds each — about what the exam allows once you take the plotting out. Run out of time and it counts against you.' },
 ];
-const GATE = { drill:'8 of your last 10', passage:'berth safely with at most one correction', watch:'12 questions, 90 seconds each, at most 1 wrong' };
+const GATE = { drill:'6 of your last 8', passage:'berth safely with at most one correction', watch:'12 questions, 90 seconds each, at most 1 wrong' };
 const WATCH_N = 12, WATCH_SECS = 90;
 for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
 
@@ -440,10 +440,86 @@ const idx = () => STAGES.indexOf(stage);
 // ---- question builders. Each returns the q object; render() does the rest.
 const B = {};
 
+// options are written answer-first for legibility, then shuffled, so the
+// position of the right answer is never worth remembering
+function shuf(q){
+  if (q.ansType !== 'choice') return q;
+  const order = q.choices.map((_,i) => i);
+  for (let i = order.length - 1; i > 0; i--) { const j = rnd(0,i); [order[i], order[j]] = [order[j], order[i]]; }
+  q.choices = order.map(i => q.choices[i]);
+  q.target = order.indexOf(q.target);
+  return q;
+}
+// a pool per stage, so the concept question is a different one each time
+const CONCEPTS = {
+  depth: [
+    { prompt:'A charted depth printed on the chart is measured from which level?',
+      choices:['Chart datum, about the lowest astronomical tide','Mean sea level','Mean high water springs','The height of tide on the day of survey'],
+      steps:[['Chart datum','the level the tide almost never falls below','so the charted depth is the least you expect']] },
+    { prompt:'Chart datum on a British Admiralty chart is set at approximately which level?',
+      choices:['Lowest astronomical tide','Mean low water springs','Mean sea level','The lowest tide ever recorded'],
+      steps:[['LAT','the lowest the tide goes astronomically','a level the weather can still beat, rarely']] },
+    { prompt:'The height of tide printed in the almanac is measured up from which level?',
+      choices:['Chart datum','The seabed','Mean sea level','Mean high water springs'],
+      steps:[['height of tide','measured up from chart datum','which is why it adds to the charted depth']] },
+    { prompt:'What does a charted depth of 3.2 m actually promise you?',
+      choices:['The least water you can normally expect there','The water there at mean sea level','The average depth over the year','The water there at high water'],
+      steps:[['3.2 m','at chart datum','and the tide is nearly always on top of it']] },
+    { prompt:'The sounder almost always reads more than the charted depth. Why?',
+      choices:['The height of tide is almost always above chart datum','The sounder reads from the waterline','Charted depths are surveyed at high water','The chart is out of date'],
+      steps:[['sounder','charted depth + height of tide','and the tide is above datum nearly all the time']] },
+  ],
+  clear: [
+    { prompt:'The charted height of a lighthouse or a bridge is measured from which level?',
+      choices:['Mean high water springs','Chart datum','Mean sea level','The height of tide at the time'],
+      steps:[['MHWS','the practical worst case overhead','so clearances shrink as the tide rises']] },
+    { prompt:'A drying height, printed underlined on the chart, is measured from which level?',
+      choices:['Chart datum, upwards','MHWS, downwards','Mean sea level','The height of tide on the day'],
+      steps:[['drying height','stands up from chart datum','so it is subtracted from the height of tide']] },
+    { prompt:'When is your clearance under a fixed bridge greatest?',
+      choices:['At low water','At high water','At half tide','It does not change with the tide'],
+      steps:[['clearance','charted height + MHWS − height of tide','least tide, most room']] },
+    { prompt:'The green tint along the shore on a chart marks what?',
+      choices:['Ground that dries at chart datum','Shallow water that never dries','A prohibited area','A charted anchorage'],
+      steps:[['green','the drying foreshore','heights there are drying heights, not depths']] },
+    { prompt:'Why is a drying height subtracted from the height of tide rather than added?',
+      choices:['The bank stands up from chart datum, so it eats into the tide','Drying heights are just negative depths','It is measured down from MHWS','Because the bank is always above water'],
+      steps:[['the bank','sticks up from datum','the tide has to cover it before it floats you']] },
+  ],
+  range: [
+    { prompt:'It is a full moon today. When will the biggest tides of this fortnight be?',
+      choices:['In about two days','Today','In about seven days','In about four days'],
+      steps:[['full or new moon','sun and moon pulling in line','springs follow about two days later']] },
+    { prompt:'Neap tides happen at which phase of the moon?',
+      choices:['The first and last quarter','New and full moon','Only at full moon','They do not follow the moon at all'],
+      steps:[['quarters','sun and moon pulling at right angles','smallest range, weakest streams']] },
+    { prompt:'Compared with neaps, a spring tide gives you what?',
+      choices:['A bigger range: higher HW and lower LW','A bigger range, but the same LW','A smaller range and weaker streams','The same range, only faster streams'],
+      steps:[['springs','range at its largest','more water at HW, less at LW, faster streams']] },
+    { prompt:'In tidal work, what does duration mean?',
+      choices:['The time from HW to LW','How long the tide stands at HW','The time between two successive high waters','How long the stream runs one way']} ,
+    { prompt:'It is neaps, and you are lying to a drying berth. What does that mean for you?',
+      choices:['Less water at HW, but more at LW','More water at HW and at LW','Less water at both HW and LW','No difference — only the times change'],
+      steps:[['neaps','range at its smallest','the tide stays nearer mean level all day']] },
+  ],
+};
+const CONCEPT_RULE = {
+  depth:'Charted depths and drying heights are measured from chart datum. Charted heights of bridges and lights are measured from MHWS.',
+  clear:'Wet things measure up from chart datum, dry and overhead things measure down from MHWS. Two datums, one picture.',
+  range:'Springs at new and full moon, neaps at the quarters, with about a two-day lag. The cycle repeats roughly fortnightly.',
+};
+function conceptQ(mode){
+  const c = pick(CONCEPTS[mode]);
+  return { qtype:'The idea behind it', prompt:c.prompt, givens:[], ansType:'choice',
+    choices:c.choices.slice(), target:0, steps:c.steps || [[c.choices[0], 'is the one that follows from the datum picture', '']],
+    rule:CONCEPT_RULE[mode] };
+}
+
 B.depth = () => {
+  if (Math.random() < 0.16) return conceptQ('depth');
   const day = genDay(), hot = r1(heightAt(day, rnd(-4,4)*30));
   const cd = r1(rnd(4,95)/10), draught = r1(rnd(9,22)/10);
-  const v = rnd(0,3);
+  const v = rnd(0,2);
   if (v === 0) return {
     qtype:'Depth now', prompt:`The chart shows ${m1(cd)} m here. The height of tide is ${m1(hot)} m. How much water is under you?`,
     givens:[['Charted depth', m1(cd)+' m'],['Height of tide', m1(hot)+' m']], ansType:'m', target:r1(cd+hot), tol:0.05, unit:'m',
@@ -460,16 +536,13 @@ B.depth = () => {
     ansType:'m', target:r1(cd2+hot-draught), tol:0.05, unit:'m',
     steps:[[m1(cd2)+' m','+ '+m1(hot)+' m tide', m1(r1(cd2+hot))+' m of water'],['− '+m1(draught)+' m','draught', m1(r1(cd2+hot-draught))+' m under the keel']],
     rule:'Find the water first, then take the draught off. Then take your own margin off that — half a metre is the usual minimum, more in a swell.' }; }
-  return {
-    qtype:'What is it measured from?', prompt:'A charted depth printed on the chart is measured from which level?',
-    givens:[], ansType:'choice', choices:['Chart datum, about the lowest astronomical tide','Mean sea level','Mean high water springs','The height of tide on the day of survey'],
-    target:0, steps:[['Chart datum','the level the tide almost never falls below','so the charted depth is the least you expect']],
-    rule:'Charted depths and drying heights are measured from chart datum. Charted heights of bridges and lights are measured from MHWS.' };
+  return conceptQ('depth');
 };
 
 B.clear = () => {
+  if (Math.random() < 0.16) return conceptQ('clear');
   const day = genDay(), hot = r1(heightAt(day, rnd(-4,4)*30));
-  const v = rnd(0,3);
+  const v = rnd(0,2);
   if (v === 0) {
     const dry = r1(rnd(3, Math.max(4, Math.round(hot*10)-3))/10);
     return { qtype:'Over a drying patch', prompt:`A sandbank is charted as drying ${m1(dry)} m. The height of tide is ${m1(hot)} m. How much water is over it?`,
@@ -494,15 +567,13 @@ B.clear = () => {
       steps:[[m1(ch)+' m','+ '+m1(PORT.MHWS)+' m − '+m1(hot)+' m', m1(clear)+' m clear'],[m1(clear)+' m','− '+m1(air)+' m air draught', m1(r1(clear-air))+' m over the masthead']],
       rule:'A mast is not a keel: you cannot feel it touch until it has gone. Aerials and instruments sit above the measured air draught, so keep a real margin.' };
   }
-  return { qtype:'What is it measured from?', prompt:'The charted height of a lighthouse or a bridge is measured from which level?',
-    givens:[], ansType:'choice', choices:['Mean high water springs','Chart datum','Mean sea level','The height of tide at the time'],
-    target:0, steps:[['MHWS','the practical worst case overhead','so clearances shrink as the tide rises']],
-    rule:'Wet things measure up from chart datum, dry and overhead things measure down from MHWS. Two datums, one picture.' };
+  return conceptQ('clear');
 };
 
 B.range = () => {
+  if (Math.random() < 0.16) return conceptQ('range');
   const day = genDay(pick(['springs','neaps','mid']));
-  const v = rnd(0,3);
+  const v = rnd(0,2);
   if (v === 0) return {
     qtype:'Range', prompt:`HW is ${m1(day.HW)} m and LW is ${m1(day.LW)} m. What is the range of the tide?`,
     givens:[['HW', m1(day.HW)+' m'],['LW', m1(day.LW)+' m']], ansType:'m', target:day.R, tol:0.05, unit:'m',
@@ -523,10 +594,7 @@ B.range = () => {
       steps:[[hhmm(tLW),'− '+hhmm(day.tHW), dur(day.D)+' duration']],
       rule:'Duration is HW to LW. It is near six and a quarter hours in most of the UK, but it is not exactly six — which is why the rule of twelfths is only a check.' };
   }
-  return { qtype:'The moon', prompt:'It is a full moon today. When will the biggest tides of this fortnight be?',
-    givens:[], ansType:'choice', choices:['In about two days','Today','In about seven days','In about four days'], target:0,
-    steps:[['full or new moon','sun and moon pulling in line','springs follow about two days later']],
-    rule:'Springs at new and full moon, neaps at the quarters, with about a two-day lag. The cycle repeats roughly fortnightly.' };
+  return conceptQ('range');
 };
 
 B.twelfths = () => {
@@ -694,6 +762,7 @@ function genPassageQ(){
              [hhmm(day.tHW + day.D*2), '− '+dur(Math.abs(dt)), hhmm(t2)]],
       rule:'Turn the depth you need into a height of tide, then read the curve backwards. That number is the tidal gate, and it is the one you write in the plan.', hitKind:'bar' };
   }
+  shuf(q);
   render();
 }
 function passageOver(made){
@@ -718,7 +787,7 @@ function passageOver(made){
 const MODES = ['depth','clear','range','twelfths','curveH','curveT','secondary'];
 function genQ(){
   const mode = stage.kind === 'watch' ? pick(MODES) : stage.cfg.mode;
-  q = B[mode]();
+  q = shuf(B[mode]());
   q.mode = mode;
   render();
 }
@@ -858,8 +927,8 @@ function endWatch(){
 // ---- stages
 function unlocked(i){ return i === 0 || store.stages[STAGES[i-1].id].done; }
 function recordStage(ok){
-  const s = ss(); s.recent.push(ok); if (s.recent.length > 10) s.recent.shift();
-  if (!s.done && s.recent.length >= 10 && s.recent.filter(Boolean).length >= 8) completeStage();
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 8) s.recent.shift();
+  if (!s.done && s.recent.length >= 8 && s.recent.filter(Boolean).length >= 6) completeStage();
 }
 function completeStage(){
   const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
@@ -876,7 +945,7 @@ function renderStatus(){
     `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
     `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)||i===STAGES.length-1?'disabled':''} aria-label="Next stage">›</button></span>`;
   const last = stage.kind === 'drill' ? s.recent : [];
-  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:10}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:8}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
     `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
 }
 function renderConcept(){

@@ -247,7 +247,7 @@ const STAGES = [
   { id:'watch', kind:'watch', title:'Night watch',
     intro:'Twelve contacts, one minute each, no scaffolding. Lights, shapes, sounds and second looks, mixed. Say what she is out loud before you touch a key.' },
 ];
-const GATE = { drill:'8 of your last 10', watch:'12 contacts, at most 1 wrong' };
+const GATE = { drill:'6 of your last 8', watch:'12 contacts, at most 1 wrong' };
 for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
 
 let stage, q = null, answered = false, watch = null, qTimer = null;
@@ -1150,8 +1150,8 @@ const idx = () => STAGES.indexOf(stage);
 const DEV = new URLSearchParams(location.search);
 function unlocked(i){ return i === 0 || DEV.has('dev') || store.stages[STAGES[i-1].id].done; }
 function recordStage(ok){
-  const s = ss(); s.recent.push(ok); if (s.recent.length > 10) s.recent.shift();
-  if (!s.done && s.recent.length >= 10 && s.recent.filter(Boolean).length >= 8) completeStage();
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 8) s.recent.shift();
+  if (!s.done && s.recent.length >= 8 && s.recent.filter(Boolean).length >= 6) completeStage();
 }
 function completeStage(){
   const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
@@ -1171,7 +1171,7 @@ function renderStatus(){
     `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
     `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)||i===STAGES.length-1?'disabled':''} aria-label="Next stage">›</button></span>`;
   const last = stage.kind === 'drill' ? s.recent : [];
-  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:10}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : `<span>best watch: ${store.watchBest || 0} of 12</span>`) +
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:8}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : `<span>best watch: ${store.watchBest || 0} of 12</span>`) +
     `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
 }
 function renderConcept(){

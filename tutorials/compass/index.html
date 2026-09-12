@@ -216,7 +216,7 @@ const STAGES = [
   { id:'s9', kind:'watch', title:'Quick convert', cfg:{},
     intro:'Twelve conversions, everything mixed, no chart. One minute each, which is about what the exam allows. Run out of time and the question counts as wrong.' },
 ];
-const GATE = { drill:'8 of your last 10', passage:'arrive with at most one correction', watch:'12 questions, a minute each, at most 1 wrong' };
+const GATE = { drill:'6 of your last 8', passage:'arrive with at most one correction', watch:'12 questions, a minute each, at most 1 wrong' };
 const WATCH_N = 12, WATCH_SECS = 60;
 for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
 
@@ -552,8 +552,8 @@ const ss = () => store.stages[stage.id];
 const idx = () => STAGES.indexOf(stage);
 function unlocked(i){ return i === 0 || store.stages[STAGES[i-1].id].done; }
 function recordStage(ok){
-  const s = ss(); s.recent.push(ok); if (s.recent.length > 10) s.recent.shift();
-  if (!s.done && s.recent.length >= 10 && s.recent.filter(Boolean).length >= 8) completeStage();
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 8) s.recent.shift();
+  if (!s.done && s.recent.length >= 8 && s.recent.filter(Boolean).length >= 6) completeStage();
 }
 function completeStage(){
   const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
@@ -570,7 +570,7 @@ function renderStatus(){
     `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
     `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)||i===STAGES.length-1?'disabled':''} aria-label="Next stage">›</button></span>`;
   const last = stage.kind === 'drill' ? s.recent : [];
-  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:10}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:8}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
     `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
 }
 function renderConcept(){

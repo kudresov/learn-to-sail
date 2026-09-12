@@ -14,7 +14,7 @@ derived from `tutorials/compass/` (the reference implementation):
   (variation only), add one complication per stage (wrap through 360, deviation,
   opposite signs, the card, the decoy). Never introduce two new ideas at once.
 - **Gate progression on evidence, not clicks.** A stage unlocks the next only
-  when the learner hits a pass bar (e.g. 8 of last 10, or 12 timed questions at a minute
+  when the learner hits a pass bar (e.g. 6 of last 8, or 12 timed questions at a minute
   each with at most 1 wrong). Store recent results; never gate on a single
   answer.
 - **Consequences, not red crosses.** Wrong answers should show what would
