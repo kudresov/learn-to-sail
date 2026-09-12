@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Day Skipper Cheat Sheet</title>
+<meta name="description" content="Compact printable reference for the RYA Day Skipper shorebased exam: chartwork, tides, buoyage, lights, COLREGs, weather, safety, passage planning.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../shared/site.css">
+<style>
+/* ---------- screen ---------- */
+body{font-size:15px}
+.wrap{max-width:1040px}
+h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:clamp(30px,5vw,46px);margin:0 0 10px;line-height:1.08}
+.lede{color:var(--ink-2);max-width:44em;margin:0 0 8px}
+.cover{padding-block:44px 28px;border-bottom:1.5px solid var(--ink)}
+.kicker{font:700 11px/1.4 "Source Sans 3",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
+
+section{margin-top:34px}
+section > h2{font:400 26px "Libre Caslon Text",Georgia,serif;margin:0 0 4px;padding-bottom:6px;border-bottom:1.5px solid var(--ink);display:flex;align-items:baseline;gap:10px}
+section > h2 .num{font:600 12px "IBM Plex Mono",monospace;color:var(--magenta);letter-spacing:.06em}
+section > h2 .why{margin-left:auto;font:400 12px "Source Sans 3",sans-serif;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em}
+h3{font:700 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);margin:16px 0 6px}
+h4{font:600 14px "Source Sans 3",sans-serif;margin:10px 0 4px;color:var(--ink)}
+p{margin:0 0 8px}
+ul,ol{margin:0 0 8px;padding-left:18px}
+li{margin:0 0 3px}
+.mono,code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+code{font-size:.92em;background:var(--paper);border:1px solid var(--rule);padding:0 4px;border-radius:3px}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px 26px;align-items:start}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 20px;align-items:start}
+@media screen and (max-width:760px){.cols,.cols3{grid-template-columns:1fr}}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:0 0 10px}
+th,td{text-align:left;vertical-align:top;padding:4px 8px 4px 0;border-bottom:1px solid var(--rule)}
+th{font:700 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--ink-2)}
+td.mono,th.mono{font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+.tbl-tight td,.tbl-tight th{padding:3px 8px 3px 0;font-size:13px}
+
+.box{background:var(--paper);border:1px solid var(--rule);padding:10px 12px;margin:0 0 10px}
+.box.rule{border-left:3px solid var(--magenta)}
+.box.warn{border-left:3px solid var(--bad);background:var(--bad-soft)}
+.box.good{border-left:3px solid var(--good);background:var(--good-soft)}
+.box.mn{border-left:3px solid var(--brass);background:var(--brass-soft)}
+.box h4{margin-top:0}
+.box p:last-child,.box ul:last-child,.box ol:last-child{margin-bottom:0}
+
+.recipe{counter-reset:step;list-style:none;padding-left:0;margin:0 0 10px}
+.recipe li{counter-increment:step;position:relative;padding-left:26px;margin-bottom:5px}
+.recipe li::before{content:counter(step);position:absolute;left:0;top:1px;width:18px;height:18px;border-radius:50%;background:var(--magenta);color:#fff;font:600 11px/18px "IBM Plex Mono",monospace;text-align:center}
+
+.pill{display:inline-block;font:600 11px "Source Sans 3",sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:1px 7px;border:1px solid var(--rule);border-radius:10px;color:var(--ink-2)}
+.pill.red{color:var(--bad);border-color:var(--bad)}
+.pill.green{color:var(--good);border-color:var(--good)}
+.swatch{display:inline-block;width:10px;height:10px;border:1px solid var(--ink-3);vertical-align:baseline;margin-right:4px}
+
+.toc{columns:2;column-gap:28px;font-size:14px;margin:18px 0 0}
+@media screen and (max-width:600px){.toc{columns:1}}
+.toc a{display:block;text-decoration:none;color:var(--ink-2);padding:3px 0;border-bottom:1px dotted var(--rule);break-inside:avoid}
+.toc a:hover{color:var(--magenta)}
+.toc a b{font:600 12px "IBM Plex Mono",monospace;color:var(--magenta);margin-right:8px}
+
+figure{margin:0 0 10px}
+figcaption{font-size:12px;color:var(--ink-3);margin-top:3px}
+svg{max-width:100%;height:auto}
+
+.print-hint{font-size:13px;color:var(--ink-3)}
+.btn{display:inline-block;font:600 13px "Source Sans 3",sans-serif;padding:7px 14px;border:1px solid var(--ink-2);color:var(--ink);text-decoration:none;background:var(--paper)}
+.btn:hover{border-color:var(--magenta);color:var(--magenta)}
+
+/* ---------- print ---------- */
+@page{size:A4;margin:12mm 11mm 13mm}
+@media print{
+  :root{--ground:#fff;--paper:#FAFBF9;--ink:#111;--ink-2:#333;--ink-3:#666;--rule:#bbb}
+  html,body{background:#fff !important;background-image:none !important;font-size:9.6pt;padding:0;margin:0}
+  .wrap{max-width:none}
+  .site-nav,.site-foot,.no-print{display:none !important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  section{break-before:page;margin-top:0}
+  section:first-of-type{break-before:auto}
+  section > h2{font-size:16pt;margin-bottom:6px}
+  h3{font-size:8.4pt;margin:9px 0 3px}
+  h4{font-size:9.6pt;margin:7px 0 2px}
+  table{font-size:8.4pt}
+  .tbl-tight td,.tbl-tight th{font-size:8pt}
+  .cols{gap:10px 18px}
+  .box{padding:6px 8px;margin-bottom:7px}
+  .cover{padding-block:0 14px}
+  h1{font-size:30pt}
+  .toc{font-size:9pt}
+  table,figure,.box,.recipe{break-inside:avoid}
+  tr,li{break-inside:avoid}
+  h3,h4{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="site-nav"><div class="crumb"><a href="../">Learn to Sail</a><span>/</span><span>Cheat sheet</span></div><a href="../">All tutorials</a></nav>
+
+<header class="cover">
+  <div class="kicker">RYA Day Skipper · shorebased theory</div>
+  <h1>The Day Skipper Cheat Sheet</h1>
+  <p class="lede">Every method, table and mnemonic the two exam papers ask for, in the order you use them at the chart table. Built for revision and for use as a reference while you learn — not a substitute for the almanac in the exam.</p>
+  <p class="print-hint no-print"><a class="btn" href="rya-day-skipper-cheatsheet.pdf">Download the PDF</a> &nbsp; or press <code>Ctrl/Cmd&nbsp;+&nbsp;P</code> — the layout is already set for A4.</p>
+</header>
+
+<section id="exam" style="break-before:auto">
+  <h2><span class="num">00</span> The exam, and how marks are lost <span class="why">Read this first</span></h2>
+  <div class="cols">
+    <div>
+      <h3>Shape of the assessment</h3>
+      <table class="tbl-tight">
+        <tr><th>Paper</th><th>Time</th><th>Content</th></tr>
+        <tr><td>1 · General</td><td class="mono">90 min</td><td>Short written answers: IRPCS, buoyage, lights and shapes, sound signals, weather, safety, ropes, anchoring, terms, electronics, passage planning.</td></tr>
+        <tr><td>2 · Chartwork</td><td class="mono">90 min</td><td>Plotting on RYA training charts: positions, fixes, EP, course to steer, tidal heights and streams, pilotage, passage.</td></tr>
+      </table>
+      <p>Taken at home or in the classroom under exam conditions. Allowed: <b>RYA Training Almanac</b> and <b>RYA Training Charts 3 &amp; 4</b>, plotter, dividers, pencil, calculator. Not allowed: course notes or handbook. The pass is understanding, not perfection — working shown earns marks when the final number slips.</p>
+      <div class="box good">
+        <h4>Show every step</h4>
+        <p>Write the tidal-height table, the compass ladder, the vector labels. An examiner can award most of a question from correct method with one arithmetic error; a bare wrong number earns nothing.</p>
+      </div>
+    </div>
+    <div>
+      <h3>The seven recurring mark-losers</h3>
+      <table class="tbl-tight">
+        <tr><th>Slip</th><th>Guard</th></tr>
+        <tr><td>Bearing with no suffix</td><td>Always three figures + <span class="mono">T / M / C</span>: <span class="mono">045°T</span>, never <span class="mono">45</span>.</td></tr>
+        <tr><td>Variation applied the wrong way</td><td>Draw the ladder every time. <b>CADET</b> going up, subtract East going down.</td></tr>
+        <tr><td>Deviation from a bearing</td><td>Deviation is looked up by <b>ship's heading</b>, never by the bearing of an object.</td></tr>
+        <tr><td>Depth vs height of tide</td><td>Charted depth is below chart datum baseline; height of tide is added to it. Drying heights (underlined) are subtracted.</td></tr>
+        <tr><td>CTS and EP drawn the same</td><td>EP: DR first, then tide. CTS: tide first, then the boat-speed arc.</td></tr>
+        <tr><td>Times in the wrong zone</td><td>Note UT vs BST at the top of the page and add the hour once, in writing.</td></tr>
+        <tr><td>Reading the question thinly</td><td>Underline what is asked: a time, a height, a bearing, a course, or a decision. Answer that, with units.</td></tr>
+      </table>
+      <div class="box mn">
+        <h4>Plotting-sheet discipline</h4>
+        <p>Label every line as you draw it: course over the line, speed under it. One arrowhead = ground track, two = water track (the course you steer), three = tidal stream. Ring every fix time in four figures.</p>
+      </div>
+    </div>
+  </div>
+  <h3>What lives where in this sheet</h3>
+  <nav class="toc">
+    <a href="#chart"><b>01</b> Charts, positions and units</a>
+    <a href="#compass"><b>02</b> The three norths</a>
+    <a href="#chartwork"><b>03</b> Chartwork: fix, EP, course to steer</a>
+    <a href="#tides"><b>04</b> Tidal heights</a>
+    <a href="#streams"><b>05</b> Tidal streams</a>
+    <a href="#buoyage"><b>06</b> IALA A buoyage and light characters</a>
+    <a href="#lights"><b>07</b> Lights and shapes</a>
+    <a href="#colregs"><b>08</b> Rules of the road</a>
+    <a href="#sound"><b>09</b> Sound and visibility signals</a>
+    <a href="#weather"><b>10</b> Meteorology</a>
+    <a href="#safety"><b>11</b> Safety, distress and MOB</a>
+    <a href="#passage"><b>12</b> Passage planning and pilotage</a>
+    <a href="#seamanship"><b>13</b> Ropework, anchoring, terms</a>
+    <a href="#oneglance"><b>14</b> Everything on one page</a>
+  </nav>
+</section>
+
+<section id="chart">
+  <h2><span class="num">01</span> Charts, positions and units <span class="why">Paper 2 opener</span></h2>
+  <div class="cols">
+    <div>
+      <h3>Reading a position</h3>
+      <p>Latitude first, then longitude, degrees and decimal minutes, with the hemisphere: <span class="mono">50°42.35'N 001°18.60'W</span>. Latitude is read on the <b>side</b> of the chart, longitude on the <b>top and bottom</b>.</p>
+      <table class="tbl-tight">
+        <tr><th>Quantity</th><th>Rule</th></tr>
+        <tr><td>Distance</td><td>1 nautical mile = 1 minute of <b>latitude</b>. Measure on the side scale, at the latitude of your work.</td></tr>
+        <tr><td>Never</td><td>Measure distance on the longitude scale — minutes of longitude shrink towards the poles.</td></tr>
+        <tr><td>Cable</td><td>0.1 nm ≈ 185 m. "Two cables off" = 0.2 nm.</td></tr>
+        <tr><td>Knot</td><td>1 nm per hour. <span class="mono">Distance = Speed × Time</span>.</td></tr>
+        <tr><td>Depth / height</td><td>Metres on modern charts; check the chart's units note in the title block.</td></tr>
+      </table>
+      <div class="box rule">
+        <h4>The speed–time–distance triangle</h4>
+        <p class="mono">D = S × T &nbsp;·&nbsp; S = D / T &nbsp;·&nbsp; T = D / S</p>
+        <p>Work in decimal hours: 20 min = 0.33 h, 45 min = 0.75 h. 6 kn for 40 min = <span class="mono">6 × 0.667 = 4.0 nm</span>.</p>
+      </div>
+      <h3>Chart datums, in one line each</h3>
+      <table class="tbl-tight">
+        <tr><td class="mono">5₈</td><td><b>Charted depth</b> 5.8 m — least depth expected, measured <b>above chart datum</b>.</td></tr>
+        <tr><td class="mono"><u>1₅</u></td><td><b>Drying height</b> 1.5 m — dries that much <b>above</b> chart datum. Underlined.</td></tr>
+        <tr><td class="mono">(12)</td><td><b>Charted height</b> of a light, bridge or land — above <b>MHWS</b>.</td></tr>
+        <tr><td class="mono">┄┄</td><td>Depth contour; the 5 m and 10 m contours make good pilotage handrails.</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Symbols worth knowing cold</h3>
+      <table class="tbl-tight">
+        <tr><th>On the chart</th><th>Means</th></tr>
+        <tr><td>Magenta anything</td><td>Caution or man-made: lights, buoys, cables, prohibited areas.</td></tr>
+        <tr><td>Star + magenta flare</td><td>Lighthouse, with its character alongside.</td></tr>
+        <tr><td>Diamond with letter</td><td><b>Tidal diamond</b> — look the letter up in the chart's tidal stream table.</td></tr>
+        <tr><td>Circled dot ⊙</td><td>Tide-rip, overfalls or observation spot depending on annotation.</td></tr>
+        <tr><td>Anchor symbol</td><td>Anchorage. Crossed-out anchor = anchoring prohibited.</td></tr>
+        <tr><td>Wreck symbols</td><td>Hull outline = shallow/dangerous wreck; ⊕ with dots = depth known; dotted circle = position approximate.</td></tr>
+        <tr><td class="mono">S, M, Sh, R, Co</td><td>Seabed: sand, mud, shingle, rock, coral — anchoring quality.</td></tr>
+        <tr><td>Green tint</td><td>Dries at LAT — the drying foreshore.</td></tr>
+        <tr><td>Blue tint</td><td>Shallow water, usually inside the 5 m or 10 m line.</td></tr>
+      </table>
+      <h3>Publications and their job</h3>
+      <table class="tbl-tight">
+        <tr><td>Almanac</td><td>Tide tables, tidal curves, port entry, lights, radio, safety.</td></tr>
+        <tr><td>Pilot book</td><td>Prose description of harbours, approaches, hazards, photos.</td></tr>
+        <tr><td>Chart 5011</td><td>The dictionary of chart symbols and abbreviations.</td></tr>
+        <tr><td>Notices to Mariners</td><td>Corrections; the chart is only as good as its last correction date (bottom left).</td></tr>
+      </table>
+      <div class="box">
+        <h4>Compass rose</h4>
+        <p>Outer ring = <b>true</b>. Inner ring = <b>magnetic</b>, with variation and its annual change printed at the centre, e.g. <span class="mono">Var 2°45'W 2020 (8'E)</span>. Round the variation to the nearest degree for exam work and say which way you applied it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="compass">
+  <h2><span class="num">02</span> The three norths <span class="why">Both papers</span></h2>
+  <div class="cols">
+    <div>
+      <h3>What each one is</h3>
+      <table class="tbl-tight">
+        <tr><td><b>True</b></td><td>Geographic north. What the chart is drawn to, what you plot.</td></tr>
+        <tr><td><b>Magnetic</b></td><td>True corrected for <b>variation</b> — where the earth's field points at that place and year.</td></tr>
+        <tr><td><b>Compass</b></td><td>Magnetic corrected for <b>deviation</b> — what your boat's own iron does to the needle, on that heading.</td></tr>
+      </table>
+      <div class="box mn">
+        <h4>The ladder</h4>
+        <p class="mono">True → Variation → Magnetic → Deviation → Compass</p>
+        <p><b>T</b>rue <b>V</b>irgins <b>M</b>ake <b>D</b>ull <b>C</b>ompany. Going the other way, <b>CADET</b>: <b>C</b>ompass <b>ADd E</b>ast to get <b>T</b>rue.</p>
+        <p><b>Error west, compass best</b> (compass reads a bigger number than true).<br><b>Error east, compass least.</b></p>
+      </div>
+      <div class="box rule">
+        <h4>Signs, without thinking</h4>
+        <p>Going <b>down</b> the ladder (T→C): <span class="mono">add West, subtract East</span>.<br>
+        Going <b>up</b> the ladder (C→T): <span class="mono">add East, subtract West</span>.</p>
+        <p>Worked: course <span class="mono">070°T</span>, variation <span class="mono">5°W</span>, deviation <span class="mono">2°E</span> →
+        magnetic <span class="mono">070 + 5 = 075°M</span> → compass <span class="mono">075 − 2 = 073°C</span>.</p>
+      </div>
+    </div>
+    <div>
+      <h3>Deviation, the trap</h3>
+      <ul>
+        <li>Caused by the boat's own magnetic fields: engine, keel bolts, speakers, a phone left on the bulkhead.</li>
+        <li>It <b>changes with the boat's heading</b>, so it is read off a deviation card against the <b>ship's heading</b>.</li>
+        <li>It is <b>never</b> looked up against the bearing of a lighthouse. A hand-bearing compass taken well away from steelwork is treated as deviation-free.</li>
+        <li>Checked by a transit: compare the compass bearing of two objects in line with the charted (magnetic) bearing.</li>
+      </ul>
+      <h3>Wrapping and format</h3>
+      <ul>
+        <li>Three figures always: <span class="mono">007°</span>, not <span class="mono">7°</span>.</li>
+        <li>Wrap within 000–359: <span class="mono">358 + 5 = 003</span>, <span class="mono">002 − 5 = 357</span>.</li>
+        <li>Suffix always: <span class="mono">T</span> (true), <span class="mono">M</span> (magnetic), <span class="mono">C</span> (compass).</li>
+        <li>Reciprocal = <span class="mono">± 180°</span>. A light bearing <span class="mono">210°</span> from you means you bear <span class="mono">030°</span> from it.</li>
+      </ul>
+      <div class="box warn">
+        <h4>Almanac and chart mix</h4>
+        <p>Almanac and pilot-book bearings of leading lines and sector lights are usually <b>true</b>; buoy and transit bearings quoted in port entries may be magnetic. Read the note. Plot in true, convert once, and write the conversion down.</p>
+      </div>
+      <p><a href="../tutorials/compass/" class="no-print">Drill this: Three Norths →</a></p>
+    </div>
+  </div>
+</section>
+
+<section id="chartwork">
+  <h2><span class="num">03</span> Chartwork: fix, EP and course to steer <span class="why">Half of paper 2</span></h2>
+  <div class="cols">
+    <div>
+      <h3>The three plotting symbols</h3>
+      <table class="tbl-tight">
+        <tr><th>Symbol</th><th>Line</th><th>Meaning</th></tr>
+        <tr><td class="mono">→</td><td>One arrow</td><td><b>Ground track</b> / course over the ground — what actually happens.</td></tr>
+        <tr><td class="mono">→→</td><td>Two arrows</td><td><b>Water track</b> — the course you steer through the water.</td></tr>
+        <tr><td class="mono">→→→</td><td>Three arrows</td><td><b>Tidal stream</b> — set (direction it goes <i>towards</i>) and drift (distance).</td></tr>
+        <tr><td class="mono">⊕ 1030</td><td>Circle + dot</td><td><b>Fix</b>, with time in four figures.</td></tr>
+        <tr><td class="mono">△ 1130</td><td>Triangle</td><td><b>Estimated position</b>, with time.</td></tr>
+        <tr><td class="mono">•</td><td>Dot / tick</td><td><b>DR position</b> — course and log only, no tide.</td></tr>
+      </table>
+      <h3>Fixing your position</h3>
+      <ol class="recipe">
+        <li>Pick three objects roughly 60° apart, charted and certainly identified.</li>
+        <li>Take the <b>quickest-changing bearing last</b> (the one nearest the beam), note the time and log.</li>
+        <li>Convert each: compass → magnetic → true. Write each line out.</li>
+        <li>Plot from the object with the reciprocal; label each line with its bearing.</li>
+        <li>A small cocked hat is normal; take the position at the corner nearest the danger.</li>
+      </ol>
+      <p>Other good fixes: a <b>transit</b> (two objects in line — the most accurate line on any chart, no compass involved), a transit crossed with a bearing, a bearing crossed with a depth contour, a <b>range</b> from a radar or a rising/dipping light.</p>
+      <div class="box">
+        <h4>Running fix</h4>
+        <p>One object only: bearing at time 1, run the course and log distance from any point on that line, transfer the bearing line to the run's end, cross with the second bearing. Mark the result <span class="mono">R Fix</span>.</p>
+      </div>
+    </div>
+    <div>
+      <h3>Estimated position — "where am I?"</h3>
+      <ol class="recipe">
+        <li>Start at the last fix. Plot the <b>water track</b> (course steered, corrected to true, plus leeway) and step off the <b>log distance</b> run — that end is the DR.</li>
+        <li>From the DR, plot the <b>tidal stream</b> for the same period: set and drift, three arrows.</li>
+        <li>The end of the tide vector is your <b>EP</b>. Triangle, time it.</li>
+        <li>The line fix→EP is your ground track; measure it for course and distance made good.</li>
+      </ol>
+      <h3>Course to steer — "where do I point?"</h3>
+      <ol class="recipe">
+        <li>Draw the <b>ground track</b> you want: a line from your position to the destination. Don't measure it yet.</li>
+        <li>From your position, plot the <b>tidal stream</b> for one hour (set and drift). Call its end A.</li>
+        <li>From A, swing the dividers at your <b>boat speed through the water</b> for one hour; where the arc cuts the ground-track line is B.</li>
+        <li><b>A→B is the course to steer</b> (water track, two arrows). Measure it: that's your heading in true.</li>
+        <li>Apply <b>leeway</b>: steer <i>upwind</i> of that by the leeway angle. Then apply variation and deviation down the ladder to get °C.</li>
+        <li>Your position→B is the ground track: measure it for <b>speed over the ground</b> and the ETA.</li>
+      </ol>
+      <div class="box rule">
+        <h4>Tell them apart in one breath</h4>
+        <p><b>EP: boat first, tide second.</b> You know what you did, you want the result.<br>
+        <b>CTS: tide first, boat second.</b> You know the result you want, you need the heading.</p>
+      </div>
+      <div class="box warn">
+        <h4>Leeway</h4>
+        <p>The wind pushes the hull sideways, so the wake lies to leeward of the heading. To <b>make good</b> a water track, point up into the wind by the leeway angle. Building an EP, the water track lies <b>downwind</b> of the heading you steered. Typical 5° close-hauled in a breeze, 10° or more reefed and pressed; nil dead downwind.</p>
+      </div>
+      <p class="print-hint">Multi-hour legs: use whole hours of tide from the same starting line — two hours of tide then a two-hour boat-speed arc. The construction is identical, the numbers just double.</p>
+    </div>
+  </div>
+</section>
+
+<section id="tides">
+  <h2><span class="num">04</span> Tidal heights <span class="why">Most-failed topic</span></h2>
+  <div class="cols">
+    <div>
+      <h3>The vertical picture</h3>
+      <figure>
+        <svg viewBox="0 0 360 200" role="img" aria-label="Diagram of tidal datums: charted depth and drying height measured from chart datum, height of tide above it, charted height above MHWS">
+          <rect x="0" y="0" width="360" height="200" fill="var(--paper)"/>
+          <path d="M0 150 L60 150 L110 128 L170 150 L250 155 L300 138 L360 138 L360 200 L0 200Z" fill="var(--land)" stroke="var(--ink-3)" stroke-width="1"/>
+          <rect x="0" y="70" width="360" height="80" fill="var(--shallow)" opacity=".7"/>
+          <line x1="0" y1="150" x2="360" y2="150" stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="6 3"/>
+          <text x="4" y="146" font-size="9" fill="var(--ink)" font-family="IBM Plex Mono,monospace">CHART DATUM (≈ LAT)</text>
+          <line x1="0" y1="70" x2="360" y2="70" stroke="var(--focus)" stroke-width="1.4"/>
+          <text x="4" y="66" font-size="9" fill="var(--focus)" font-family="IBM Plex Mono,monospace">sea level now</text>
+          <line x1="0" y1="40" x2="360" y2="40" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="4" y="37" font-size="9" fill="var(--ink-3)" font-family="IBM Plex Mono,monospace">MHWS</text>
+          <g stroke="var(--magenta)" stroke-width="1.2" fill="none">
+            <line x1="250" y1="70" x2="250" y2="150"/><line x1="246" y1="70" x2="254" y2="70"/><line x1="246" y1="150" x2="254" y2="150"/>
+            <line x1="300" y1="150" x2="300" y2="155"/>
+            <line x1="110" y1="128" x2="110" y2="150"/><line x1="106" y1="128" x2="114" y2="128"/><line x1="106" y1="150" x2="114" y2="150"/>
+            <line x1="330" y1="40" x2="330" y2="138"/><line x1="326" y1="40" x2="334" y2="40"/><line x1="326" y1="138" x2="334" y2="138"/>
+          </g>
+          <text x="256" y="115" font-size="9.5" fill="var(--magenta)">height of tide</text>
+          <text x="118" y="142" font-size="9.5" fill="var(--magenta)">drying ht (underlined)</text>
+          <text x="236" y="172" font-size="9.5" fill="var(--ink-2)">charted depth</text>
+          <line x1="250" y1="152" x2="250" y2="163" stroke="var(--ink-2)" stroke-width="1.2"/>
+          <text x="248" y="34" font-size="9.5" fill="var(--magenta)" text-anchor="end">charted height (from MHWS)</text>
+        </svg>
+        <figcaption>Everything wet is measured up from chart datum; everything dry and overhead is measured down from MHWS.</figcaption>
+      </figure>
+      <table class="tbl-tight">
+        <tr><th>You want</th><th>Sum</th></tr>
+        <tr><td>Depth of water now</td><td class="mono">charted depth + height of tide</td></tr>
+        <tr><td>Depth over a drying patch</td><td class="mono">height of tide − drying height</td></tr>
+        <tr><td>Clearance under the keel</td><td class="mono">depth of water − draught</td></tr>
+        <tr><td>Clearance under a bridge</td><td class="mono">charted height + MHWS − height of tide</td></tr>
+        <tr><td>Range of the tide</td><td class="mono">HW height − LW height</td></tr>
+      </table>
+      <div class="box warn">
+        <h4>Always leave a safety margin</h4>
+        <p>Work the answer, then subtract your own clearance (commonly 0.5–1.0 m under the keel, plus more in a swell). The exam rewards stating the margin you chose.</p>
+      </div>
+      <h3>Springs and neaps</h3>
+      <ul>
+        <li><b>Springs</b>: new and full moon, sun and moon in line. Biggest range, highest HW, lowest LW, fastest streams. About <b>two days after</b> the moon phase.</li>
+        <li><b>Neaps</b>: first and last quarter. Smallest range, weakest streams.</li>
+        <li>Roughly fortnightly cycle; the almanac prints the spring/neap ranges for each standard port in the curve panel.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Standard port, height at a given time</h3>
+      <ol class="recipe">
+        <li>Find the day's <b>HW and LW</b> times and heights. Correct for <b>BST</b> (+1 h) if the tables are UT and the question is local.</li>
+        <li>Compute the <b>range</b> = HW − LW, and see where it sits between the printed spring and neap ranges.</li>
+        <li>On the tidal curve, mark <b>HW height</b> on the top scale and <b>LW height</b> on the bottom scale; join them with a sloping line.</li>
+        <li>Enter the time scale at HW, count the hours to the time you want, go up to the curve — <b>spring curve solid, neap curve dashed</b>, interpolate for anything between.</li>
+        <li>Go across to the sloping line, then up or down to the height scale. Read the <b>height of tide</b>.</li>
+      </ol>
+      <h4>Time for a given height — the same picture backwards</h4>
+      <p>Enter on the <b>height</b> scale, across to the sloping line, up to the curve, down to the <b>time</b> scale, and add or subtract from HW. Two answers exist each tide (one rising, one falling) — say which you mean.</p>
+      <div class="box rule">
+        <h4>Rule of twelfths — the quick check</h4>
+        <p>Over a six-hour tide the range comes in as <span class="mono">1/12, 2/12, 3/12, 3/12, 2/12, 1/12</span> per hour.</p>
+        <p>Half the range in the middle two hours. Range 6 m → 0.5, 1.0, 1.5, 1.5, 1.0, 0.5 m.</p>
+        <p>Valid only for a roughly sinusoidal tide of about 6 h. Use the <b>curve</b> for the answer and twelfths for the sanity check — and never for the Solent's double HW.</p>
+      </div>
+      <h3>Secondary ports</h3>
+      <ol class="recipe">
+        <li>Work the <b>standard port</b> tide for the day, first.</li>
+        <li>Take the secondary port's <b>time differences</b> (given for HW at e.g. 0000 and 0600) and <b>interpolate</b> for your actual HW time.</li>
+        <li>Take the <b>height differences</b> for MHWS / MHWN / MLWN / MLWS and interpolate for your actual HW and LW heights.</li>
+        <li>Apply both: secondary HW time and height, secondary LW time and height.</li>
+        <li>Use the <b>standard port's curve</b> with the secondary port's figures unless the almanac prints its own.</li>
+      </ol>
+      <p class="print-hint">Day Skipper needs awareness and a straightforward case; Coastal/Yachtmaster needs full interpolation. Lay the work out as a table — standard, difference, secondary — and the marks follow the layout.</p>
+      <div class="box mn">
+        <h4>Vocabulary</h4>
+        <p><b>MHWS/MHWN</b> mean high water springs/neaps · <b>MLWN/MLWS</b> the lows · <b>LAT</b> lowest astronomical tide, the datum · <b>Duration</b> HW to LW · <b>Stand</b> a pause at HW or LW · <b>Charted depth</b> what you'd find at LAT.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="streams">
+  <h2><span class="num">05</span> Tidal streams <span class="why">Feeds every CTS question</span></h2>
+  <div class="cols">
+    <div>
+      <h3>Two sources, same answer</h3>
+      <table class="tbl-tight">
+        <tr><th>Source</th><th>How to read it</th></tr>
+        <tr><td><b>Tidal diamond</b> on the chart</td><td>Find the lettered diamond nearest your track, then the table: rows are hours <b>before and after HW at the named standard port</b>, columns give direction (°T), spring rate, neap rate.</td></tr>
+        <tr><td><b>Tidal stream atlas</b></td><td>One page per hour relative to HW. Arrows show direction; figures like <span class="mono">19,34</span> mean <b>1.9 kn neaps, 3.4 kn springs</b> — the comma is a decimal point, small number first.</td></tr>
+      </table>
+      <div class="box rule">
+        <h4>Set and drift</h4>
+        <p><b>Set</b> = the direction the water flows <b>towards</b>, in °T. <b>Drift</b> = the distance it carries you in the period (rate × time). Wind is named where it comes <i>from</i>; tide is named where it goes <i>to</i>. Do not mix them up.</p>
+      </div>
+      <h3>Interpolating for the day</h3>
+      <ol class="recipe">
+        <li>Work the standard port's <b>HW time</b> for the day and label your hours: HW−3, HW−2, … HW+1.</li>
+        <li>Work the day's <b>range</b> and compare with the printed spring and neap ranges.</li>
+        <li>Interpolate the rate between the neap and spring columns in that proportion. Halfway between = the mean of the two.</li>
+        <li>Multiply by the hours you'll be in that square to get drift.</li>
+      </ol>
+      <p class="print-hint">Computation aid in the almanac does this graphically; in the exam, plain proportion is accepted if you show it.</p>
+    </div>
+    <div>
+      <h3>Using the stream, not fighting it</h3>
+      <ul>
+        <li><b>Tidal gate</b>: a headland or narrows where the stream runs hard — plan to arrive with it, not against it.</li>
+        <li>A fair tide of 2 kn on a 5 kn boat is a 40% speed change; over a day it dwarfs any sail trim.</li>
+        <li>Streams turn <b>earlier inshore</b> and run harder off headlands and over shoals.</li>
+        <li>Wind over tide = short, steep, breaking seas. Same strength, far worse ride.</li>
+        <li>In a river or narrow channel, the stream follows the deep water; the eddy at the edge may run the other way.</li>
+      </ul>
+      <div class="box">
+        <h4>Course made good vs course steered</h4>
+        <p>Cross-tide on a short hop: the tide that pushes you off in the first hour may push you back in the third. For a short passage, plan the <b>whole-passage</b> vector rather than fighting each hour — it is usually a shorter distance through the water.</p>
+      </div>
+      <div class="box warn">
+        <h4>Common exam traps</h4>
+        <ul>
+          <li>Diamond hours are relative to <b>HW at the port named in the table</b>, which may not be your destination.</li>
+          <li>Atlas figures are <b>tenths of a knot</b>, and the neap figure comes first.</li>
+          <li>Springs/neaps interpolation applies to the <b>rate</b>, not the direction.</li>
+          <li>Reversing the set by 180° because it "looks wrong" — set is already the direction of flow.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="buoyage">
+  <h2><span class="num">06</span> IALA A buoyage and light characters <span class="why">Guaranteed marks</span></h2>
+  <div class="cols">
+    <div>
+      <h3>Lateral marks — Region A (UK and Europe)</h3>
+      <table class="tbl-tight">
+        <tr><th>Mark</th><th>Day</th><th>Light</th></tr>
+        <tr><td><b>Port</b></td><td><span class="swatch" style="background:#C62828"></span>Red <b>can</b>, can topmark</td><td class="mono">Fl R / Q R / any red rhythm</td></tr>
+        <tr><td><b>Starboard</b></td><td><span class="swatch" style="background:#2E7D32"></span>Green <b>cone</b>, point up</td><td class="mono">Fl G / Q G</td></tr>
+        <tr><td><b>Preferred channel to starboard</b></td><td>Red with one broad <b>green</b> band, can</td><td class="mono">Fl(2+1) R</td></tr>
+        <tr><td><b>Preferred channel to port</b></td><td>Green with one broad <b>red</b> band, cone</td><td class="mono">Fl(2+1) G</td></tr>
+      </table>
+      <div class="box mn">
+        <p><b>Red to port entering.</b> "Is there any <b>red</b> port left?" Direction of buoyage is <b>into harbour, up-river, or clockwise round a landmass</b> — shown on the chart by a magenta arrow. Coming out, it all reverses.</p>
+        <p>IALA <b>B</b> (Americas, Japan, Korea, Philippines) is the mirror image: red to starboard entering — "red right returning".</p>
+      </div>
+      <h3>Cardinal marks — go where the black points</h3>
+      <table class="tbl-tight">
+        <tr><th>Mark</th><th>Topmark (2 cones)</th><th>Body</th><th>Light (white)</th></tr>
+        <tr><td><b>North</b></td><td>Both points <b>up</b></td><td>Black over yellow</td><td class="mono">Q or VQ (continuous)</td></tr>
+        <tr><td><b>East</b></td><td>Base to base (♦)</td><td>Black, yellow band, black</td><td class="mono">Q(3) 10s / VQ(3) 5s</td></tr>
+        <tr><td><b>South</b></td><td>Both points <b>down</b></td><td>Yellow over black</td><td class="mono">Q(6)+LFl 15s / VQ(6)+LFl 10s</td></tr>
+        <tr><td><b>West</b></td><td>Point to point (wine glass)</td><td>Yellow, black band, yellow</td><td class="mono">Q(9) 15s / VQ(9) 10s</td></tr>
+      </table>
+      <div class="box rule">
+        <h4>Reading a cardinal in the dark</h4>
+        <p>Count the flashes like a clock face: <b>3 at 3 o'clock = East</b>, <b>6 at 6 o'clock = South</b> (plus the long flash so you can't miscount), <b>9 at 9 o'clock = West</b>, <b>continuous = North</b>.</p>
+        <p>The mark names the <b>side of the danger you pass</b>: a north cardinal means <b>pass to the north of it</b>. Safe water lies in the named quadrant.</p>
+      </div>
+    </div>
+    <div>
+      <h3>The other four marks</h3>
+      <table class="tbl-tight">
+        <tr><th>Mark</th><th>Day</th><th>Light</th><th>Means</th></tr>
+        <tr><td><b>Isolated danger</b></td><td>Black with red band(s), <b>two black balls</b></td><td class="mono">Fl(2) white</td><td>Small danger with navigable water all round — stay off.</td></tr>
+        <tr><td><b>Safe water</b></td><td>Red and white <b>vertical</b> stripes, single red sphere</td><td class="mono">Iso, Oc, LFl 10s or Mo(A)</td><td>Mid-channel or landfall; water all round.</td></tr>
+        <tr><td><b>Special</b></td><td>Yellow, yellow <b>X</b> topmark</td><td class="mono">Fl Y</td><td>Not navigational: spoil ground, outfall, racing buoy, cable.</td></tr>
+        <tr><td><b>Emergency wreck</b></td><td>Blue and yellow vertical stripes, yellow cross</td><td class="mono">Al Oc Bu/Y 3s</td><td>New, uncharted wreck. Alternating blue/yellow.</td></tr>
+      </table>
+      <h3>Light characters, decoded</h3>
+      <table class="tbl-tight">
+        <tr><th class="mono">Abbr.</th><th>Name</th><th>Rhythm</th></tr>
+        <tr><td class="mono">F</td><td>Fixed</td><td>Continuous, steady.</td></tr>
+        <tr><td class="mono">Fl</td><td>Flashing</td><td>Light shorter than dark. <span class="mono">Fl(3) 10s</span> = three flashes every 10 s.</td></tr>
+        <tr><td class="mono">LFl</td><td>Long flashing</td><td>One flash of 2 s or more.</td></tr>
+        <tr><td class="mono">Q</td><td>Quick</td><td>50–60 flashes a minute.</td></tr>
+        <tr><td class="mono">VQ</td><td>Very quick</td><td>100–120 a minute.</td></tr>
+        <tr><td class="mono">IQ / IVQ</td><td>Interrupted</td><td>Quick flashing with a regular dark gap.</td></tr>
+        <tr><td class="mono">Iso</td><td>Isophase</td><td>Equal light and dark.</td></tr>
+        <tr><td class="mono">Oc</td><td>Occulting</td><td>Light longer than dark — a "blink" of darkness.</td></tr>
+        <tr><td class="mono">Mo(A)</td><td>Morse</td><td>The letter in morse: A = • —, safe water / landfall.</td></tr>
+        <tr><td class="mono">Al</td><td>Alternating</td><td>Changes colour.</td></tr>
+      </table>
+      <div class="box">
+        <h4>Reading a full light description</h4>
+        <p class="mono">Fl(2) WRG 10s 18m 15/11M</p>
+        <p>Two flashes every 10 seconds · white, red and green <b>sectors</b> · focal plane 18 m above MHWS · nominal range 15 M white, 11 M the coloured sectors. Sector limits are quoted <b>from seaward</b> — the almanac or chart gives the bearings; white usually marks the safe approach, red and green the danger sides.</p>
+      </div>
+      <div class="box warn">
+        <p><b>Period</b> is the whole cycle, flash <i>and</i> dark, in seconds. Timing a light: start the watch on a flash, count ten cycles, divide. <b>Rising and dipping</b> distance of a light is in the almanac — the moment it appears gives you a range.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lights">
+  <h2><span class="num">07</span> Lights and shapes <span class="why">Paper 1 staple</span></h2>
+  <div class="cols">
+    <div>
+      <h3>The arcs, first</h3>
+      <table class="tbl-tight">
+        <tr><th>Light</th><th>Arc</th><th>Where</th></tr>
+        <tr><td>Masthead (steaming)</td><td class="mono">225°</td><td>White, ahead to 22.5° abaft each beam.</td></tr>
+        <tr><td>Sidelights</td><td class="mono">112.5° each</td><td>Red port, green starboard, ahead to 22.5° abaft that beam.</td></tr>
+        <tr><td>Sternlight</td><td class="mono">135°</td><td>White, astern — fills the gap the masthead leaves.</td></tr>
+        <tr><td>All-round</td><td class="mono">360°</td><td>Anchor lights, and every "status" light (red/green/white pairs).</td></tr>
+      </table>
+      <p class="print-hint">225 + 135 = 360: the masthead and stern arcs together cover the horizon, and each sidelight covers half the masthead arc.</p>
+      <h3>Power-driven vessel underway</h3>
+      <ul>
+        <li><b>Under 50 m</b>: one masthead light, sidelights, sternlight (a second, higher masthead light is optional).</li>
+        <li><b>50 m and over</b>: <b>two</b> masthead lights, the after one higher, plus sidelights and sternlight.</li>
+        <li>Two masthead lights in line tell you the <b>heading</b>: open to the right, she is crossing right to left… read them with the sidelight.</li>
+        <li><b>Under 12 m</b>: may show one all-round white plus sidelights. <b>Under 7 m and under 7 kn</b>: one all-round white, sidelights if practicable.</li>
+      </ul>
+      <h3>Sailing vessel</h3>
+      <ul>
+        <li>Sidelights + sternlight. <b>No masthead light</b> — that is the giveaway.</li>
+        <li>Optional: two all-round lights at the masthead, <b>red over green</b> ("red over green, sailing machine"), with the sidelights and sternlight still burning.</li>
+        <li><b>Under 20 m</b> may combine sidelights and sternlight in one <b>tricolour</b> at the masthead — used <i>instead of</i>, never as well as.</li>
+        <li><b>Motor-sailing</b> = a power-driven vessel: masthead light on, and by day a <b>cone, point down</b>, forward.</li>
+        <li>Under oars, or sail under 7 m: at least a torch or lantern shown in time to prevent collision.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Status lights and day shapes</h3>
+      <table class="tbl-tight">
+        <tr><th>Vessel</th><th>Lights (all-round)</th><th>Shapes</th></tr>
+        <tr><td>Not under command</td><td><b>Red over red</b></td><td>Two balls</td></tr>
+        <tr><td>Restricted in ability to manoeuvre</td><td><b>Red, white, red</b></td><td>Ball, diamond, ball</td></tr>
+        <tr><td>Constrained by draught</td><td><b>Three red</b> in a vertical line</td><td>Cylinder</td></tr>
+        <tr><td>Trawling</td><td><b>Green over white</b></td><td>Two cones, points together</td></tr>
+        <tr><td>Fishing (not trawling)</td><td><b>Red over white</b></td><td>Two cones, points together (+ cone pointing at outlying gear over 150 m)</td></tr>
+        <tr><td>Pilot on duty</td><td><b>White over red</b></td><td>Flag H if displayed</td></tr>
+        <tr><td>At anchor</td><td>One all-round white forward (two if ≥50 m, forward one higher; deck lights on if ≥100 m)</td><td>One <b>ball</b> forward</td></tr>
+        <tr><td>Aground</td><td>Anchor light(s) <b>plus two red</b></td><td>Three balls</td></tr>
+        <tr><td>Minesweeping</td><td>Three green: masthead and each yardarm</td><td>Three balls, same positions</td></tr>
+        <tr><td>Motor-sailing</td><td>As power-driven</td><td>Cone, <b>point down</b></td></tr>
+        <tr><td>Diving</td><td>—</td><td>Rigid replica of flag A</td></tr>
+      </table>
+      <div class="box mn">
+        <h4>Say them aloud</h4>
+        <p><b>Red over red</b> — the captain is dead (not under command).<br>
+        <b>Red, white, red</b> — restricted ahead (RAM).<br>
+        <b>Green over white</b> — trawling at night.<br>
+        <b>Red over white</b> — fishing tonight.<br>
+        <b>White over red</b> — pilot ahead.<br>
+        <b>Red over green</b> — sailing machine.</p>
+      </div>
+      <h3>Towing and pushing</h3>
+      <ul>
+        <li>Tug: <b>two masthead lights in a vertical line</b>; <b>three</b> if the tow measures more than 200 m from tug stern to tow stern. Sidelights, sternlight, and a <b>yellow towing light</b> above the sternlight.</li>
+        <li>Vessel towed: sidelights and sternlight only — dark between tug and tow, so never cut through.</li>
+        <li>Tow over 200 m: a <b>diamond</b> shape by day on tug and tow.</li>
+        <li>Unable to deviate from her course (tug and tow restricted): she may also show the RAM lights and shapes.</li>
+      </ul>
+      <div class="box warn">
+        <h4>Identify in this order</h4>
+        <p>1. Any <b>status</b> lights (red/white/green all-rounds) — they outrank everything.<br>
+        2. <b>Masthead</b> light? Yes = power-driven, no = sailing. Two = 50 m or more.<br>
+        3. <b>Sidelights</b>: which colours, and in what order, gives the aspect.<br>
+        4. Only then decide who gives way.</p>
+      </div>
+      <p class="no-print"><a href="../tutorials/night-watch/">Drill this in 3D: Night Watch →</a></p>
+    </div>
+  </div>
+</section>
+
+<section id="colregs">
+  <h2><span class="num">08</span> Rules of the road <span class="why">Quote the rule number</span></h2>
+  <div class="cols">
+    <div>
+      <h3>The rules Day Skipper examines by number</h3>
+      <table class="tbl-tight">
+        <tr><th>No.</th><th>Rule</th><th>What it demands</th></tr>
+        <tr><td class="mono">5</td><td>Look-out</td><td>A proper look-out <b>by sight and hearing</b> and all available means, at all times.</td></tr>
+        <tr><td class="mono">6</td><td>Safe speed</td><td>Able to stop in the distance appropriate to the visibility, traffic, manoeuvrability, background lights, sea state, draught.</td></tr>
+        <tr><td class="mono">7</td><td>Risk of collision</td><td>Use all available means; assume risk exists if in doubt. <b>A constant compass bearing with decreasing range means collision.</b></td></tr>
+        <tr><td class="mono">8</td><td>Action to avoid</td><td><b>Early, substantial, obvious</b> — large enough to be seen by eye or radar. Avoid a succession of small alterations. Slowing or stopping is a legitimate action. Alter course rather than speed if there is room.</td></tr>
+        <tr><td class="mono">9</td><td>Narrow channels</td><td>Keep to the <b>starboard</b> side. Vessels <b>under 20 m</b>, sailing vessels and fishing vessels <b>shall not impede</b> a vessel that can navigate only within the channel. Don't cross so as to impede. Sound one prolonged blast at a blind bend.</td></tr>
+        <tr><td class="mono">10</td><td>Traffic separation</td><td>Join and leave at the ends, or at a <b>small angle</b>. Crossing: head <b>as nearly as practicable at right angles</b> to the flow (heading, not track). Under 20 m, sailing and fishing shall not impede lane traffic. Use inshore zones if under 20 m or sailing.</td></tr>
+      </table>
+      <h3>Steering and sailing — who gives way</h3>
+      <table class="tbl-tight">
+        <tr><th>No.</th><th>Situation</th><th>Action</th></tr>
+        <tr><td class="mono">12</td><td><b>Sail meets sail</b></td><td>Different tacks: <b>port tack gives way</b>. Same tack: <b>windward gives way</b>. In doubt about the other's tack when you are on port: assume you must give way.</td></tr>
+        <tr><td class="mono">13</td><td><b>Overtaking</b></td><td>Coming up from more than <b>22.5° abaft the beam</b> (you'd see only her sternlight). <b>The overtaker keeps clear</b>, sail or power, and stays clear until finally past and clear.</td></tr>
+        <tr><td class="mono">14</td><td><b>Power head-on</b></td><td>Both alter <b>to starboard</b> and pass port to port. In doubt, assume it applies.</td></tr>
+        <tr><td class="mono">15</td><td><b>Power crossing</b></td><td>The vessel that has the other <b>on her own starboard side</b> gives way, and shall avoid crossing ahead.</td></tr>
+        <tr><td class="mono">16</td><td>Give-way vessel</td><td>Take early and substantial action to keep <b>well</b> clear.</td></tr>
+        <tr><td class="mono">17</td><td>Stand-on vessel</td><td><b>Keep course and speed.</b> You <b>may</b> act when it becomes clear the other is not; you <b>must</b> act when collision cannot be avoided by her action alone. If power, do <b>not</b> alter to port for a vessel on your own port side.</td></tr>
+        <tr><td class="mono">18</td><td>Responsibilities</td><td>The pecking order below — and remember a sailing vessel keeps clear of a vessel <b>constrained by draught</b>, fishing, RAM or NUC.</td></tr>
+        <tr><td class="mono">19</td><td>Restricted visibility</td><td>See the box opposite — no vessel is "stand-on" in fog.</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box mn">
+        <h4>Rule 18 pecking order — who gives way to whom</h4>
+        <ol style="margin-bottom:6px">
+          <li><b>N</b>ot under command</li>
+          <li><b>R</b>estricted in ability to manoeuvre</li>
+          <li><b>C</b>onstrained by draught</li>
+          <li><b>F</b>ishing (actively, with gear out)</li>
+          <li><b>S</b>ailing</li>
+          <li><b>P</b>ower-driven</li>
+          <li><b>S</b>eaplane / WIG craft</li>
+        </ol>
+        <p><b>N</b>ew <b>R</b>eels <b>C</b>atch <b>F</b>ish <b>S</b>o <b>P</b>urchase <b>S</b>ome.<br>Everything below gives way to everything above it.</p>
+      </div>
+      <div class="box rule">
+        <h4>Rule 19 — conduct in restricted visibility</h4>
+        <ul>
+          <li>Applies to vessels <b>not in sight of one another</b>. The steering and sailing rules of Section II (12–18) do <b>not</b> apply: there is no stand-on vessel.</li>
+          <li>Safe speed; engines ready for immediate manoeuvre.</li>
+          <li>Detecting a vessel by radar alone: avoid <b>altering to port</b> for a vessel forward of the beam (unless overtaking), and avoid <b>altering towards</b> a vessel abeam or abaft the beam.</li>
+          <li>Hearing a fog signal <b>forward of the beam</b>, or unable to avoid close quarters: reduce to <b>minimum steerage way</b>, and if necessary take all way off and navigate with extreme caution.</li>
+        </ul>
+      </div>
+      <h3>Deciding in four moves</h3>
+      <ol class="recipe">
+        <li><b>Is there risk of collision?</b> Take a compass bearing. Steady bearing, closing range → yes.</li>
+        <li><b>What is she?</b> Read lights, shapes or aspect. Power, sail, fishing, restricted?</li>
+        <li><b>Which rule?</b> Overtaking (13) beats crossing (15) beats the sail rules (12), and Rule 18 sits over all of them.</li>
+        <li><b>Give way or stand on?</b> If give-way: alter <b>early, large, to starboard where possible</b>, pass astern, and make it obvious. If stand-on: hold course and speed, keep watching, be ready to act.</li>
+      </ol>
+      <div class="box warn">
+        <h4>Phrases examiners want back</h4>
+        <ul>
+          <li>"A constant bearing with a decreasing range indicates risk of collision."</li>
+          <li>"Early and substantial, so as to be readily apparent to the other vessel."</li>
+          <li>"Avoid crossing ahead; alter to pass under her stern."</li>
+          <li>"Keep clear until finally past and clear."</li>
+          <li>"Nothing in these rules exonerates any vessel from the consequences of neglect" (Rule 2, the rule of good seamanship).</li>
+        </ul>
+      </div>
+      <p class="no-print"><a href="../tutorials/colregs/">Drill this: Rules of the Road →</a></p>
+    </div>
+  </div>
+</section>
+
+<section id="sound">
+  <h2><span class="num">09</span> Sound signals <span class="why">Easy marks, often dropped</span></h2>
+  <div class="cols">
+    <div>
+      <h3>The units</h3>
+      <p><b>Short blast</b> ≈ 1 second. <b>Prolonged blast</b> = 4–6 seconds. Written <span class="mono">•</span> and <span class="mono">—</span>.</p>
+      <h3>Rule 34 — manoeuvring, in sight of one another</h3>
+      <table class="tbl-tight">
+        <tr><th class="mono">Signal</th><th>Means</th></tr>
+        <tr><td class="mono">•</td><td>I am altering my course <b>to starboard</b>.</td></tr>
+        <tr><td class="mono">• •</td><td>I am altering my course <b>to port</b>.</td></tr>
+        <tr><td class="mono">• • •</td><td>I am <b>operating astern propulsion</b>.</td></tr>
+        <tr><td class="mono">• • • • •</td><td>(at least five, rapid) <b>I do not understand your intentions</b> / your action is insufficient. The doubt or "wake-up" signal.</td></tr>
+        <tr><td class="mono">— — •</td><td>I intend to overtake you <b>on your starboard side</b> (narrow channel).</td></tr>
+        <tr><td class="mono">— — • •</td><td>I intend to overtake you <b>on your port side</b>.</td></tr>
+        <tr><td class="mono">— • — •</td><td>Overtaking agreed (Morse C).</td></tr>
+        <tr><td class="mono">—</td><td>Approaching a <b>blind bend</b> or an obstructed view in a channel — answered by the same from the other side.</td></tr>
+        <tr><td class="mono">—</td><td>Also: leaving a berth / getting under way where sight is obscured.</td></tr>
+      </table>
+      <div class="box">
+        <p>Sound signals say what you <b>are doing</b>, not what you'd like the other vessel to do. They are a commentary on your own helm, made at the moment you put it over.</p>
+      </div>
+    </div>
+    <div>
+      <h3>Rule 35 — in or near restricted visibility</h3>
+      <table class="tbl-tight">
+        <tr><th>Vessel</th><th class="mono">Signal</th><th>Interval</th></tr>
+        <tr><td>Power-driven, <b>making way</b></td><td class="mono">—</td><td>≤ 2 min</td></tr>
+        <tr><td>Power-driven, underway but <b>stopped</b></td><td class="mono">— —</td><td>≤ 2 min</td></tr>
+        <tr><td>Sailing · fishing · NUC · RAM · CBD · towing or pushing</td><td class="mono">— • •</td><td>≤ 2 min</td></tr>
+        <tr><td>Vessel <b>towed</b> (last of the tow, if manned)</td><td class="mono">— • • •</td><td>≤ 2 min</td></tr>
+        <tr><td><b>At anchor</b></td><td>Bell rung rapidly <b>5 s</b> (plus gong aft if ≥ 100 m)</td><td>≤ 1 min</td></tr>
+        <tr><td>At anchor, warning an approaching vessel</td><td class="mono">• — •</td><td>as needed</td></tr>
+        <tr><td><b>Aground</b></td><td>3 separate bell strokes, the 5 s bell, 3 strokes</td><td>≤ 1 min</td></tr>
+        <tr><td>Pilot vessel on duty (extra)</td><td class="mono">• • • •</td><td>—</td></tr>
+        <tr><td>Under 12 m</td><td>Any efficient sound signal</td><td>≤ 2 min</td></tr>
+      </table>
+      <div class="box mn">
+        <h4>How to remember the fog set</h4>
+        <p>One long = <b>I'm a ship, going somewhere</b>. Two long = <b>going nowhere</b>. Long-short-short = <b>I have a problem or a privilege</b> (sail, fishing, restricted, towing) — the same signal for everyone who can't just get out of your way. Add a third short and it's the <b>thing on the end of the rope</b>.</p>
+      </div>
+      <h3>Distress signals you may be asked to list</h3>
+      <ul>
+        <li>Mayday by VHF voice on Ch 16; DSC alert on Ch 70; EPIRB; SART.</li>
+        <li>Continuous sounding of any fog-signalling apparatus.</li>
+        <li>Red parachute rocket or red hand flare; orange smoke by day.</li>
+        <li>SOS by any means; the spoken word "Mayday".</li>
+        <li>Flag <b>N over C</b>; a square flag with a ball above or below it.</li>
+        <li>Slow, repeated raising and lowering of outstretched arms.</li>
+        <li>Flames on the vessel; a gun fired at one-minute intervals.</li>
+      </ul>
+      <p class="print-hint">A <b>white</b> flare is not a distress signal — it is an anti-collision signal to say "I am here".</p>
+    </div>
+  </div>
+</section>
+
+<section id="weather">
+  <h2><span class="num">10</span> Meteorology <span class="why">Vocabulary marks</span></h2>
+  <div class="cols">
+    <div>
+      <h3>Shipping forecast vocabulary</h3>
+      <table class="tbl-tight">
+        <tr><th>Term</th><th>Means</th></tr>
+        <tr><td><b>Imminent</b></td><td>Within <b>6 hours</b> of the time of issue.</td></tr>
+        <tr><td><b>Soon</b></td><td><b>6 to 12 hours</b>.</td></tr>
+        <tr><td><b>Later</b></td><td><b>More than 12 hours</b>.</td></tr>
+        <tr><td><b>Veering</b></td><td>Wind direction changing <b>clockwise</b> (SW → W → NW).</td></tr>
+        <tr><td><b>Backing</b></td><td>Changing <b>anticlockwise</b> (SW → S → SE).</td></tr>
+        <tr><td><b>Gale warning</b></td><td>Force 8, or gusts 43–51 kn.</td></tr>
+        <tr><td><b>Severe gale</b> / <b>Storm</b></td><td>Force 9 (gusts 52–60) / Force 10 (gusts 61–68).</td></tr>
+        <tr><td><b>Violent storm</b> / <b>Hurricane force</b></td><td>Force 11 (gusts 69+) / Force 12.</td></tr>
+      </table>
+      <table class="tbl-tight">
+        <tr><th>Visibility</th><th>Range</th></tr>
+        <tr><td>Good</td><td class="mono">more than 5 nm</td></tr>
+        <tr><td>Moderate</td><td class="mono">2 – 5 nm</td></tr>
+        <tr><td>Poor</td><td class="mono">1000 m – 2 nm</td></tr>
+        <tr><td>Fog</td><td class="mono">less than 1000 m</td></tr>
+      </table>
+      <table class="tbl-tight">
+        <tr><th>Pressure tendency</th><th>Change in 3 h</th></tr>
+        <tr><td>Steady</td><td class="mono">&lt; 0.1 mb</td></tr>
+        <tr><td>Rising / falling slowly</td><td class="mono">0.1 – 1.5 mb</td></tr>
+        <tr><td>Rising / falling</td><td class="mono">1.6 – 3.5 mb</td></tr>
+        <tr><td>Rising / falling quickly</td><td class="mono">3.6 – 6.0 mb</td></tr>
+        <tr><td>Very rapidly</td><td class="mono">more than 6.0 mb</td></tr>
+      </table>
+      <h3>Beaufort, the numbers that matter</h3>
+      <table class="tbl-tight">
+        <tr><th class="mono">F</th><th class="mono">Knots</th><th>Name / at sea</th></tr>
+        <tr><td class="mono">0–1</td><td class="mono">0–3</td><td>Calm / light air, mirror or ripples.</td></tr>
+        <tr><td class="mono">2–3</td><td class="mono">4–10</td><td>Light breeze / gentle breeze; crests begin to break.</td></tr>
+        <tr><td class="mono">4</td><td class="mono">11–16</td><td><b>Moderate</b>; frequent white horses. Reef point for many cruisers.</td></tr>
+        <tr><td class="mono">5</td><td class="mono">17–21</td><td><b>Fresh</b>; moderate waves, many white horses.</td></tr>
+        <tr><td class="mono">6</td><td class="mono">22–27</td><td><b>Strong</b>; large waves, spray. "Yachtsman's gale".</td></tr>
+        <tr><td class="mono">7</td><td class="mono">28–33</td><td>Near gale; foam blown in streaks.</td></tr>
+        <tr><td class="mono">8</td><td class="mono">34–40</td><td><b>Gale</b>; moderately high waves, well-marked streaks.</td></tr>
+        <tr><td class="mono">9–10</td><td class="mono">41–55</td><td>Severe gale / storm; visibility affected, tumbling crests.</td></tr>
+        <tr><td class="mono">11–12</td><td class="mono">56+</td><td>Violent storm / hurricane force.</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Pressure systems in the northern hemisphere</h3>
+      <table class="tbl-tight">
+        <tr><th></th><th>Low (depression)</th><th>High (anticyclone)</th></tr>
+        <tr><td>Circulation</td><td><b>Anticlockwise</b>, spiralling in</td><td><b>Clockwise</b>, spiralling out</td></tr>
+        <tr><td>Weather</td><td>Cloud, rain, wind, fronts, changeable</td><td>Settled, light winds, haze or fog, can be persistent</td></tr>
+        <tr><td>Isobars</td><td>Close = strong wind</td><td>Widely spaced = light</td></tr>
+      </table>
+      <div class="box mn">
+        <h4>Buys Ballot's law</h4>
+        <p>Stand with your <b>back to the wind</b> in the northern hemisphere: <b>low pressure is on your left</b>. It tells you where the system is without a chart.</p>
+      </div>
+      <h3>A depression passing over you</h3>
+      <table class="tbl-tight">
+        <tr><th>Stage</th><th>Sky</th><th>Wind</th><th>Pressure</th></tr>
+        <tr><td>Ahead</td><td>Cirrus thickening to cirrostratus, halo</td><td>Backs, freshens</td><td>Falling</td></tr>
+        <tr><td><b>Warm front</b></td><td>Nimbostratus, steady rain, poor visibility</td><td><b>Veers</b> as it passes</td><td>Falling, then steady</td></tr>
+        <tr><td>Warm sector</td><td>Stratus, drizzle, mild, often murky</td><td>Steady direction</td><td>Steady</td></tr>
+        <tr><td><b>Cold front</b></td><td>Cumulonimbus, squalls, heavy showers, then clearing</td><td><b>Veers sharply</b>, gusty</td><td>Rising</td></tr>
+        <tr><td>Behind</td><td>Cumulus, bright, good visibility, showers</td><td>Gusty, veered</td><td>Rising</td></tr>
+      </table>
+      <p class="print-hint">Wind <b>veers</b> at every front passage in the northern hemisphere — that is the single most testable fact here. An <b>occlusion</b> is a cold front catching a warm one: the warm sector lifted clear of the surface, mixed weather, wind veering.</p>
+      <h3>Local effects</h3>
+      <ul>
+        <li><b>Sea breeze</b>: sunny afternoon, land heats, air rises, cool air draws in from the sea. Onshore, building through the afternoon, dying at dusk; can add 10–15 kn and back or veer the gradient wind.</li>
+        <li><b>Land breeze</b>: night and early morning, weaker, offshore.</li>
+        <li><b>Advection fog</b> (sea fog): warm moist air over a cold sea. Common in spring, persists in wind — the fog that matters to sailors.</li>
+        <li><b>Radiation fog</b>: clear calm night over land, drifts out of river mouths at dawn, burns off with the sun.</li>
+        <li><b>Wind over tide</b>: steep breaking seas. <b>Wind against a headland or shoal</b>: overfalls and a race.</li>
+        <li><b>Katabatic wind</b>: cold air pouring down a valley or off high ground at night, gusty, offshore.</li>
+        <li>Wind funnels and accelerates between headlands and along cliffs; expect more than the forecast in a gap.</li>
+      </ul>
+      <h3>Where the forecast comes from</h3>
+      <p>Shipping forecast (BBC R4 long wave, four times daily) · inshore waters forecast · Met Office and other websites and apps · <b>Maritime Safety Information</b> broadcasts by the Coastguard on VHF after an announcement on Ch 16 · Navtex (518 kHz) · harbour offices and marinas · barometer and your own eyes.</p>
+    </div>
+  </div>
+</section>
+
+<section id="safety">
+  <h2><span class="num">11</span> Safety, distress and man overboard <span class="why">Learn the script</span></h2>
+  <div class="cols">
+    <div>
+      <h3>The Mayday call, word for word</h3>
+      <div class="box rule">
+        <p class="mono" style="font-size:.95em;line-height:1.5">
+        MAYDAY, MAYDAY, MAYDAY<br>
+        THIS IS <i>Seabird, Seabird, Seabird</i><br>
+        Callsign … · MMSI …<br>
+        MAYDAY <i>Seabird</i>, Callsign …<br>
+        MY POSITION IS 50°42.3'N 001°18.6'W<br>
+        <span class="mono">(or a bearing and distance from a charted object)</span><br>
+        I AM <i>holed and sinking</i><br>
+        I REQUIRE IMMEDIATE ASSISTANCE<br>
+        FOUR PERSONS ON BOARD, taking to the liferaft<br>
+        <i>White hull, red sails, EPIRB activated</i><br>
+        OVER
+        </p>
+      </div>
+      <div class="box mn">
+        <h4>Remember the order</h4>
+        <p><b>M</b>ayday · <b>I</b>dentity · <b>P</b>osition · <b>D</b>anger (nature of distress) · <b>A</b>ssistance · <b>N</b>umber on board · <b>I</b>nfo · <b>O</b>ver.</p>
+        <p>Send the <b>DSC alert on Ch 70 first</b> (red button, hold), then the voice Mayday on <b>Ch 16</b>. DSC carries your identity and GPS position automatically.</p>
+      </div>
+      <table class="tbl-tight">
+        <tr><th>Call</th><th>Use</th></tr>
+        <tr><td><b>Mayday</b></td><td>Grave and imminent danger to a vessel or person, immediate assistance required.</td></tr>
+        <tr><td><b>Pan-Pan</b></td><td>Urgency: a serious problem, but no immediate danger to life — engine failure in a shipping lane, a serious injury.</td></tr>
+        <tr><td><b>Sécurité</b></td><td>Safety: navigational or weather information, e.g. a container adrift.</td></tr>
+        <tr><td><b>Mayday relay</b></td><td>You are passing on someone else's Mayday.</td></tr>
+        <tr><td><b>Seelonce Mayday</b></td><td>Silence imposed by the controlling station; <b>Seelonce Feenee</b> ends it.</td></tr>
+      </table>
+      <h3>Flares and what they are for</h3>
+      <table class="tbl-tight">
+        <tr><th>Type</th><th>Range / use</th></tr>
+        <tr><td><b>Red parachute</b></td><td>Up to ~25–30 nm at night, fires to ~300 m. Long-range distress — use when there is a chance of being seen.</td></tr>
+        <tr><td><b>Red handheld</b></td><td>~5–10 nm. Pinpoints you for a searching craft. Hold downwind, over the side.</td></tr>
+        <tr><td><b>Orange smoke</b></td><td>Daylight distress, ~3 nm, and shows the wind to a helicopter.</td></tr>
+        <tr><td><b>White handheld</b></td><td><b>Not distress.</b> Anti-collision: "I am here".</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Man overboard, in order</h3>
+      <ol class="recipe">
+        <li><b>Shout "man overboard"</b> and detail one person to point and never look away.</li>
+        <li>Press <b>MOB</b> on the GPS or plotter.</li>
+        <li>Throw buoyancy: horseshoe, danbuoy, lifesling — immediately, even if you sail back.</li>
+        <li>Get the crew on deck; start the engine (watch for lines in the water).</li>
+        <li>Manoeuvre back: a reach away and a reach back, or a crash stop, depending on boat and conditions — the plan you have practised.</li>
+        <li>Approach <b>slowly from downwind</b>, stop with the casualty at the shrouds, secure them to the boat before anything else.</li>
+        <li>Recover with a strop, halyard and winch — lifting horizontally where possible after a long immersion.</li>
+        <li>If not recovered quickly, send a <b>Mayday</b>. Treat for hypothermia and shock.</li>
+      </ol>
+      <h3>Kit, checks and fire</h3>
+      <table class="tbl-tight">
+        <tr><th>Item</th><th>Point</th></tr>
+        <tr><td>Lifejackets</td><td>150 N for coastal cruising; crotch strap, light, whistle, spray hood. Check gas bottle and firing head, service annually.</td></tr>
+        <tr><td>Harness and tether</td><td>Clip to jackstays or a strong point, not the guardrail. Short tether on deck beats a long one.</td></tr>
+        <tr><td>Liferaft</td><td>Serviced, lashed where it can be launched, painter made fast to the boat. <b>Step up into the raft</b> — abandon only when the boat is definitely going down.</td></tr>
+        <tr><td>Fire: prevention</td><td>Turn gas off at the bottle, sniff the bilge before starting, no smoking near fuel, secure the cooker.</td></tr>
+        <tr><td>Fire: action</td><td><b>Cut the fuel or gas, cut the air, then cool.</b> Dry powder for most; never water on fuel or electrics. A fire blanket for a galley pan.</td></tr>
+        <tr><td>Bilge and pumps</td><td>Know where the seacocks are and keep bungs beside them.</td></tr>
+        <tr><td>Helicopter</td><td>Brief the crew, drop sails or motor as instructed, all lifejackets on. <b>Never make the hi-line fast</b> — let it touch the sea or the deck first to discharge static, and pay it out freely.</td></tr>
+        <tr><td>Before leaving</td><td>Tell someone ashore your plan and your ETA, and tell them when you arrive.</td></tr>
+      </table>
+      <div class="box warn">
+        <h4>Cold water</h4>
+        <p>Cold shock gasping in the first minute, loss of grip and useful movement within ten, then hypothermia. Buoyancy and a way back aboard matter more than swimming ability.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="passage">
+  <h2><span class="num">12</span> Passage planning, pilotage and electronics <span class="why">The long question</span></h2>
+  <div class="cols">
+    <div>
+      <h3>The four stages</h3>
+      <table class="tbl-tight">
+        <tr><td><b>Appraisal</b></td><td>Gather everything: charts, almanac, pilot book, forecast, crew and boat capability.</td></tr>
+        <tr><td><b>Planning</b></td><td>Write the plan: route, waypoints, tidal windows, ETA, bolt-holes, pilotage notes.</td></tr>
+        <tr><td><b>Execution</b></td><td>Depart at the planned time, or re-plan. The plan serves the day, not the other way round.</td></tr>
+        <tr><td><b>Monitoring</b></td><td>Fix regularly, log it, compare with the plan, adjust. Cross-check the plotter against a bearing or a depth.</td></tr>
+      </table>
+      <h3>What a Day Skipper plan must contain</h3>
+      <ul>
+        <li><b>Tides</b>: HW and LW times and heights at departure, destination and any gate; stream directions along the route hour by hour; the height of tide over every shallow patch on the way.</li>
+        <li><b>Weather</b>: the latest forecast and where the next one comes from; wind against tide spots; the limit you'll turn back at.</li>
+        <li><b>Route</b>: courses and distances leg by leg, with the expected SOG and a running ETA.</li>
+        <li><b>Hazards</b>: rocks, races, firing ranges, TSS, ferry routes, restricted areas; clearing bearings or contours for each.</li>
+        <li><b>Pilotage</b>: entry and exit plans at both ends, drawn out, with lights and marks in sequence.</li>
+        <li><b>Contingency</b>: alternative ports and the conditions under which you'd use them; where you can anchor and wait for the tide.</li>
+        <li><b>Admin</b>: fuel, water, food, crew fitness and watches, safety briefing, someone ashore told the plan.</li>
+      </ul>
+      <div class="box mn">
+        <p>Six headings to recite if the question says "what would you consider": <b>crew, boat, tides, weather, navigation, contingency</b>. Then add "and I'd tell someone ashore".</p>
+      </div>
+      <h3>Tidal window, worked in three lines</h3>
+      <ol class="recipe">
+        <li>Least charted depth on the route, minus your draught and safety margin, gives the <b>height of tide you need</b>.</li>
+        <li>Read the curve for the <b>times</b> that height occurs, rising and falling — that's the window.</li>
+        <li>Check the <b>stream</b> and the harbour's own restrictions inside that window, then set the departure time by working back from the far end.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Pilotage — navigation without plotting</h3>
+      <table class="tbl-tight">
+        <tr><th>Tool</th><th>Use</th></tr>
+        <tr><td><b>Transit</b></td><td>Two charted objects in line: the most accurate position line there is, and it needs no compass. Also shows cross-tide instantly — if the back mark drifts left, you are being set right.</td></tr>
+        <tr><td><b>Leading line</b></td><td>A purpose-built transit into a harbour; keep them in line and stay in the channel.</td></tr>
+        <tr><td><b>Clearing bearing</b></td><td>"Keep the bearing of the church <b>more than</b> 060° and you stay clear of the ledge." Written <span class="mono">NLT 060°M</span> / <span class="mono">NMT 145°M</span>.</td></tr>
+        <tr><td><b>Depth contour</b></td><td>A handrail: follow the 10 m line, or use "not less than 5 m" as a safety line.</td></tr>
+        <tr><td><b>Sectored light</b></td><td>White = safe approach; red and green mark the danger sides. "Am I still in the white?"</td></tr>
+        <tr><td><b>Buoy hopping</b></td><td>List the marks in order with their characters and the course between each — a ladder you tick off.</td></tr>
+      </table>
+      <div class="box rule">
+        <h4>The pilotage plan on a card</h4>
+        <p>Write it before you get there, big enough to read in the dark and the wet: each mark, its light character, the course to the next, the distance, the expected time, the depth you should see, and the abort point. Then you pilot by eye, not by chart table.</p>
+      </div>
+      <h3>Electronic navigation, and its limits</h3>
+      <table class="tbl-tight">
+        <tr><th>Instrument</th><th>Reads</th><th>Watch out</th></tr>
+        <tr><td>GPS / plotter</td><td><b>COG and SOG</b> — over the ground, with the tide already in them</td><td>No tide vector to apply; position to WGS84; check the chart's datum note. Antenna and power can fail.</td></tr>
+        <tr><td>Compass</td><td><b>Heading</b> — where the bow points</td><td>Not the same as COG whenever there is tide or leeway.</td></tr>
+        <tr><td>Log</td><td><b>STW</b> — speed through the water</td><td>Impeller fouls; calibration drifts.</td></tr>
+        <tr><td>Echo sounder</td><td>Depth <b>below the transducer</b>, unless offset</td><td>Know whether it reads from the waterline, the keel or the transducer. Say which when you answer.</td></tr>
+        <tr><td>AIS</td><td>Other vessels' identity, course, speed, CPA</td><td>Not every vessel carries it. It is not a look-out.</td></tr>
+      </table>
+      <div class="box warn">
+        <h4>Waypoints</h4>
+        <p>Never put a waypoint <b>on</b> a buoy or a mark — everyone else's plotter has it there too. Offset to the side you'll pass, check every leg between waypoints for what it crosses, and keep the cross-track error alarm on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="seamanship">
+  <h2><span class="num">13</span> Ropework, anchoring and the words for things <span class="why">Quick paper-1 marks</span></h2>
+  <div class="cols3">
+    <div>
+      <h3>Knots and their one job</h3>
+      <table class="tbl-tight">
+        <tr><td><b>Bowline</b></td><td>A fixed loop that won't slip or jam — sheets to a sail, a line round a post, round a casualty.</td></tr>
+        <tr><td><b>Round turn &amp; two half hitches</b></td><td>To a ring, rail or post under load; can be untied loaded.</td></tr>
+        <tr><td><b>Clove hitch</b></td><td>Fenders to a guardrail; quick, adjustable, not to be trusted alone under varying load.</td></tr>
+        <tr><td><b>Figure of eight</b></td><td>Stopper knot in the end of a sheet.</td></tr>
+        <tr><td><b>Reef knot</b></td><td>Joins two ends of the <b>same</b> line round something — reefing ties, sail ties. Not for joining two ropes under load.</td></tr>
+        <tr><td><b>Sheet bend</b></td><td>Joins two ropes, especially of <b>different</b> size.</td></tr>
+        <tr><td><b>Rolling hitch</b></td><td>Grips along another rope or a spar — taking the load off a riding turn.</td></tr>
+      </table>
+      <h4>Rope</h4>
+      <ul>
+        <li><b>Polyester</b> (Terylene): low stretch, UV resistant — sheets and halyards.</li>
+        <li><b>Nylon</b> (polyamide): strong and <b>stretchy</b> — anchor rodes and mooring warps, where shock absorption helps.</li>
+        <li><b>Polypropylene</b>: cheap, <b>floats</b>, weakens in sunlight — heaving lines, dinghy painters.</li>
+        <li>Kill chafe: it does more damage than load. Whip or heat-seal every end.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Anchoring</h3>
+      <table class="tbl-tight">
+        <tr><td><b>Scope</b></td><td>At least <b>4 ×</b> the maximum depth of water in all chain, <b>6 ×</b> with rope. Depth means at <b>high water</b>, plus freeboard.</td></tr>
+        <tr><td><b>Swinging room</b></td><td>Radius = scope veered + boat length. Check what it sweeps at every state of tide and wind.</td></tr>
+        <tr><td><b>Holding</b></td><td>Sand and mud good, weed and rock poor, shingle variable. Read the chart's seabed abbreviation.</td></tr>
+        <tr><td><b>Types</b></td><td>CQR/plough and Delta: good in sand and mud. Danforth/Fortress: high holding, flat stowage, poor in weed. Bruce/claw: easy setting. Fisherman: rock and weed, heavy.</td></tr>
+      </table>
+      <h4>Letting go, in order</h4>
+      <ol class="recipe">
+        <li>Pick the spot for depth, holding, shelter and swinging room; check the tide's rise and fall.</li>
+        <li>Approach <b>into the wind or tide</b>, whichever dominates, and stop over the spot.</li>
+        <li>Lower — don't drop — the anchor until it is on the bottom, then drop back, veering the scope as you go.</li>
+        <li>Snub it and go astern gently to <b>dig it in</b>.</li>
+        <li>Take <b>transits or bearings</b> to check she is holding, note the depth, and set an anchor alarm.</li>
+        <li>Show a <b>ball</b> by day and an <b>all-round white</b> by night.</li>
+      </ol>
+      <p class="print-hint">Dragging: the chain snatches, the transit moves, the boat sheers oddly. Veer more scope or re-lay. Weigh by motoring up to the chain, never by winching the boat up to the anchor.</p>
+    </div>
+    <div>
+      <h3>Terms they ask for</h3>
+      <table class="tbl-tight">
+        <tr><td><b>Port / starboard</b></td><td>Left / right facing forward. Red / green.</td></tr>
+        <tr><td><b>Bow / stern / beam / quarter</b></td><td>Front / back / sideways / between beam and stern.</td></tr>
+        <tr><td><b>Windward / leeward</b></td><td>Towards the wind / away from it.</td></tr>
+        <tr><td><b>Draught / freeboard / air draught</b></td><td>Below waterline / waterline to deck / above waterline to masthead.</td></tr>
+        <tr><td><b>Displacement</b></td><td>The weight of water the boat displaces — her weight.</td></tr>
+        <tr><td><b>Tack / gybe</b></td><td>Turn the bow through the wind / turn the stern through the wind.</td></tr>
+        <tr><td><b>Close-hauled / reach / run</b></td><td>As close to the wind as she'll sail / wind on the beam / wind behind.</td></tr>
+        <tr><td><b>No-go zone</b></td><td>Roughly 45° either side of the true wind, where she won't sail.</td></tr>
+        <tr><td><b>Reefing</b></td><td>Reducing sail area. First reef early — "the time to reef is when you first think of it".</td></tr>
+        <tr><td><b>Heave to</b></td><td>Backed headsail, helm to leeward: the boat lies quietly, drifting slowly.</td></tr>
+        <tr><td><b>Warps</b></td><td>Bow line, stern line, <b>springs</b> (fore and aft, stop surging), breast lines.</td></tr>
+        <tr><td><b>Rafting up</b></td><td>Own lines ashore, springs rigged, masts staggered, cross the foredeck of your neighbour.</td></tr>
+        <tr><td><b>Prop walk</b></td><td>The stern kicks sideways astern — usually to port with a right-handed prop. Use it, don't fight it.</td></tr>
+        <tr><td><b>Pontoon approach</b></td><td>Into the strongest of wind or tide, slowly, with a plan and fenders and lines ready both sides.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="oneglance">
+  <h2><span class="num">14</span> Everything worth memorising, on one page <span class="why">Night-before page</span></h2>
+  <div class="cols3">
+    <div>
+      <h3>Compass</h3>
+      <div class="box mn">
+        <p class="mono">T V M D C</p>
+        <p><b>T</b>rue <b>V</b>irgins <b>M</b>ake <b>D</b>ull <b>C</b>ompany (down) · <b>CADET</b>: Compass ADd East → True (up).<br>Error <b>west</b>, compass <b>best</b>. Error <b>east</b>, compass <b>least</b>. Deviation by <b>heading</b>.</p>
+      </div>
+      <h3>Chartwork</h3>
+      <div class="box">
+        <p><b>EP</b>: boat then tide, triangle.<br><b>CTS</b>: tide then boat-speed arc, two arrows.<br>1 arrow ground · 2 arrows water · 3 arrows tide.<br>Leeway: steer <b>up</b>wind of the water track.<br><span class="mono">D = S × T</span>, 1 nm = 1' latitude.</p>
+      </div>
+      <h3>Tides</h3>
+      <div class="box">
+        <p><span class="mono">depth = charted depth + HoT</span><br>
+        <span class="mono">over a drying patch = HoT − drying ht</span><br>
+        <span class="mono">bridge = charted ht + MHWS − HoT</span><br>
+        <span class="mono">range = HW − LW</span><br>
+        Twelfths <span class="mono">1 2 3 3 2 1</span>. Springs ≈ 2 days after full or new moon. Atlas figures: <b>neaps first</b>, tenths of a knot.</p>
+      </div>
+      <h3>Weather</h3>
+      <div class="box">
+        <p>Imminent &lt;6 h · soon 6–12 h · later &gt;12 h.<br>
+        Veer = clockwise, back = anticlockwise. Wind <b>veers</b> at a front.<br>
+        Gale = F8 or gusts 43–51 kn.<br>
+        Fog &lt;1000 m · poor to 2 nm · moderate to 5 nm · good beyond.<br>
+        Back to the wind → <b>low on your left</b>.</p>
+      </div>
+    </div>
+    <div>
+      <h3>Buoyage</h3>
+      <div class="box">
+        <p>Region A: <b>red can to port</b> entering; green cone to starboard.<br>
+        Cardinals: <b>N</b> continuous · <b>E</b> 3 · <b>S</b> 6 + long flash · <b>W</b> 9. Topmark cones point the way the black band sits. Pass on the <b>named side</b>.<br>
+        Isolated danger: 2 balls, <span class="mono">Fl(2)</span>. Safe water: red/white stripes, sphere, <span class="mono">Iso / Oc / LFl 10s / Mo(A)</span>. Special: yellow X, <span class="mono">Fl Y</span>.</p>
+      </div>
+      <h3>Lights</h3>
+      <div class="box">
+        <p>Masthead <span class="mono">225°</span> · sidelight <span class="mono">112.5°</span> · stern <span class="mono">135°</span> · all-round <span class="mono">360°</span>.<br>
+        No masthead light = <b>sailing</b>. Two masthead lights = <b>50 m or more</b>.<br>
+        Red over red — captain is dead.<br>
+        Red, white, red — restricted ahead.<br>
+        Green over white — trawling tonight.<br>
+        Red over white — fishing tonight.<br>
+        White over red — pilot ahead.<br>
+        Red over green — sailing machine.<br>
+        Anchor: white all-round + <b>ball</b>. Aground: + two red, three balls. Motor-sailing: <b>cone point down</b>.</p>
+      </div>
+      <h3>Sound</h3>
+      <div class="box">
+        <p><span class="mono">•</span> starboard · <span class="mono">••</span> port · <span class="mono">•••</span> astern · <span class="mono">•••••</span> doubt.<br>
+        <span class="mono">——•</span> overtake your starboard · <span class="mono">——••</span> your port · <span class="mono">—•—•</span> agreed.<br>
+        Fog: <span class="mono">—</span> making way · <span class="mono">——</span> stopped · <span class="mono">—••</span> sail, fishing, towing, NUC, RAM, CBD · <span class="mono">—•••</span> vessel towed · bell 5 s at anchor.</p>
+      </div>
+    </div>
+    <div>
+      <h3>Rules</h3>
+      <div class="box">
+        <p><b>New Reels Catch Fish So Purchase Some</b> — NUC, RAM, CBD, Fishing, Sailing, Power, Seaplane.<br>
+        Sail: <b>port gives way to starboard</b>; same tack, <b>windward gives way</b>.<br>
+        Power head-on: both <b>starboard</b>. Power crossing: <b>other on your starboard, you give way</b>, pass astern.<br>
+        <b>Overtaker always keeps clear</b>, from 22.5° abaft the beam.<br>
+        Stand-on: <b>hold course and speed</b>, act if she doesn't.<br>
+        Fog (Rule 19): <b>nobody stands on</b>; no turn to port for anything forward of the beam; hear a signal ahead → minimum steerage way.<br>
+        Risk: <b>constant bearing, decreasing range</b>. Action: <b>early, substantial, obvious</b>.</p>
+      </div>
+      <h3>Safety</h3>
+      <div class="box">
+        <p>Mayday order: <b>M I P D A N I O</b> — Mayday, Identity, Position, Danger, Assistance, Number aboard, Info, Over. DSC Ch 70 then voice Ch 16.<br>
+        Mayday = grave danger · Pan-Pan = urgency · Sécurité = safety.<br>
+        White flare is <b>not</b> distress.<br>
+        Fire: <b>cut fuel, cut air, cool</b>.<br>
+        Hi-line: <b>never make it fast</b>.</p>
+      </div>
+      <h3>Passage</h3>
+      <div class="box">
+        <p>Appraise · Plan · Execute · Monitor.<br>
+        Consider: <b>crew, boat, tides, weather, navigation, contingency</b> — and tell someone ashore.<br>
+        Anchor scope: <b>4 × depth chain, 6 × rope</b>, at HW.<br>
+        Waypoint: <b>never on the buoy</b>.</p>
+      </div>
+    </div>
+  </div>
+  <p class="print-hint">Sources: RYA Day Skipper shorebased syllabus (G14/G158 scheme), IRPCS 1972 as amended, IALA Maritime Buoyage System Region A, Met Office shipping forecast definitions. Where a number varies by publication — flare ranges, leeway angles, anchor scope — the figure here is the common teaching value; quote the almanac in the exam.</p>
+</section>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="https://github.com/kudresov/learn-to-sail">Source on GitHub</a></footer>
+</div>
+</body>
+</html>
