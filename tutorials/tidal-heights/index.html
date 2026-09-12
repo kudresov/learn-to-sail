@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Tidal Heights · Learn to Sail</title>
+<meta name="description" content="Drill RYA Day Skipper tidal heights: chart datum, drying heights, bridge clearance, range, the rule of twelfths, the tidal curve both ways, secondary ports, and a harbour entry where the wrong number puts you on the bar.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../shared/site.css">
+<style>
+.col{max-width:720px;margin:0 auto}
+.tut-head{padding-block:22px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tut-head h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:24px;margin:0}
+.tut-head .streak{font-size:13px;color:var(--ink-3)}
+.tut-head .streak b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:10px;padding-block:16px 4px;flex-wrap:wrap}
+.stepper .dots{display:flex;gap:6px;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;padding:0;cursor:pointer}
+.stepper .dot.done{background:var(--good);border-color:var(--good)}
+.stepper .dot.now{background:var(--magenta);border-color:var(--magenta);transform:scale(1.3)}
+.stepper .dot.locked{border-color:var(--rule);cursor:not-allowed}
+.stepper .name{font:italic 400 17px "Libre Caslon Text",Georgia,serif}
+.stepper .name small{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:8px;font-style:normal}
+.stepper .nav{margin-left:auto;display:flex;gap:4px}
+.stepper .nav button{font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:4px 9px;cursor:pointer;border-radius:2px}
+.stepper .nav button:disabled{opacity:.35;cursor:default}
+.concept{border:1px solid var(--rule);border-left:4px solid var(--magenta);background:var(--paper);margin-top:14px}
+.concept summary{list-style:none;cursor:pointer;padding:12px 16px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);display:flex;justify-content:space-between}
+.concept summary::after{content:"show";font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.concept[open] summary::after{content:"hide"}
+.concept .body{padding:0 16px 16px;font-size:15px}
+.concept p{margin:0 0 8px;max-width:42em}
+.concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;color:var(--ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
+.concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.concept svg{width:100%;height:auto;margin-top:10px;display:block}
+.figbox{margin-top:16px;background:var(--paper);border:1px solid var(--rule);padding:12px}
+.figbox svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin-top:8px;color:var(--ink-2)}
+.legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle;border-radius:2px}
+.legend .sp::before{background:var(--ink-2)}.legend .np::before{background:var(--ink-3)}
+.legend .day::before{background:var(--magenta)}.legend .wk::before{background:var(--brass)}
+.note{font-size:12px;color:var(--ink-3);margin-top:4px}
+.legs{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.leg{width:26px;height:8px;background:var(--rule);border-radius:2px}
+.leg.done{background:var(--good)}.leg.bad{background:var(--bad)}.leg.now{background:var(--magenta);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.strikes{font-size:13px;color:var(--ink-3);margin-left:auto}
+.strikes b{color:var(--bad);letter-spacing:.15em}
+.q{margin-top:22px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
+.timer{font-size:13px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(19px,2.6vw,23px);line-height:1.35;margin:8px 0 16px;text-wrap:balance}
+.givens{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px;margin-bottom:16px}
+.given{border:1px solid var(--rule);padding:9px 12px;background:var(--paper);min-width:0}
+.given .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.given .v{font-size:21px;font-weight:500;overflow-wrap:anywhere}
+.given.hi{border-color:var(--magenta)}.given.hi .v{color:var(--magenta)}
+.answer{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.answer input{font-family:"IBM Plex Mono",monospace;font-size:32px;font-weight:500;width:150px;max-width:100%;padding:8px 14px;border:1.5px solid var(--ink-2);background:var(--paper);color:var(--ink);letter-spacing:.06em;border-radius:2px}
+.answer input:disabled{opacity:.4}
+.answer .unit{align-self:center;font-size:19px;color:var(--ink-3)}
+.choices{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.choices[hidden]{display:none}
+.choices button{font:500 16px "Source Sans 3",sans-serif;padding:10px 16px;border:1.5px solid var(--ink-2);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:2px;text-align:left;min-height:44px}
+.choices button:hover{border-color:var(--magenta)}
+.choices button .kb{font:500 11px "IBM Plex Mono",monospace;color:var(--ink-3);margin-right:8px}
+.choices button.picked{border-color:var(--magenta);background:var(--magenta-soft)}
+.choices button:disabled{cursor:default;opacity:.75}
+.choices button.right{border-color:var(--good);background:var(--good-soft);opacity:1}
+.btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
+.feedback.show{display:block}
+.feedback.ok{border-color:var(--good);background:var(--good-soft)}
+.feedback.no{border-color:var(--bad);background:var(--bad-soft)}
+.feedback h3{margin:0 0 8px;font:700 15px "Source Sans 3",sans-serif}
+.feedback p{margin:6px 0 0}
+.steps{margin:0;padding:0;list-style:none;font-size:15px}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:3px 0}
+.steps li .s{font-weight:500}
+.rule{font-size:13px;color:var(--ink-2);margin-top:8px;font-style:italic}
+.tbl{margin-top:16px;border:1px solid var(--rule);overflow-x:auto;background:var(--paper)}
+.tbl table{border-collapse:collapse;width:100%;font-size:14px;min-width:440px}
+.tbl th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);background:var(--ground)}
+.tbl td{padding:5px 10px;border-bottom:1px solid var(--rule)}
+.tbl tr.hi td{background:var(--brass-soft)}
+.tbl caption{caption-side:top;text-align:left;font:italic 13px "Libre Caslon Text",serif;padding:8px 10px;color:var(--ink-2)}
+.progress{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);flex-wrap:wrap}
+.progress .last{display:flex;gap:5px}
+.progress .last i{width:14px;height:14px;border-radius:3px;background:var(--rule);display:block}
+.progress .last i.y{background:var(--good)}.progress .last i.n{background:var(--bad)}
+.progress .cleared{color:var(--good);font-weight:600}
+.more{margin-top:28px;background:var(--paper);border:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 18px;font:italic 400 17px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
+.more[open] summary::after{content:"−"}
+.more .body{padding:0 18px 18px;font-size:15px}
+.more h4{margin:14px 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.more p{margin:0 0 6px;max-width:42em}
+.more .mono{font-family:"IBM Plex Mono",monospace;font-size:14px}
+.more table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+.more td,.more th{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:left}
+.more th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.empty{font-style:italic;color:var(--ink-3);font-family:"Libre Caslon Text",serif}
+kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
+.pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
+.pop.show{opacity:1;transform:translate(-50%,0)}
+.iconbtn{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-3);padding:4px 8px;cursor:pointer;border-radius:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="pop" id="pop"></div>
+<div class="col">
+<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Tidal Heights</a></div><button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button></nav>
+
+<header class="tut-head">
+  <h1>Tidal Heights</h1>
+  <span class="streak">streak <b id="streak">0</b> · best <b id="best">0</b></span>
+</header>
+
+<div class="stepper" id="stepper"></div>
+
+<details class="concept" id="concept">
+  <summary>The idea</summary>
+  <div class="body" id="conceptBody"></div>
+</details>
+
+<section class="figbox" id="figbox" hidden>
+  <svg id="fig" viewBox="0 0 600 300" role="img" aria-label="Tidal diagram"></svg>
+  <div class="legend" id="legend"></div>
+  <div class="note" id="fignote"></div>
+  <div class="legs" id="legs"></div>
+</section>
+
+<section class="q" aria-label="Question">
+  <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
+  <p class="prompt" id="prompt"></p>
+  <div class="givens" id="givens"></div>
+  <form class="answer" id="form" autocomplete="off">
+    <input id="ans" inputmode="decimal" placeholder="0.0" aria-label="Your answer">
+    <span class="unit" id="unit">m</span>
+    <div class="choices" id="choices" hidden></div>
+    <button class="btn" type="submit" id="check">Check</button>
+    <button class="btn ghost" type="button" id="skip">Show me</button>
+  </form>
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="tbl" id="tbl" hidden></div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<details class="more" id="logbox">
+  <summary>Ship's log</summary>
+  <div class="body" id="logbody"></div>
+</details>
+
+<details class="more">
+  <summary>The rules, in one breath</summary>
+  <div class="body">
+    <h4>The vertical picture</h4>
+    <p>Everything wet is measured <strong>up from chart datum</strong>. Everything dry or overhead is measured <strong>down from MHWS</strong>.</p>
+    <table>
+      <tr><th>You want</th><th>Sum</th></tr>
+      <tr><td>Depth of water now</td><td class="mono">charted depth + height of tide</td></tr>
+      <tr><td>Depth over a drying patch</td><td class="mono">height of tide − drying height</td></tr>
+      <tr><td>Clearance under the keel</td><td class="mono">depth of water − draught</td></tr>
+      <tr><td>Clearance under a bridge</td><td class="mono">charted height + MHWS − height of tide</td></tr>
+      <tr><td>Range of the tide</td><td class="mono">HW height − LW height</td></tr>
+    </table>
+    <h4>Springs and neaps</h4>
+    <p>Springs: new and full moon, biggest range, about two days after the phase. Neaps: first and last quarter, smallest range. Compare the day's range with the spring and neap ranges printed in the curve panel and interpolate.</p>
+    <h4>The curve, both ways</h4>
+    <p>Mark HW height on the top scale and LW height on the bottom scale, join them with a sloping line. <strong>Time → height</strong>: enter on the time axis, up to the curve, across to the sloping line, down to the height scale. <strong>Height → time</strong>: the same picture backwards. Spring curve solid, neap curve dashed, interpolate between. Two times answer every height — say whether you mean the rising or the falling one.</p>
+    <h4>Rule of twelfths</h4>
+    <p class="mono">1 · 2 · 3 · 3 · 2 · 1 twelfths of the range, hour by hour.</p>
+    <p>Half the range arrives in the middle two hours. It is a sanity check for a roughly six-hour, roughly sinusoidal tide — never for the Solent's double high water. Use the curve for the answer.</p>
+    <h4>Secondary ports</h4>
+    <p>Work the standard port first. Interpolate the <strong>time</strong> difference between the two reference high waters (0000 and 0600) by your actual HW time. Interpolate the <strong>height</strong> difference between MHWN and MHWS by your actual HW height, and between MLWN and MLWS for the low. Lay it out as a table — standard, difference, secondary — and the marks follow the layout.</p>
+    <h4>Always leave a margin</h4>
+    <p>Work the answer, then take off your own clearance: commonly 0.5–1.0 m under the keel, more in a swell. State the margin you chose.</p>
+    <h4>Keys</h4>
+    <p><kbd>Enter</kbd> checks, <kbd>Enter</kbd> again moves on. <kbd>1</kbd>–<kbd>4</kbd> pick an option. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
+  </div>
+</details>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="../../">More tutorials</a></footer>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[rnd(0,a.length-1)];
+const r1 = x => Math.round(x*10)/10;
+const m1 = x => x.toFixed(1);
+const hhmm = t => { const n = ((t%1440)+1440)%1440; return String(Math.floor(n/60)).padStart(2,'0') + String(n%60).padStart(2,'0'); };
+const dur = t => `${String(Math.floor(t/60)).padStart(2,'0')}${String(t%60).padStart(2,'0')}`;
+const sdiff = t => (t < 0 ? '−' : '+') + dur(Math.abs(t));
+const sm = x => (x < 0 ? '−' : '+') + m1(Math.abs(x));
+
+// ---- the port. Fictional, so every figure here is internally consistent
+// and nobody sails on a number scraped off a training page.
+const PORT = { name:'Havenport', MHWS:4.6, MHWN:3.6, MLWN:1.8, MLWS:0.8 };
+const SPR = r1(PORT.MHWS - PORT.MLWS);   // 3.8 m spring range
+const NEA = r1(PORT.MHWN - PORT.MLWN);   // 1.8 m neap range
+const ML  = r1((PORT.MHWS + PORT.MLWS)/2); // 2.7 m mean level
+const DUR_S = 370, DUR_N = 390;          // HW→LW in minutes, springs and neaps
+
+// ---- persistence
+const KEY = 'lts:tidal-heights:v1';
+let store = { streak:0, best:0, stages:{}, log:[], muted:false, seenConcept:{} };
+try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
+
+const STAGES = [
+  { id:'h1', kind:'drill', title:'Up from the datum', cfg:{mode:'depth'}, fig:'datum',
+    intro:'Charted depth is the least water you expect: it is measured up from chart datum, the level the tide almost never falls below. The tide sits on top of it. Add the height of tide to the charted depth and you have the water under you now.',
+    ex:'charted depth 2.4 m + height of tide 3.1 m = 5.5 m of water\n5.5 m − draught 1.8 m = 3.7 m under the keel' },
+  { id:'h2', kind:'drill', title:'Dries and bridges', cfg:{mode:'clear'}, fig:'datum',
+    intro:'Two traps, one picture. A drying height is printed underlined and sticks up from the datum, so you subtract it from the height of tide. A charted height — bridge, light, cliff — is measured down from MHWS, so add MHWS back on and take the height of tide off.',
+    ex:'drying 1.2 m, tide 3.1 m → 1.9 m of water over it\nbridge 8.5 m charted, MHWS 4.6 m, tide 3.1 m → 8.5 + 4.6 − 3.1 = 10.0 m clear' },
+  { id:'h3', kind:'drill', title:'Range, springs and neaps', cfg:{mode:'range'}, fig:null,
+    intro:'The range is HW height minus LW height, and it decides everything else: which curve you read, how fast the streams run, how much margin you have. Compare the day’s range with the spring and neap ranges printed beside the curve.',
+    ex:`HW 4.4 m, LW 0.9 m → range 3.5 m\nHavenport springs ${m1(SPR)} m, neaps ${m1(NEA)} m → 3.5 m is near springs` },
+  { id:'h4', kind:'drill', title:'Rule of twelfths', cfg:{mode:'twelfths'}, fig:'curve',
+    intro:'A six-hour tide comes in as twelfths of the range: 1, 2, 3, 3, 2, 1. Half of it arrives in the middle two hours, which is why the water runs away so fast around half tide. It is a sanity check, not a substitute for the curve.',
+    ex:'range 3.6 m → 0.3, 0.6, 0.9, 0.9, 0.6, 0.3 m an hour\n2 h after HW the tide has fallen 1+2 = 3/12 = 0.9 m' },
+  { id:'h5', kind:'drill', title:'Read the curve', cfg:{mode:'curveH'}, fig:'curve',
+    intro:'The almanac curve is the real answer. Mark the day’s HW height on the top scale and the LW height on the bottom, join them with a sloping line. Enter on the time axis, go up to the curve, across to the sloping line, then down to the height scale.',
+    ex:'spring curve solid, neap curve dashed\nread to the nearest 0.1 m and state the time you used' },
+  { id:'h6', kind:'drill', title:'The curve backwards', cfg:{mode:'curveT'}, fig:'curve',
+    intro:'Same picture, opposite direction. Enter on the height scale, up to the sloping line, across to the curve, down to the time axis, then add or subtract from HW. Every height happens twice each tide — once rising, once falling. The question will say which one it wants.',
+    ex:'need 2.8 m, HW 1512 → falling branch 2 h 10 m after HW → 1722' },
+  { id:'h7', kind:'drill', title:'Secondary port', cfg:{mode:'secondary'}, fig:null,
+    intro:'Most harbours are not standard ports. Work the standard port for the day first, then apply the differences: time differences interpolated between the two reference high waters, height differences interpolated between the neap and spring levels. Standard, difference, secondary — three lines, every time.',
+    ex:'HW Havenport 0300 → between the 0000 and 0600 columns, halfway\ndiff −0035 and −0025 → −0030 → HW secondary 0230' },
+  { id:'h8', kind:'passage', title:'Evening entry', cfg:{},
+    intro:'Everything so far, on one entry. A bar, a footbridge and a drying berth, and a tide that is going out while you decide. A wrong number shows you where the boat actually ends up. Three wrong and you are on the putty.' },
+  { id:'h9', kind:'watch', title:'Tide watch', cfg:{}, fig:null,
+    intro:'Twelve questions, everything mixed, ninety seconds each — about what the exam allows once you take the plotting out. Run out of time and it counts against you.' },
+];
+const GATE = { drill:'8 of your last 10', passage:'berth safely with at most one correction', watch:'12 questions, 90 seconds each, at most 1 wrong' };
+const WATCH_N = 12, WATCH_SECS = 90;
+for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
+
+// ---- sound
+let actx = null;
+function tone(seq){
+  if (store.muted) return;
+  try {
+    actx ??= new (window.AudioContext || window.webkitAudioContext)();
+    let t = actx.currentTime;
+    for (const [f, d, type] of seq) {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.12, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + 0.02); t += d * 0.7;
+    }
+  } catch(e) {}
+}
+const bell = () => tone([[1568,.35],[2093,.5]]);
+const thud = () => tone([[110,.25,'triangle'],[82,.35,'triangle']]);
+const fanfare = () => tone([[784,.18],[988,.18],[1175,.18],[1568,.5]]);
+const aground = () => tone([[160,.3,'sawtooth'],[120,.3,'sawtooth'],[80,.6,'sawtooth']]);
+
+// ---- the tide of the day
+function genDay(bias){
+  let R;
+  if (bias === 'springs') R = r1(SPR - rnd(0,4)/10);
+  else if (bias === 'neaps') R = r1(NEA + rnd(0,4)/10);
+  else R = r1(NEA + 0.5 + rnd(0,10)/10);
+  const HW = r1(ML + R/2), LW = r1(HW - R);
+  const D = Math.round(DUR_N + (R - NEA) / (SPR - NEA) * (DUR_S - DUR_N));
+  return { R, HW, LW, D, tHW: rnd(6,46)*30, springish: R >= (SPR+NEA)/2 };
+}
+// the standard-port curve: sinusoidal, which is exactly what the rule of
+// twelfths approximates, so the two stages never contradict each other.
+const factor = (dt, D) => (1 + Math.cos(Math.PI * Math.max(-D, Math.min(D, dt)) / D)) / 2;
+const heightAt = (day, dt) => day.LW + factor(dt, day.D) * day.R;
+// minutes from HW for a height; sign chosen by branch ('rising' = before HW)
+function timeFor(day, h, branch){
+  const f = Math.max(0, Math.min(1, (h - day.LW) / day.R));
+  const dt = day.D * Math.acos(2*f - 1) / Math.PI;
+  return branch === 'rising' ? -dt : dt;
+}
+
+// ---- drawing: the almanac curve panel
+const CV = { x0:52, x1:300, xr:520, y0:34, y1:238, mMin:0, mMax:5.2, span:6.5*60 };
+const hx = m => CV.x1 - (m - CV.mMin)/(CV.mMax - CV.mMin) * (CV.x1 - CV.x0);
+const fy = f => CV.y1 - f * (CV.y1 - CV.y0);
+const tx = dt => CV.x1 + (dt + CV.span)/(2*CV.span) * (CV.xr - CV.x1);
+function curvePath(D){
+  let d = '';
+  for (let t = -D; t <= D; t += 5) d += (d ? 'L' : 'M') + tx(t).toFixed(1) + ' ' + fy(factor(t, D)).toFixed(1) + ' ';
+  return d;
+}
+function drawCurve(day, target, show){
+  const g = [];
+  g.push(`<rect x="${CV.x0}" y="${CV.y0}" width="${CV.x1-CV.x0}" height="${CV.y1-CV.y0}" fill="var(--shallow)" opacity=".35"/>`);
+  g.push(`<rect x="${CV.x1}" y="${CV.y0}" width="${CV.xr-CV.x1}" height="${CV.y1-CV.y0}" fill="var(--paper)"/>`);
+  // height scale, top and bottom of the left square
+  for (let m = CV.mMin; m <= CV.mMax + 0.001; m += 0.5) {
+    const x = hx(m);
+    g.push(`<line x1="${x.toFixed(1)}" y1="${CV.y0}" x2="${x.toFixed(1)}" y2="${CV.y1}" stroke="var(--rule)" stroke-width=".5"/>`);
+    g.push(`<text x="${x.toFixed(1)}" y="${CV.y0-6}" font-size="9" fill="var(--ink-3)" text-anchor="middle" font-family="IBM Plex Mono,monospace">${m1(m)}</text>`);
+    g.push(`<text x="${x.toFixed(1)}" y="${CV.y1+13}" font-size="9" fill="var(--ink-3)" text-anchor="middle" font-family="IBM Plex Mono,monospace">${m1(m)}</text>`);
+  }
+  g.push(`<text x="${CV.x0-6}" y="${CV.y0+4}" font-size="9" fill="var(--ink-3)" text-anchor="end">HW scale</text>`);
+  g.push(`<text x="${CV.x0-6}" y="${CV.y1+4}" font-size="9" fill="var(--ink-3)" text-anchor="end">LW scale</text>`);
+  g.push(`<text x="${CV.x0-6}" y="${CV.y1+27}" font-size="9" fill="var(--ink-3)" text-anchor="end">metres</text>`);
+  g.push(`<text x="${CV.xr+2}" y="${CV.y1+27}" font-size="9" fill="var(--ink-3)">hours from HW</text>`);
+  // time axis
+  for (let h = -6; h <= 6; h++) {
+    const x = tx(h*60);
+    g.push(`<line x1="${x.toFixed(1)}" y1="${CV.y0}" x2="${x.toFixed(1)}" y2="${CV.y1}" stroke="var(--rule)" stroke-width="${h===0?1.2:0.5}"/>`);
+    g.push(`<text x="${x.toFixed(1)}" y="${CV.y1+27}" font-size="9" fill="var(--ink-3)" text-anchor="middle" font-family="IBM Plex Mono,monospace">${h===0?'HW':Math.abs(h)}</text>`);
+  }
+  for (let f = 0; f <= 1.001; f += 0.25) g.push(`<line x1="${CV.x0}" y1="${fy(f).toFixed(1)}" x2="${CV.xr}" y2="${fy(f).toFixed(1)}" stroke="var(--rule)" stroke-width=".5"/>`);
+  // the printed spring and neap curves, then the day's own
+  g.push(`<path d="${curvePath(DUR_S)}" fill="none" stroke="var(--ink-2)" stroke-width="1.4"/>`);
+  g.push(`<path d="${curvePath(DUR_N)}" fill="none" stroke="var(--ink-3)" stroke-width="1.4" stroke-dasharray="5 4"/>`);
+  g.push(`<path d="${curvePath(day.D)}" fill="none" stroke="var(--magenta)" stroke-width="2"/>`);
+  // the sloping line: HW height on the top scale, LW on the bottom
+  g.push(`<line x1="${hx(day.HW).toFixed(1)}" y1="${CV.y0}" x2="${hx(day.LW).toFixed(1)}" y2="${CV.y1}" stroke="var(--magenta)" stroke-width="2"/>`);
+  g.push(`<circle cx="${hx(day.HW).toFixed(1)}" cy="${CV.y0}" r="3.5" fill="var(--magenta)"/>`);
+  g.push(`<circle cx="${hx(day.LW).toFixed(1)}" cy="${CV.y1}" r="3.5" fill="var(--magenta)"/>`);
+  g.push(`<rect x="${CV.x0}" y="${CV.y0}" width="${CV.xr-CV.x0}" height="${CV.y1-CV.y0}" fill="none" stroke="var(--ink-2)" stroke-width="1.2"/>`);
+  g.push(`<line x1="${CV.x1}" y1="${CV.y0}" x2="${CV.x1}" y2="${CV.y1}" stroke="var(--ink-2)" stroke-width="1.2"/>`);
+  // the construction, once the answer is on the table
+  if (show && target) {
+    const { dt, h } = target, f = factor(dt, day.D), y = fy(f);
+    const c = 'var(--brass)';
+    g.push(`<path d="M${tx(dt).toFixed(1)} ${CV.y1} L${tx(dt).toFixed(1)} ${y.toFixed(1)} L${hx(h).toFixed(1)} ${y.toFixed(1)} L${hx(h).toFixed(1)} ${CV.y1}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="4 3"/>`);
+    g.push(`<circle cx="${tx(dt).toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${c}"/>`);
+    g.push(`<circle cx="${hx(h).toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${c}"/>`);
+    g.push(`<text x="${hx(h).toFixed(1)}" y="${CV.y1+41}" font-size="11" font-weight="600" fill="${c}" text-anchor="middle" font-family="IBM Plex Mono,monospace">${m1(h)} m</text>`);
+    g.push(`<text x="${tx(dt).toFixed(1)}" y="${CV.y0-18}" font-size="11" font-weight="600" fill="${c}" text-anchor="middle" font-family="IBM Plex Mono,monospace">${hhmm(day.tHW + dt)}</text>`);
+  }
+  const svg = $('fig');
+  svg.setAttribute('viewBox', '0 0 600 288');
+  svg.innerHTML = g.join('');
+  $('legend').innerHTML = `<span class="sp">spring curve</span><span class="np">neap curve</span><span class="day">today, range ${m1(day.R)} m</span>` + (show ? `<span class="wk">the working</span>` : '');
+  $('fignote').textContent = `${PORT.name} · HW ${hhmm(day.tHW)} ${m1(day.HW)} m · LW ${hhmm(day.tHW + day.D)} ${m1(day.LW)} m · springs ${m1(SPR)} m, neaps ${m1(NEA)} m`;
+}
+
+// ---- drawing: the datum picture
+function datumSvg(){
+  const y = v => 190 - v*20;
+  return `<svg viewBox="0 0 600 250" role="img" aria-label="Chart datum, height of tide, charted depth, drying height and charted height">
+  <rect x="0" y="${y(3.2)}" width="600" height="${190 - y(3.2) + 40}" fill="var(--shallow)"/>
+  <path d="M0 ${190+30} L120 ${190+30} L180 ${y(1.4)} L250 ${y(1.4)} L320 ${190+20} L470 ${190+34} L520 ${190+34} L600 ${190+34} L600 250 L0 250 Z" fill="var(--land)"/>
+  <line x1="0" y1="190" x2="600" y2="190" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="7 4"/>
+  <text x="6" y="185" font-size="11" fill="var(--ink)" font-weight="600">CHART DATUM (≈ LAT)</text>
+  <line x1="0" y1="${y(3.2)}" x2="600" y2="${y(3.2)}" stroke="var(--focus)" stroke-width="1.5"/>
+  <text x="6" y="${y(3.2)-5}" font-size="11" fill="var(--focus)" font-weight="600">sea level now</text>
+  <line x1="0" y1="${y(4.6)}" x2="600" y2="${y(4.6)}" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="6" y="${y(4.6)-4}" font-size="10" fill="var(--ink-3)">MHWS</text>
+  <g stroke="var(--magenta)" stroke-width="1.5" fill="none">
+    <path d="M400 190 L400 ${y(3.2)}"/><path d="M396 ${y(3.2)+4} L400 ${y(3.2)} L404 ${y(3.2)+4}"/><path d="M396 186 L400 190 L404 186"/>
+    <path d="M430 ${190+34} L430 190"/><path d="M426 194 L430 190 L434 194"/><path d="M426 ${190+30} L430 ${190+34} L434 ${190+30}"/>
+    <path d="M215 190 L215 ${y(1.4)}"/><path d="M211 ${y(1.4)+4} L215 ${y(1.4)} L219 ${y(1.4)+4}"/><path d="M211 186 L215 190 L219 186"/>
+    <path d="M520 ${y(4.6)} L520 ${y(8.2)}"/><path d="M516 ${y(8.2)+4} L520 ${y(8.2)} L524 ${y(8.2)+4}"/><path d="M516 ${y(4.6)-4} L520 ${y(4.6)} L524 ${y(4.6)-4}"/>
+  </g>
+  <line x1="470" y1="${y(8.2)}" x2="570" y2="${y(8.2)}" stroke="var(--ink)" stroke-width="4"/>
+  <text x="405" y="${y(1.6)}" font-size="11" fill="var(--magenta)" font-weight="600">height of tide</text>
+  <text x="436" y="${190+22}" font-size="11" fill="var(--magenta)" font-weight="600">charted depth</text>
+  <text x="150" y="${y(0.6)}" font-size="11" fill="var(--magenta)" font-weight="600">drying ht</text>
+  <text x="514" y="${y(6.4)}" font-size="11" fill="var(--magenta)" font-weight="600" text-anchor="end">charted height</text>
+  <text x="514" y="${y(6.4)+13}" font-size="10" fill="var(--ink-3)" text-anchor="end">from MHWS</text>
+  </svg>`;
+}
+
+// ---- drawing: the harbour, in section
+function drawHarbour(pas, hot, hit){
+  const P = pas.p, floor = 5.0;
+  // fit the scene: the bridge or the masthead sets the top, the offshore depth the bottom
+  const top = Math.max(P.bridge + PORT.MHWS, hot + P.air) + 1.2;
+  const K = 296 / (top + floor), D0 = 298 - floor*K, y = v => D0 - v*K;
+  const g = [], wl = y(hot);
+  g.push(`<rect x="0" y="${wl.toFixed(1)}" width="600" height="${(300-wl).toFixed(1)}" fill="var(--shallow)"/>`);
+  g.push(`<path d="M0 ${y(-floor)} L90 ${y(-floor)} L155 ${y(-P.bar)} L225 ${y(-P.bar)} L300 ${y(-P.pool)} L415 ${y(-P.pool)} L465 ${y(P.dry)} L600 ${y(P.dry)} L600 300 L0 300 Z" fill="var(--land)"/>`);
+  g.push(`<line x1="0" y1="${y(0)}" x2="600" y2="${y(0)}" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="6 4"/>`);
+  g.push(`<text x="4" y="${y(0)-5}" font-size="10" fill="var(--ink-3)">chart datum</text>`);
+  g.push(`<text x="4" y="${(wl-6).toFixed(1)}" font-size="10" fill="var(--focus)" font-weight="600">sea level · ${m1(hot)} m of tide</text>`);
+  g.push(`<line x1="0" y1="${wl.toFixed(1)}" x2="600" y2="${wl.toFixed(1)}" stroke="var(--focus)" stroke-width="1.2"/>`);
+  g.push(`<text x="190" y="${(y(-P.bar)+15).toFixed(1)}" font-size="10" fill="var(--ink-2)" text-anchor="middle">the bar, charted ${m1(P.bar)} m</text>`);
+  g.push(`<text x="596" y="${(y(P.dry)-8).toFixed(1)}" font-size="10" fill="var(--ink-2)" text-anchor="end">quay, dries ${m1(P.dry)} m</text>`);
+  // the footbridge, charted above MHWS
+  const bY = y(P.bridge + PORT.MHWS);
+  g.push(`<rect x="330" y="${bY.toFixed(1)}" width="140" height="7" fill="var(--ink-2)"/>`);
+  g.push(`<rect x="462" y="${bY.toFixed(1)}" width="8" height="${(y(P.dry)-bY).toFixed(1)}" fill="var(--ink-2)"/>`);
+  g.push(`<text x="330" y="${(bY-7).toFixed(1)}" font-size="10" fill="var(--ink-2)">bridge, charted ${m1(P.bridge)} m above MHWS</text>`);
+  // the boat, where she is on this leg
+  const bx = [175, 175, 395, 520, 520][Math.min(pas.leg, 4)];
+  const onBottom = hit === 'bar' || hit === 'quay';
+  const keel = onBottom ? y(pas.leg >= 3 ? P.dry : -P.bar) : wl + P.draught*K;
+  const deck = keel - P.draught*K, mast = deck - P.air*K;
+  g.push(`<g><path d="M${bx-24} ${deck.toFixed(1)} L${bx+24} ${deck.toFixed(1)} L${bx+14} ${keel.toFixed(1)} L${bx-14} ${keel.toFixed(1)} Z" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5"/>`);
+  g.push(`<line x1="${bx}" y1="${deck.toFixed(1)}" x2="${bx}" y2="${mast.toFixed(1)}" stroke="var(--ink)" stroke-width="2"/></g>`);
+  if (hit === 'bridge') {
+    g.push(`<circle cx="${bx}" cy="${mast.toFixed(1)}" r="12" fill="none" stroke="var(--bad)" stroke-width="3"/>`);
+    g.push(`<text x="${bx}" y="${(mast-18).toFixed(1)}" font-size="12" font-weight="700" fill="var(--bad)" text-anchor="middle">masthead</text>`);
+  }
+  if (onBottom) g.push(`<text x="${bx}" y="${(keel+18).toFixed(1)}" font-size="12" font-weight="700" fill="var(--bad)" text-anchor="middle">aground</text>`);
+  const svg = $('fig');
+  svg.setAttribute('viewBox', '0 0 600 300');
+  svg.innerHTML = g.join('');
+  $('legend').innerHTML = '';
+  $('fignote').textContent = `${P.sec} · draught ${m1(P.draught)} m · air draught ${m1(P.air)} m · MHWS ${m1(PORT.MHWS)} m`;
+}
+
+// ---- secondary port
+function genSecondary(){
+  const name = pick(['Fernwick','Colton Quay','St Maddern','Netherhaven','Weirpool']);
+  const s = Math.random() < .5 ? -1 : 1;
+  const hw0 = s * rnd(2,11)*5, hw6 = hw0 + s * pick([5,10,15]);
+  const lw0 = s * rnd(2,11)*5, lw6 = lw0 + s * pick([5,10,15]);
+  const mhws = rnd(-8,4)/10, mhwn = r1(mhws + rnd(-2,3)/10);
+  const mlwn = rnd(-4,4)/10, mlws = r1(mlwn + rnd(-2,2)/10);
+  return { name, hw0, hw6, lw0, lw6, mhws, mhwn, mlwn, mlws };
+}
+// time differences are tabulated at two reference hours six apart and repeat
+// every twelve; interpolate on where the actual HW falls in that cycle
+function interpTime(t, d0, d6){
+  const h = (((t % 720) + 720) % 720) / 60;
+  const f = h <= 6 ? h/6 : (12 - h)/6;
+  return Math.round(d0 + f * (d6 - d0));
+}
+const interpHt = (h, lo, hi, dLo, dHi) => r1(dLo + (h - lo)/(hi - lo) * (dHi - dLo));
+
+// ---- state
+let stage = null, q = null, answered = false, watch = null, pas = null, picked = null;
+const ss = () => store.stages[stage.id];
+const idx = () => STAGES.indexOf(stage);
+
+// ---- question builders. Each returns the q object; render() does the rest.
+const B = {};
+
+B.depth = () => {
+  const day = genDay(), hot = r1(heightAt(day, rnd(-4,4)*30));
+  const cd = r1(rnd(4,95)/10), draught = r1(rnd(9,22)/10);
+  const v = rnd(0,3);
+  if (v === 0) return {
+    qtype:'Depth now', prompt:`The chart shows ${m1(cd)} m here. The height of tide is ${m1(hot)} m. How much water is under you?`,
+    givens:[['Charted depth', m1(cd)+' m'],['Height of tide', m1(hot)+' m']], ansType:'m', target:r1(cd+hot), tol:0.05, unit:'m',
+    steps:[[m1(cd)+' m', 'charted depth, up from chart datum', ''],['+ '+m1(hot)+' m','height of tide', m1(r1(cd+hot))+' m of water']],
+    rule:'Depth of water now = charted depth + height of tide. Everything wet is measured up from chart datum.' };
+  if (v === 1) return {
+    qtype:'Height of tide', prompt:`The echo sounder reads ${m1(r1(cd+hot))} m of water and the chart says ${m1(cd)} m. What is the height of tide?`,
+    givens:[['Sounder', m1(r1(cd+hot))+' m'],['Charted depth', m1(cd)+' m']], ansType:'m', target:hot, tol:0.05, unit:'m',
+    steps:[[m1(r1(cd+hot))+' m','water now',''],['− '+m1(cd)+' m','charted depth', m1(hot)+' m height of tide']],
+    rule:'The same sum, rearranged. Depth − charted depth = height of tide. A good check on the almanac when you are anchored.' };
+  if (v === 2) { const cd2 = Math.max(cd, r1(draught + 0.4 - hot)); return {
+    qtype:'Under the keel', prompt:`You draw ${m1(draught)} m. Charted depth ${m1(cd2)} m, height of tide ${m1(hot)} m. What is under the keel?`,
+    givens:[['Charted depth', m1(cd2)+' m'],['Height of tide', m1(hot)+' m'],['Draught', m1(draught)+' m']],
+    ansType:'m', target:r1(cd2+hot-draught), tol:0.05, unit:'m',
+    steps:[[m1(cd2)+' m','+ '+m1(hot)+' m tide', m1(r1(cd2+hot))+' m of water'],['− '+m1(draught)+' m','draught', m1(r1(cd2+hot-draught))+' m under the keel']],
+    rule:'Find the water first, then take the draught off. Then take your own margin off that — half a metre is the usual minimum, more in a swell.' }; }
+  return {
+    qtype:'What is it measured from?', prompt:'A charted depth printed on the chart is measured from which level?',
+    givens:[], ansType:'choice', choices:['Chart datum, about the lowest astronomical tide','Mean sea level','Mean high water springs','The height of tide on the day of survey'],
+    target:0, steps:[['Chart datum','the level the tide almost never falls below','so the charted depth is the least you expect']],
+    rule:'Charted depths and drying heights are measured from chart datum. Charted heights of bridges and lights are measured from MHWS.' };
+};
+
+B.clear = () => {
+  const day = genDay(), hot = r1(heightAt(day, rnd(-4,4)*30));
+  const v = rnd(0,3);
+  if (v === 0) {
+    const dry = r1(rnd(3, Math.max(4, Math.round(hot*10)-3))/10);
+    return { qtype:'Over a drying patch', prompt:`A sandbank is charted as drying ${m1(dry)} m. The height of tide is ${m1(hot)} m. How much water is over it?`,
+      givens:[['Drying height', m1(dry)+' m'],['Height of tide', m1(hot)+' m']], ansType:'m', target:r1(hot-dry), tol:0.05, unit:'m',
+      steps:[[m1(hot)+' m','height of tide',''],['− '+m1(dry)+' m','the bank sticks up from datum', m1(r1(hot-dry))+' m over it']],
+      rule:'A drying height is underlined on the chart and stands up from chart datum, so you subtract it. Add it and you will be very confident about a bank you are about to hit.' };
+  }
+  if (v === 1) {
+    const ch = r1(rnd(60,140)/10);
+    return { qtype:'Under a bridge', prompt:`A footbridge is charted at ${m1(ch)} m. MHWS here is ${m1(PORT.MHWS)} m and the height of tide is ${m1(hot)} m. What is the clearance under it?`,
+      givens:[['Charted height', m1(ch)+' m'],['MHWS', m1(PORT.MHWS)+' m'],['Height of tide', m1(hot)+' m']],
+      ansType:'m', target:r1(ch+PORT.MHWS-hot), tol:0.05, unit:'m',
+      steps:[[m1(ch)+' m','+ '+m1(PORT.MHWS)+' m MHWS', m1(r1(ch+PORT.MHWS))+' m above chart datum'],['− '+m1(hot)+' m','height of tide', m1(r1(ch+PORT.MHWS-hot))+' m clear']],
+      rule:'Charted heights hang down from MHWS. Put MHWS back on to get above datum, then take the tide off. Clearance is largest at low water — the opposite of everything else.' };
+  }
+  if (v === 2) {
+    const ch = r1(rnd(80,130)/10), clear = r1(ch + PORT.MHWS - hot), air = r1(clear + rnd(-12,12)/10);
+    return { qtype:'Will she fit?', prompt:`Your air draught is ${m1(air)} m. The bridge is charted at ${m1(ch)} m, MHWS ${m1(PORT.MHWS)} m, height of tide ${m1(hot)} m. Do you go through?`,
+      givens:[['Air draught', m1(air)+' m'],['Charted height', m1(ch)+' m'],['Height of tide', m1(hot)+' m']],
+      ansType:'choice', choices:['Yes, with a metre or more to spare','Yes, but by less than a metre','No, the mast does not clear'],
+      target: clear - air >= 1 ? 0 : clear - air > 0 ? 1 : 2,
+      steps:[[m1(ch)+' m','+ '+m1(PORT.MHWS)+' m − '+m1(hot)+' m', m1(clear)+' m clear'],[m1(clear)+' m','− '+m1(air)+' m air draught', m1(r1(clear-air))+' m over the masthead']],
+      rule:'A mast is not a keel: you cannot feel it touch until it has gone. Aerials and instruments sit above the measured air draught, so keep a real margin.' };
+  }
+  return { qtype:'What is it measured from?', prompt:'The charted height of a lighthouse or a bridge is measured from which level?',
+    givens:[], ansType:'choice', choices:['Mean high water springs','Chart datum','Mean sea level','The height of tide at the time'],
+    target:0, steps:[['MHWS','the practical worst case overhead','so clearances shrink as the tide rises']],
+    rule:'Wet things measure up from chart datum, dry and overhead things measure down from MHWS. Two datums, one picture.' };
+};
+
+B.range = () => {
+  const day = genDay(pick(['springs','neaps','mid']));
+  const v = rnd(0,3);
+  if (v === 0) return {
+    qtype:'Range', prompt:`HW is ${m1(day.HW)} m and LW is ${m1(day.LW)} m. What is the range of the tide?`,
+    givens:[['HW', m1(day.HW)+' m'],['LW', m1(day.LW)+' m']], ansType:'m', target:day.R, tol:0.05, unit:'m',
+    steps:[[m1(day.HW)+' m','− '+m1(day.LW)+' m', m1(day.R)+' m range']],
+    rule:'Range = HW height − LW height, for that one tide. It sets which curve you read and how much the streams run.' };
+  if (v === 1) {
+    const mid = (SPR+NEA)/2, near = Math.abs(day.R - SPR) < 0.45 ? 0 : Math.abs(day.R - NEA) < 0.45 ? 1 : 2;
+    return { qtype:'Springs or neaps?', prompt:`Today's range at ${PORT.name} is ${m1(day.R)} m. Springs here are ${m1(SPR)} m and neaps ${m1(NEA)} m. What kind of tide is it?`,
+      givens:[['Today', m1(day.R)+' m'],['Springs', m1(SPR)+' m'],['Neaps', m1(NEA)+' m']],
+      ansType:'choice', choices:['Near springs','Near neaps','Between the two — interpolate'], target:near,
+      steps:[[m1(day.R)+' m','against '+m1(NEA)+'–'+m1(SPR)+' m', near===0?'near springs':near===1?'near neaps':'in between, so interpolate the curve']],
+      rule:`Compare the day's range with the printed spring and neap ranges. Mid-way means read mid-way between the solid and dashed curves. Springs run about ${m1(SPR)} m, neaps about ${m1(NEA)} m.` };
+  }
+  if (v === 2) {
+    const tLW = day.tHW + day.D;
+    return { qtype:'Duration', prompt:`HW is at ${hhmm(day.tHW)} and the following LW at ${hhmm(tLW)}. What is the duration of the falling tide?`,
+      givens:[['HW', hhmm(day.tHW)],['LW', hhmm(tLW)]], ansType:'dur', target:day.D, tol:5, unit:'h m',
+      steps:[[hhmm(tLW),'− '+hhmm(day.tHW), dur(day.D)+' duration']],
+      rule:'Duration is HW to LW. It is near six and a quarter hours in most of the UK, but it is not exactly six — which is why the rule of twelfths is only a check.' };
+  }
+  return { qtype:'The moon', prompt:'It is a full moon today. When will the biggest tides of this fortnight be?',
+    givens:[], ansType:'choice', choices:['In about two days','Today','In about seven days','In about four days'], target:0,
+    steps:[['full or new moon','sun and moon pulling in line','springs follow about two days later']],
+    rule:'Springs at new and full moon, neaps at the quarters, with about a two-day lag. The cycle repeats roughly fortnightly.' };
+};
+
+B.twelfths = () => {
+  const day = genDay(), n = rnd(1,5);
+  const cum = [0,1,3,6,9,11,12][n];
+  const fall = r1(day.R * cum / 12);
+  const from = Math.random() < .5;
+  const twelfth = r1(day.R/12);
+  const parts = [1,2,3,3,2,1].map(k => m1(r1(twelfth*k))).join(', ');
+  if (from) return {
+    qtype:'Twelfths, falling', prompt:`HW is ${m1(day.HW)} m, LW ${m1(day.LW)} m. By the rule of twelfths, what is the height of tide ${n} hour${n>1?'s':''} after HW?`,
+    givens:[['HW', m1(day.HW)+' m'],['LW', m1(day.LW)+' m'],['Range', m1(day.R)+' m']],
+    ansType:'m', target:r1(day.HW - fall), tol:0.06, unit:'m', day,
+    steps:[[m1(day.R)+' m range','÷ 12', m1(twelfth)+' m per twelfth'],['hours 1–'+n, [1,2,3,3,2,1].slice(0,n).join('+')+' = '+cum+'/12', m1(fall)+' m fallen'],[m1(day.HW)+' m','− '+m1(fall)+' m', m1(r1(day.HW-fall))+' m']],
+    rule:`1, 2, 3, 3, 2, 1 twelfths an hour — here ${parts} m. Half the range in the middle two hours.` };
+  return {
+    qtype:'Twelfths, rising', prompt:`LW is ${m1(day.LW)} m and the following HW ${m1(day.HW)} m. By the rule of twelfths, what is the height of tide ${n} hour${n>1?'s':''} after LW?`,
+    givens:[['LW', m1(day.LW)+' m'],['HW', m1(day.HW)+' m'],['Range', m1(day.R)+' m']],
+    ansType:'m', target:r1(day.LW + fall), tol:0.06, unit:'m', day,
+    steps:[[m1(day.R)+' m range','÷ 12', m1(twelfth)+' m per twelfth'],['hours 1–'+n, [1,2,3,3,2,1].slice(0,n).join('+')+' = '+cum+'/12', m1(fall)+' m risen'],[m1(day.LW)+' m','+ '+m1(fall)+' m', m1(r1(day.LW+fall))+' m']],
+    rule:`The same twelfths whichever way the tide is going — here ${parts} m an hour. Rising or falling, the middle two hours carry half the range.` };
+};
+
+B.curveH = () => {
+  const day = genDay(pick(['springs','neaps','mid']));
+  let dt; do { dt = rnd(-Math.floor((day.D-20)/20), Math.floor((day.D-20)/20)) * 20; } while (Math.abs(dt) < 30);
+  const h = r1(heightAt(day, dt)), t = day.tHW + dt;
+  return { qtype:'Curve · time → height', prompt:`What is the height of tide at ${PORT.name} at ${hhmm(t)}?`,
+    givens:[['HW', hhmm(day.tHW)+' · '+m1(day.HW)+' m'],['LW', hhmm(day.tHW+day.D)+' · '+m1(day.LW)+' m'],['Wanted', hhmm(t), true]],
+    ansType:'m', target:h, tol:0.2, unit:'m', day, curve:{dt, h},
+    steps:[[hhmm(t), (dt<0?'before':'after')+' HW by '+dur(Math.abs(dt)), 'enter the time axis'],['up to the curve','across to the sloping line','down to the height scale'],['height of tide', 'at '+hhmm(t), m1(h)+' m']],
+    rule:'Enter on time, up to the curve, across to the sloping line, down to the scale. Read to 0.1 m and write the time you used beside it.' };
+};
+
+B.curveT = () => {
+  const day = genDay(pick(['springs','neaps','mid']));
+  const branch = Math.random() < .5 ? 'rising' : 'falling';
+  const h = r1(day.LW + (rnd(15,85)/100) * day.R);
+  const dt = Math.round(timeFor(day, h, branch));
+  const t = day.tHW + dt;
+  return { qtype:'Curve · height → time', prompt:`You need ${m1(h)} m of tide. On the ${branch} tide, when does ${PORT.name} reach it?`,
+    givens:[['HW', hhmm(day.tHW)+' · '+m1(day.HW)+' m'],['LW', hhmm(day.tHW+day.D)+' · '+m1(day.LW)+' m'],['Wanted', m1(h)+' m, '+branch, true]],
+    ansType:'time', target:((t%1440)+1440)%1440, tol:12, unit:'hhmm', day, curve:{dt, h},
+    steps:[[m1(h)+' m','up to the sloping line','across to the '+branch+' side of the curve'],['down to the time axis', dur(Math.abs(dt))+' '+(dt<0?'before':'after')+' HW', ''],[hhmm(day.tHW), (dt<0?'− ':'+ ')+dur(Math.abs(dt)), hhmm(t)]],
+    rule:'Every height happens twice a tide. The rising answer is before HW, the falling answer after it — always say which one you mean.' };
+};
+
+B.secondary = () => {
+  const day = genDay(pick(['springs','neaps','mid']));
+  day.tHW = rnd(1,23) * 60;
+  const s = genSecondary(), v = rnd(0,3);
+  const tLW = day.tHW + day.D;
+  const tbl = { s, day };
+  if (v === 0) {
+    const d = interpTime(day.tHW, s.hw0, s.hw6);
+    const h = (((day.tHW % 720) + 720) % 720)/60, f = h <= 6 ? h/6 : (12-h)/6;
+    return { qtype:'Secondary · HW time', prompt:`HW ${PORT.name} is ${hhmm(day.tHW)}. What time is HW at ${s.name}?`,
+      givens:[['HW '+PORT.name, hhmm(day.tHW)],['Secondary', s.name, true]],
+      ansType:'time', target:((day.tHW+d)%1440+1440)%1440, tol:6, unit:'hhmm', tbl,
+      steps:[[hhmm(day.tHW), 'sits '+Math.round(f*100)+'% of the way from the 0000 column to the 0600 column',''],
+             [sdiff(s.hw0)+' → '+sdiff(s.hw6), 'interpolated', sdiff(d)],
+             [hhmm(day.tHW), sdiff(d), hhmm(day.tHW+d)+' HW '+s.name]],
+      rule:'Time differences are tabulated at two reference high waters six hours apart and repeat every twelve. Find where your HW falls between them and take the same proportion of the difference.' };
+  }
+  if (v === 1) {
+    const d = interpHt(day.HW, PORT.MHWN, PORT.MHWS, s.mhwn, s.mhws);
+    const f = Math.round((day.HW - PORT.MHWN)/(PORT.MHWS - PORT.MHWN)*100);
+    return { qtype:'Secondary · HW height', prompt:`HW ${PORT.name} is ${m1(day.HW)} m. What is the height of HW at ${s.name}?`,
+      givens:[['HW '+PORT.name, m1(day.HW)+' m'],['MHWN / MHWS', m1(PORT.MHWN)+' / '+m1(PORT.MHWS)+' m'],['Secondary', s.name, true]],
+      ansType:'m', target:r1(day.HW + d), tol:0.12, unit:'m', tbl,
+      steps:[[m1(day.HW)+' m', 'sits '+f+'% of the way from MHWN to MHWS',''],
+             [sm(s.mhwn)+' → '+sm(s.mhws), 'interpolated', sm(d)],
+             [m1(day.HW)+' m', sm(d), m1(r1(day.HW+d))+' m HW '+s.name]],
+      rule:'Height differences are tabulated at the four mean levels. Interpolate the high-water pair by your actual HW height, and never against the time.' };
+  }
+  if (v === 3) {
+    const d = interpTime(tLW, s.lw0, s.lw6);
+    const h = (((tLW % 720) + 720) % 720)/60, fr = h <= 6 ? h/6 : (12-h)/6;
+    return { qtype:'Secondary · LW time', prompt:`LW ${PORT.name} is ${hhmm(tLW)}. What time is LW at ${s.name}?`,
+      givens:[['LW '+PORT.name, hhmm(tLW)],['Secondary', s.name, true]],
+      ansType:'time', target:((tLW+d)%1440+1440)%1440, tol:6, unit:'hhmm', tbl,
+      steps:[[hhmm(tLW), 'sits '+Math.round(fr*100)+'% of the way from the 0000 column to the 0600 column',''],
+             [sdiff(s.lw0)+' → '+sdiff(s.lw6), 'interpolated', sdiff(d)],
+             [hhmm(tLW), sdiff(d), hhmm(tLW+d)+' LW '+s.name]],
+      rule:'Low water has its own pair of columns and its own reference hours. Using the high-water differences on a low water is one of the commonest lost marks in the paper.' };
+  }
+  const d = interpHt(day.LW, PORT.MLWN, PORT.MLWS, s.mlwn, s.mlws);
+  const f = Math.round((day.LW - PORT.MLWN)/(PORT.MLWS - PORT.MLWN)*100);
+  return { qtype:'Secondary · LW height', prompt:`LW ${PORT.name} is ${m1(day.LW)} m at ${hhmm(tLW)}. What is the height of LW at ${s.name}?`,
+    givens:[['LW '+PORT.name, m1(day.LW)+' m'],['MLWN / MLWS', m1(PORT.MLWN)+' / '+m1(PORT.MLWS)+' m'],['Secondary', s.name, true]],
+    ansType:'m', target:r1(day.LW + d), tol:0.12, unit:'m', tbl,
+    steps:[[m1(day.LW)+' m', 'sits '+f+'% of the way from MLWN to MLWS',''],
+           [sm(s.mlwn)+' → '+sm(s.mlws), 'interpolated', sm(d)],
+           [m1(day.LW)+' m', sm(d), m1(r1(day.LW+d))+' m LW '+s.name]],
+    rule:'Low waters use the MLWN and MLWS pair. Springs give the lower low water, so read the columns in the right order before you interpolate.' };
+};
+
+function renderTbl(){
+  const el = $('tbl');
+  if (!q.tbl) { el.hidden = true; return; }
+  const s = q.tbl.s;
+  el.hidden = false;
+  el.innerHTML = `<table><caption>Tidal differences · ${s.name}, on ${PORT.name}</caption>
+  <thead><tr><th colspan="2">HW ${PORT.name}</th><th colspan="2">LW ${PORT.name}</th><th>MHWS ${m1(PORT.MHWS)}</th><th>MHWN ${m1(PORT.MHWN)}</th><th>MLWN ${m1(PORT.MLWN)}</th><th>MLWS ${m1(PORT.MLWS)}</th></tr>
+  <tr><th>0000</th><th>0600</th><th>0000</th><th>0600</th><th colspan="4">Height differences (m)</th></tr></thead>
+  <tbody><tr><td class="mono">${sdiff(s.hw0)}</td><td class="mono">${sdiff(s.hw6)}</td><td class="mono">${sdiff(s.lw0)}</td><td class="mono">${sdiff(s.lw6)}</td>
+  <td class="mono">${sm(s.mhws)}</td><td class="mono">${sm(s.mhwn)}</td><td class="mono">${sm(s.mlwn)}</td><td class="mono">${sm(s.mlws)}</td></tr></tbody></table>`;
+}
+
+// ---- the entry
+function startPassage(){
+  const day = genDay(pick(['springs','mid']));
+  day.tHW = rnd(18,30) * 30;
+  const draught = r1(rnd(14,20)/10), air = r1(rnd(90,140)/10);
+  const bar = r1(rnd(6,16)/10), pool = r1(rnd(30,50)/10), dry = Math.max(0.2, r1(day.LW + rnd(-8,8)/10));
+  const dtArr = rnd(2,7) * 30;                       // arrive this long after HW
+  const hotArr = r1(heightAt(day, dtArr));
+  const bridge = r1(air + hotArr - PORT.MHWS + rnd(1,14)/10);
+  const p = { sec: pick(['Fernwick Haven','Colton Quay','St Maddern Pool']), day, draught, air, bar, pool, dry, bridge, dtArr, hotArr };
+  pas = { p, leg:0, strikes:0, errors:0, results:[], done:false, hot:hotArr };
+  genPassageQ();
+}
+function genPassageQ(){
+  const P = pas.p, day = P.day, t = day.tHW + P.dtArr, hot = P.hotArr;
+  const margin = 0.5;
+  const L = pas.leg;
+  if (L === 0) {
+    q = { m:'passage', leg:L, qtype:'Leg 1 · the bar', prompt:`You are off ${P.sec} at ${hhmm(t)}. The bar carries a charted ${m1(P.bar)} m. How much water is over it?`,
+      givens:[['Charted depth', m1(P.bar)+' m'],['HW', hhmm(day.tHW)+' · '+m1(day.HW)+' m'],['Now', hhmm(t), true]],
+      ansType:'m', target:r1(P.bar + hot), tol:0.2, unit:'m', hot,
+      steps:[[hhmm(t), dur(P.dtArr)+' after HW', 'height of tide '+m1(hot)+' m'],[m1(P.bar)+' m','+ '+m1(hot)+' m', m1(r1(P.bar+hot))+' m over the bar']],
+      rule:'Work the height of tide off the curve first, then add the charted depth. Never the other way round.', hitKind:'bar' };
+  } else if (L === 1) {
+    const water = r1(P.bar + hot), spare = r1(water - P.draught);
+    q = { m:'passage', leg:L, qtype:'Leg 2 · the decision', prompt:`There is ${m1(water)} m over the bar and you draw ${m1(P.draught)} m. You want ${m1(margin)} m under the keel. Do you cross?`,
+      givens:[['Water over bar', m1(water)+' m'],['Draught', m1(P.draught)+' m'],['Margin wanted', m1(margin)+' m']],
+      ansType:'choice', choices:['Cross now — the margin is there','Wait for more water — the margin is not there','Cross, and ignore the margin'],
+      target: spare >= margin ? 0 : 1, hot,
+      steps:[[m1(water)+' m','− '+m1(P.draught)+' m draught', m1(spare)+' m under the keel'],[m1(spare)+' m','against '+m1(margin)+' m wanted', spare >= margin ? 'enough — go' : 'not enough — wait']],
+      rule:'The margin is part of the answer, not a decoration. A falling tide takes the decision away from you within minutes.', hitKind:'bar' };
+  } else if (L === 2) {
+    q = { m:'passage', leg:L, qtype:'Leg 3 · the bridge', prompt:`Inside the bar the bridge is charted at ${m1(P.bridge)} m. MHWS is ${m1(PORT.MHWS)} m. What clearance have you over the masthead?`,
+      givens:[['Charted height', m1(P.bridge)+' m'],['MHWS', m1(PORT.MHWS)+' m'],['Air draught', m1(P.air)+' m'],['Height of tide', m1(hot)+' m']],
+      ansType:'m', target:r1(P.bridge + PORT.MHWS - hot - P.air), tol:0.2, unit:'m', hot,
+      steps:[[m1(P.bridge)+' m','+ '+m1(PORT.MHWS)+' m MHWS − '+m1(hot)+' m tide', m1(r1(P.bridge+PORT.MHWS-hot))+' m clear water'],
+             ['− '+m1(P.air)+' m','air draught', m1(r1(P.bridge+PORT.MHWS-hot-P.air))+' m over the masthead']],
+      rule:'Charted heights come down from MHWS, so add MHWS back before taking off the tide. The clearance improves as the tide falls.', hitKind:'bridge' };
+  } else if (L === 3) {
+    const tLW = day.tHW + day.D;
+    q = { m:'passage', leg:L, qtype:'Leg 4 · the berth', prompt:`You berth against the quay, which dries ${m1(P.dry)} m. LW tonight is ${m1(day.LW)} m at ${hhmm(tLW)}. How much water will be alongside at low water?`,
+      givens:[['Drying height', m1(P.dry)+' m'],['LW', m1(day.LW)+' m'],['Draught', m1(P.draught)+' m']],
+      ansType:'m', target:r1(Math.max(0, day.LW - P.dry)), tol:0.15, unit:'m', hot,
+      steps:[[m1(day.LW)+' m','− '+m1(P.dry)+' m drying height', m1(r1(day.LW-P.dry))+' m'],
+             [day.LW - P.dry <= 0 ? 'negative' : m1(r1(day.LW-P.dry))+' m', day.LW - P.dry <= 0 ? 'the berth dries out' : 'against '+m1(P.draught)+' m draught', day.LW - P.dry < P.draught ? 'she takes the ground' : 'she stays afloat']],
+      rule:'Height of tide minus drying height. If the answer is negative the berth dries, and the only question left is whether she can sit upright.', hitKind:'quay' };
+  } else {
+    const need = Math.min(r1(day.HW - 0.2), Math.max(r1(day.LW + 0.2), r1(P.draught + 0.5 - P.bar)));
+    const dt = Math.round(timeFor(day, need, 'rising'));
+    const t2 = day.tHW + day.D * 2 + dt;
+    q = { m:'passage', leg:L, qtype:'Leg 5 · getting out', prompt:`You need ${m1(need)} m of tide to cross the bar with your margin. Tomorrow's HW is ${hhmm(day.tHW + day.D*2)}. On the rising tide, when can you leave?`,
+      givens:[['Tide needed', m1(need)+' m'],['HW tomorrow', hhmm(day.tHW + day.D*2)+' · '+m1(day.HW)+' m'],['LW', m1(day.LW)+' m']],
+      ansType:'time', target:((t2%1440)+1440)%1440, tol:15, unit:'hhmm', hot,
+      steps:[[m1(P.draught)+' m draught','+ 0.5 m margin − '+m1(P.bar)+' m charted', m1(need)+' m of tide needed'],
+             [m1(need)+' m','on the rising curve', dur(Math.abs(dt))+' before HW'],
+             [hhmm(day.tHW + day.D*2), '− '+dur(Math.abs(dt)), hhmm(t2)]],
+      rule:'Turn the depth you need into a height of tide, then read the curve backwards. That number is the tidal gate, and it is the one you write in the plan.', hitKind:'bar' };
+  }
+  render();
+}
+function passageOver(made){
+  const fb = $('fb'), legs = 5, right = pas.results.filter(Boolean).length;
+  if (made) {
+    fanfare();
+    store.log.unshift({ when:new Date().toISOString().slice(0,10), name:pas.p.sec, legs, right, strikes:pas.strikes, clean:pas.errors === 0 });
+    fb.className = 'feedback show ok';
+    fb.innerHTML = `<h3>Lines ashore at ${pas.p.sec}.</h3><p>${right} of ${legs} right${pas.errors === 0 ? '. Bar, bridge and berth, not a centimetre wrong. That is a skipper’s entry.' : `, ${pas.errors} corrected on the way in. Logged.`}</p>`;
+    if (pas.errors <= 1) completeStage();
+  } else {
+    aground();
+    fb.className = 'feedback show no';
+    fb.innerHTML = `<h3>On the putty.</h3><p>Three wrong numbers on one entry and the boat is sitting on something. Height of tide first, charted figure second, margin last — say it out loud before every answer.</p>`;
+    store.log.unshift({ when:new Date().toISOString().slice(0,10), name:pas.p.sec, legs, right, strikes:3, clean:false, aground:true });
+  }
+  $('check').textContent = 'New entry ›';
+  pas.done = true; save(); renderStatus(); renderLog();
+}
+
+// ---- question routing
+const MODES = ['depth','clear','range','twelfths','curveH','curveT','secondary'];
+function genQ(){
+  const mode = stage.kind === 'watch' ? pick(MODES) : stage.cfg.mode;
+  q = B[mode]();
+  q.mode = mode;
+  render();
+}
+
+// ---- rendering
+function render(){
+  answered = false; picked = null;
+  const isChoice = q.ansType === 'choice';
+  $('ans').hidden = isChoice; $('unit').hidden = isChoice; $('choices').hidden = !isChoice;
+  if (isChoice) {
+    $('choices').innerHTML = q.choices.map((c,i) => `<button type="button" data-c="${i}"><span class="kb">${i+1}</span>${c}</button>`).join('');
+  } else {
+    $('ans').value = '';
+    $('ans').placeholder = q.ansType === 'm' ? '0.0' : q.ansType === 'time' ? 'hhmm' : 'hhmm';
+    $('ans').inputMode = q.ansType === 'm' ? 'decimal' : 'numeric';
+    $('unit').textContent = q.unit;
+    $('ans').focus();
+  }
+  $('qtype').textContent = q.qtype;
+  $('prompt').textContent = q.prompt;
+  $('givens').innerHTML = q.givens.map(([k,v,hi]) => `<div class="given ${hi?'hi':''}"><div class="k">${k}</div><div class="v mono">${v}</div></div>`).join('');
+  $('fb').className = 'feedback'; $('fb').innerHTML = '';
+  $('check').textContent = 'Check';
+  $('check').hidden = isChoice;
+  renderTbl();
+  const showFig = q.m === 'passage' || !!q.day || stage.fig === 'datum';
+  $('figbox').hidden = !showFig;
+  if (q.m === 'passage') {
+    $('legs').innerHTML = [0,1,2,3,4].map(i => `<span class="leg ${i < pas.leg ? (pas.results[i] ? 'done' : 'bad') : i === pas.leg ? 'now' : ''}"></span>`).join('') +
+      `<span class="strikes">strikes <b>${'✕'.repeat(pas.strikes)}${'·'.repeat(3-pas.strikes)}</b></span>`;
+    drawHarbour(pas, q.hot, null);
+  } else {
+    $('legs').innerHTML = '';
+    if (q.day) drawCurve(q.day, q.curve, false);
+    else if (stage.fig === 'datum') { $('fig').outerHTML = datumSvg().replace('<svg ', '<svg id="fig" '); $('legend').innerHTML = ''; $('fignote').textContent = 'Wet measures up from chart datum. Dry and overhead measure down from MHWS.'; }
+  }
+}
+
+// ---- checking
+function parseAns(raw){
+  if (q.ansType === 'm') { if (!/^\d{1,2}(\.\d{1,2})?$/.test(raw)) return null; return parseFloat(raw); }
+  const d = raw.replace(/[^\d]/g,'');
+  if (d.length < 3 || d.length > 4) return null;
+  const s = d.padStart(4,'0'), hh = +s.slice(0,2), mm = +s.slice(2);
+  if (mm > 59 || (q.ansType === 'time' && hh > 23)) return null;
+  return hh*60 + mm;
+}
+function fmtTarget(x){ return q.ansType === 'm' ? m1(x)+' m' : q.ansType === 'time' ? hhmm(x) : dur(x); }
+function check(){
+  const raw = $('ans').value.trim();
+  const a = parseAns(raw);
+  if (a === null) { $('ans').focus(); return; }
+  finish(a, false);
+}
+function offBy(a){
+  if (q.ansType === 'm') return Math.abs(a - q.target);
+  let d = Math.abs(a - q.target);
+  if (q.ansType === 'time') d = Math.min(d, 1440 - d);
+  return d;
+}
+function finish(a, revealed){
+  answered = true;
+  const isChoice = q.ansType === 'choice';
+  const ok = revealed ? false : isChoice ? a === q.target : offBy(a) <= q.tol;
+  const fb = $('fb');
+  fb.className = 'feedback show ' + (revealed ? '' : ok ? 'ok' : 'no');
+  const tgt = isChoice ? q.choices[q.target] : fmtTarget(q.target);
+  const title = revealed ? (watch && watch.timedOut ? `Time. The answer is ${tgt}.` : `Worked answer: ${tgt}`)
+    : ok ? pick(['Spot on.','Aye, that floats.','Clean.','That would pass.','Right to the centimetre.','Good water.'])
+    : isChoice ? `Not that one. It is “${tgt}”.`
+    : q.ansType === 'm' ? `Not quite. It is ${tgt}, you were ${m1(offBy(a))} m ${a > q.target ? 'high' : 'low'}.`
+    : `Not quite. It is ${tgt}, you were ${dur(offBy(a))} ${a > q.target ? 'late' : 'early'}.`;
+  let extra = '';
+  if (!ok && !revealed && !isChoice && q.ansType === 'm' && a > q.target)
+    extra = `<p>Too much water on paper is the dangerous direction: you would go in believing you had ${m1(offBy(a))} m you do not have.</p>`;
+  if (q.m === 'passage' && !ok && !revealed) extra += consequence(a);
+  fb.innerHTML = `<h3>${title}</h3><ul class="steps">` +
+    q.steps.map(s => `<li><span class="mono s">${s[0]}</span><span>${s[1]}${s[2] ? ' → <span class="mono s">'+s[2]+'</span>' : ''}</span></li>`).join('') +
+    `</ul>${extra}<div class="rule">${q.rule}</div>`;
+  if (isChoice) {
+    for (const b of $('choices').querySelectorAll('button')) {
+      b.disabled = true;
+      if (+b.dataset.c === q.target) b.classList.add('right');
+      if (+b.dataset.c === a) b.classList.add('picked');
+    }
+  } else $('ans').disabled = false;
+  if (q.day) drawCurve(q.day, q.curve, true);
+  $('check').hidden = false;
+  $('check').textContent = 'Next ›';
+
+  const credit = ok && !revealed;
+  if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); if (watch) watch.score++; }
+  else { store.streak = 0; if (watch) watch.miss++; }
+  if (watch) { clearTimeout(watch.t); watch.used += WATCH_SECS - watch.left; watch.left = 0; watchTimer(); }
+  if (credit && store.streak % 10 === 0) pop(`${store.streak} in a row`);
+
+  if (q.m === 'passage') {
+    pas.results[q.leg] = credit;
+    if (!credit) { pas.strikes++; pas.errors++; }
+    drawHarbour(pas, q.hot, credit ? null : q.hitKind);
+    if (credit) bell(); else thud();
+    if (pas.strikes >= 3) setTimeout(passageOver, 800, false);
+    else if (q.leg === 4) setTimeout(passageOver, 900, true);
+  } else {
+    if (credit) bell(); else thud();
+    if (stage.kind === 'drill') recordStage(credit);
+  }
+  save(); renderStatus();
+}
+function consequence(a){
+  const P = pas.p;
+  if (q.hitKind === 'bar') return `<p>You cross on your figure and the keel finds the bar. On a falling tide she settles where she stops, and the next water is six hours away.</p>`;
+  if (q.hitKind === 'bridge') return `<p>The masthead touches the underside of the bridge at ${m1(P.air)} m air draught. Instruments and the VHF aerial go first, and they are above the number you measured.</p>`;
+  return `<p>She sits down on the quay at low water leaning outboard, because nobody worked the depth alongside before the lines went on.</p>`;
+}
+function pop(t){ const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2000); }
+
+// ---- watch
+function startWatch(){ watch = { asked:0, left:0, used:0, score:0, miss:0, timedOut:false, t:null }; }
+function armWatch(){
+  watch.asked++; watch.left = WATCH_SECS; watch.timedOut = false;
+  const tick = () => { watchTimer(); if (watch.left <= 0) { watch.timedOut = true; finish(null, true); } else { watch.left--; watch.t = setTimeout(tick, 1000); } };
+  tick();
+}
+function watchTimer(){ $('timer').textContent = `${watch.asked}/${WATCH_N} · ${watch.left}s · ${watch.score} right · ${watch.miss} wrong`; }
+const mmss = s => `${Math.floor(s/60)}m ${String(s%60).padStart(2,'0')}s`;
+function endWatch(){
+  clearTimeout(watch.t); const w = watch; watch = null; $('timer').textContent = '';
+  const passed = w.asked >= WATCH_N && w.miss <= 1;
+  const fb = $('fb'); fb.className = 'feedback show ' + (passed ? 'ok' : '');
+  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} of ${w.asked} right in ${mmss(w.used)}. ${passed ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Accuracy comes with reps.' : 'Slow down and draw the vertical picture before you answer.'}</p>`;
+  if (passed && stage.kind === 'watch') completeStage();
+  save(); renderStatus();
+  answered = true; $('check').hidden = false; $('check').textContent = 'Again ›';
+}
+
+// ---- stages
+function unlocked(i){ return i === 0 || store.stages[STAGES[i-1].id].done; }
+function recordStage(ok){
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 10) s.recent.shift();
+  if (!s.done && s.recent.length >= 10 && s.recent.filter(Boolean).length >= 8) completeStage();
+}
+function completeStage(){
+  const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
+  const nxt = STAGES[idx()+1];
+  pop(nxt ? `Stage cleared · next: ${nxt.title}` : 'Ladder complete');
+  renderStatus();
+}
+function renderStatus(){
+  $('streak').textContent = store.streak; $('best').textContent = store.best;
+  $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted));
+  const i = idx(), s = ss();
+  $('stepper').innerHTML = `<div class="dots">` + STAGES.map((st,k) => { const lock = !unlocked(k), d = store.stages[st.id].done;
+      return `<button class="dot ${d?'done':''} ${k===i?'now':''} ${lock?'locked':''}" data-i="${k}" title="${k+1}. ${st.title}${lock?' (locked)':''}" aria-label="Stage ${k+1}: ${st.title}" ${lock?'disabled':''}></button>`; }).join('') + `</div>` +
+    `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
+    `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)||i===STAGES.length-1?'disabled':''} aria-label="Next stage">›</button></span>`;
+  const last = stage.kind === 'drill' ? s.recent : [];
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length:10}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
+    `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
+}
+function renderConcept(){
+  $('conceptBody').innerHTML = `<p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p>`;
+  $('concept').open = !store.seenConcept[stage.id];
+  store.seenConcept[stage.id] = true; save();
+}
+function setStage(i){
+  if (!unlocked(i) || i < 0 || i >= STAGES.length) return;
+  if (watch) endWatch();
+  stage = STAGES[i];
+  renderConcept();
+  if (stage.kind === 'passage') { pas = null; startPassage(); }
+  else { if (stage.kind === 'watch') startWatch(); genQ(); if (watch) armWatch(); }
+  renderStatus(); renderLog();
+}
+function renderLog(){
+  const box = $('logbox'), b = $('logbody');
+  box.hidden = !store.log.length && stage.kind !== 'passage';
+  if (!store.log.length) { b.innerHTML = `<p class="empty">No entries yet. The tide is waiting.</p>`; return; }
+  b.innerHTML = `<table><thead><tr><th>Date</th><th>Harbour</th><th>Legs</th><th>Remarks</th></tr></thead><tbody>` +
+    store.log.slice(0,12).map(e => `<tr><td class="mono">${e.when}</td><td>${e.name}</td><td class="mono">${e.right}/${e.legs}</td><td>${e.aground ? 'Aground. Entry abandoned.' : e.clean ? 'Clean entry.' : `${e.strikes} figure${e.strikes>1?'s':''} corrected.`}</td></tr>`).join('') + `</tbody></table>`;
+}
+
+// ---- wiring
+function next(){
+  if (stage.kind === 'passage') { if (!pas || pas.done) startPassage(); else { pas.leg++; genPassageQ(); } }
+  else if (stage.kind === 'watch') { if (watch && watch.asked >= WATCH_N) return endWatch(); if (!watch) startWatch(); genQ(); armWatch(); }
+  else genQ();
+}
+$('stepper').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) return setStage(+d.dataset.i); const n = e.target.closest('[data-step]'); if (n) setStage(idx() + +n.dataset.step); });
+$('form').addEventListener('submit', e => { e.preventDefault(); if (answered) next(); else if (q.ansType !== 'choice') check(); });
+$('choices').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b && !answered) finish(+b.dataset.c, false); });
+$('skip').addEventListener('click', () => { if (!answered) finish(null, true); });
+$('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) bell(); });
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); return setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); }
+  if (!answered && q && q.ansType === 'choice' && /^[1-4]$/.test(e.key)) { const i = +e.key - 1; if (i < q.choices.length) { e.preventDefault(); finish(i, false); } }
+  if (answered && e.key === 'Enter' && document.activeElement !== $('ans')) { e.preventDefault(); next(); }
+});
+$('ans').addEventListener('input', e => { e.target.value = e.target.value.replace(q.ansType === 'm' ? /[^\d.]/g : /[^\d:]/g, '').slice(0,5); });
+
+setStage(Math.max(0, STAGES.findIndex(st => !store.stages[st.id].done)));
+})();
+</script>
+</body>
+</html>

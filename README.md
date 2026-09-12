@@ -27,11 +27,27 @@ tutorials/<slug>/       one self-contained tutorial per folder (index.html)
 |---|----------|--------|
 | 01 | Three Norths (true / magnetic / compass, variation, deviation, passage) | live |
 | 02 | Course to Steer (tidal vectors, leeway) | next |
-| 03 | Secondary Ports (tide heights and times) | planned |
+| 03 | Tidal Heights (datum, twelfths, tidal curve, secondary ports, harbour entry) | live |
 | 04 | Buoys and Lights (IALA A) | planned |
 | 05 | Rules of the Road (Rules 12–18, lights, shapes, sound signals, night encounters) | live |
 | 06 | Night Watch (WebGL: lights and arcs in 3D, buoys by night, who gives way, day shapes, fog signals, timed watch) | live |
-| 07 | Weather | planned |
+| 07 | Night Sim (real-time conn under sail: helm and tack, steady bearing, port tack gives way) | prototype |
+| 08 | Weather | planned |
+
+## Reference
+
+| Page | Contents |
+|------|----------|
+| `cheatsheet/` | Day Skipper theory cheat sheet: print-first HTML plus `rya-day-skipper-cheatsheet.pdf` (A4, 19 pages) covering all 14 syllabus areas and a single-page summary. |
+
+Regenerate the PDF after editing `cheatsheet/index.html`:
+
+```sh
+python3 -m http.server 8080 &
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu \
+  --no-pdf-header-footer --virtual-time-budget=20000 \
+  --print-to-pdf=cheatsheet/rya-day-skipper-cheatsheet.pdf http://localhost:8080/cheatsheet/
+```
 
 ## Deploy
 
