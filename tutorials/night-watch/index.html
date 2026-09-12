@@ -338,16 +338,16 @@ const V = {
              tell:'An all-round white with sidelights and no sternlight: a power-driven vessel under 12 m, using the small-craft option in Rule 23. The option is permissive: a boat under 12 m may equally show ordinary masthead, sidelights and sternlight.' },
   sail:    { name:'Sailing vessel', short:'under sail', model:'yacht', spd:3, fog:'Lss',
              lights:v => v === 'tri' ? [['g','sg', .08, 16.3, 0], ['r','sr', .08, 16.3, 0], ['w','st', .08, 16.3, 0]]
-                       : v === 'rg' ? [['r','ar', .08, 17.6, 0], ['g','ar', .08, 16.4, 0], ...SIDES(1.3, 1.75, .44), ...STERN(1.2)]
+                       : v === 'rg' ? [['r','ar', .08, 15.4, 0], ['g','ar', .08, 14.2, 0], ...SIDES(1.3, 1.75, .44), ...STERN(1.2)]
                        : [...SIDES(1.3, 1.75, .44), ...STERN(1.2)],
              tellV:{ tri:'Red, green and white in one lantern at the masthead and nothing on deck: a sailing vessel under 20 m showing a tricolour.', rg:'Sidelights and sternlight with red over green all-round at the masthead: a sailing vessel using the optional lights in Rule 25(c).', plain:'Sidelights and a sternlight with no masthead light above them: under sail.' } },
   motorsail:{ name:'Power-driven vessel under 50 m', short:'motor-sailing, so power-driven', model:'yacht', spd:5, fog:'L', dayName:'Sailing vessel also under engine',
              lights:() => [['w','mh', .08, 10, 0], ...SIDES(1.3, 1.75, .44), ...STERN(1.2)],
-             shapes:() => [['cone', .12, 6, 0]],
+             shapes:() => [['cone', .3, 7, 0]],
              tell:'Sails up, but a steaming light above her sidelights: she is motor-sailing, and for the rules she is a power-driven vessel. By day she shows a cone, point down.' },
   tow:     { name:'Vessel towing', short:'towing', model:'tug', spd:3, fog:'Lss', tow:true,
-             lights:v => [['w','mh', .15, 10, 0], ['w','mh', .15, 12.5, 0], ...(v === 'long' ? [['w','mh', .15, 15, 0]] : []), ...SIDES(8, 4.5, .1), ...STERN(3.5), ['y','tw', -.49, 5.5, 0]],
-             shapes:v => v === 'long' ? [['diamond', .15, 12, 0]] : [],
+             lights:v => [['w','mh', .15, 8, 0], ['w','mh', .15, 13, 0], ...(v === 'long' ? [['w','mh', .15, 18, 0]] : []), ...SIDES(8, 4.5, .1), ...STERN(3.5), ['y','tw', -.49, 5.5, 0]],
+             shapes:v => v === 'long' ? [['diamond', .15, 15, 0]] : [],
              tell:'Two masthead lights in a vertical line (three when the tow is over 200 m) and a yellow towing light above the sternlight: a tug with a tow. The tow itself shows only sidelights and a sternlight, and the line between them is unlit.' },
   trawl:   { name:'Vessel trawling', short:'trawling', model:'trawler', spd:2, fog:'Lss', modelV:{ big:'midship' },
              lights:(v, w) => v === 'big' ? [['g','ar', .1, 18, 0], ['w','ar', .1, 15.5, 0], ['w','mh', -.3, 22, 0], ...(w ? [...SIDES(12, 6, -.34), ...STERN(5)] : [])]
@@ -356,9 +356,9 @@ const V = {
              work:(v, w) => w ? [[-.2, 7, 0, .8], [-.05, 6.5, 2.5, .6], [-.05, 6.5, -2.5, .6]] : [[-.2, 7, 0, .4]],
              tell:'Green over white, all-round: trawling. Sidelights and sternlight only when she is making way. A trawler of 50 m or more adds a masthead light abaft of and higher than the green.' },
   fish:    { name:'Vessel fishing, not trawling', short:'fishing', model:'trawler', spd:1.5, fog:'Lss',
-             lights:(v, w) => [['r','ar', .02, 14, 0], ['w','ar', .02, 11.5, 0], ...(v === 'gear' ? [['w','ar', .02, 7, -6]] : []), ...(w && v !== 'anchored' ? [...SIDES(7.5, 4, .18), ...STERN(3.5)] : [])],
-             shapes:v => [['cones', .02, 11, 0], ...(v === 'gear' ? [['coneup', .02, 7, -6]] : [])],
-             work:(v, w) => v === 'anchored' ? [[-.2, 7, 0, .3]] : [[-.2, 7, 0, .7], [.1, 6.5, 0, .5]],
+             lights:(v, w) => [['r','ar', .02, 14, 0], ['w','ar', .02, 11.5, 0], ...(v === 'gear' ? [['w','ar', .02, 11.5, -6]] : []), ...(w && v !== 'anchored' ? [...SIDES(7.5, 4, .18), ...STERN(3.5)] : [])],
+             shapes:v => [['cones', .02, 11, 0], ...(v === 'gear' ? [['coneup', .02, 9, -6]] : [])],
+             work:(v, w) => v === 'anchored' ? [[-.2, 6, 2.6, .3]] : [[-.2, 6, 2.6, .7], [.1, 5.5, -2.6, .5]],
              tell:'Red over white, all-round: fishing other than trawling. An extra all-round white out to one side marks gear extending more than 150 m that way. At anchor she shows the same fishing lights and no anchor light.' },
   nuc:     { name:'Vessel not under command', short:'not under command', model:'midship', spd:.6, fog:'Lss', deep:true,
              lights:(v, w) => [['r','ar', 0, 20, 0], ['r','ar', 0, 17.5, 0], ...(w ? [...SIDES(12, 6, -.34), ...STERN(5)] : [])],
@@ -366,10 +366,10 @@ const V = {
              tell:'Red over red, all-round, and no masthead lights: not under command. Sidelights mean she still has way on her.' },
   ram:     { name:'Vessel restricted in ability to manoeuvre', short:'restricted in her ability to manoeuvre', model:'midship', spd:2, fog:'Lss', deep:true,
              lights:(v, w) => [['r','ar', 0, 22, 0], ['w','ar', 0, 19.5, 0], ['r','ar', 0, 17, 0], ...(v === 'anchored' ? [['w','ar', .4, 10, 0], ['w','ar', -.4, 5.5, 0]] : w ? [['w','mh', .3, 13, 0], ['w','mh', -.3, 18, 0], ...SIDES(12, 6, -.34), ...STERN(5)] : [])],
-             shapes:() => [['ball', 0, 22, 0], ['diamond', 0, 19.5, 0], ['ball', 0, 17, 0]],
-             tell:'Red, white, red in a vertical line: restricted in her ability to manoeuvre. Making way, she adds masthead lights, sidelights and sternlight. At anchor she adds anchor lights on top, unlike a fishing vessel.' },
+             shapes:v => [['ball', 0, 22, 0], ['diamond', 0, 19.5, 0], ['ball', 0, 17, 0], ...(v === 'anchored' ? [['ball', .4, 12, 0]] : [])],
+             tell:'Red, white, red in a vertical line: restricted in her ability to manoeuvre. Making way, she adds masthead lights, sidelights and sternlight. At anchor she adds anchor lights, forward and aft below the stack, unlike a fishing vessel.' },
   dredge:  { name:'Dredger, obstruction on one side', short:'dredging', model:'dredger', spd:0, fog:'Lss', deep:true,
-             lights:() => [['r','ar', -.05, 22, 0], ['w','ar', -.05, 19.5, 0], ['r','ar', -.05, 17, 0], ['r','ar', -.05, 14, -7], ['r','ar', -.05, 11.5, -7], ['g','ar', -.05, 14, 7], ['g','ar', -.05, 11.5, 7]],
+             lights:(v, w) => [['r','ar', -.05, 22, 0], ['w','ar', -.05, 19.5, 0], ['r','ar', -.05, 17, 0], ['r','ar', -.05, 14, -7], ['r','ar', -.05, 11.5, -7], ['g','ar', -.05, 14, 7], ['g','ar', -.05, 11.5, 7], ...(w ? [['w','mh', .3, 12, 0], ['w','mh', -.3, 16, 0], ...SIDES(14, 6, -.34), ...STERN(5)] : [])],
              shapes:() => [['ball', -.05, 22, 0], ['diamond', -.05, 19.5, 0], ['ball', -.05, 17, 0], ['ball', -.05, 14, -7], ['ball', -.05, 11.5, -7], ['diamond', -.05, 14, 7], ['diamond', -.05, 11.5, 7]],
              tell:'Red white red for restricted, plus two reds on the side where the obstruction is and two greens on the side you may pass. By day, two balls foul side, two diamonds clear side.' },
   cbd:     { name:'Vessel constrained by her draught', short:'constrained by her draught', model:'bigship', spd:5, fog:'Lss', deep:true,
@@ -380,19 +380,18 @@ const V = {
              lights:() => [['w','mh', .22, 19.5, 0], ['g','ar', .22, 17, 0], ['g','ar', .22, 13.5, -5], ['g','ar', .22, 13.5, 5], ...SIDES(8, 5, -.3), ...STERN(4)],
              shapes:() => [['ball', .22, 17, 0], ['ball', .22, 13.5, -5], ['ball', .22, 13.5, 5]],
              tell:'Three all-round greens, one at the foremast head and one at each yardarm, over power-driven lights: mine clearance. Keep 1000 m clear.' },
-  pilot:   { name:'Pilot vessel on duty', short:'a pilot vessel', model:'pilot', spd:5, fog:'ssss', small:true,
+  pilot:   { name:'Pilot vessel on duty', short:'a pilot vessel', model:'pilot', spd:5, fog:'ssss', small:true, fogV:{ anchored:'Bssss' },
+             shapes:v => v === 'anchored' ? [['ball', .4, 5, 0]] : [],
              lights:v => [['w','ar', 0, 8.5, 0], ['r','ar', 0, 7, 0], ...(v === 'anchored' ? [['w','ar', .4, 3.5, 0]] : [...SIDES(4.5, 2.2, .05), ...STERN(1.8)])],
              tell:'White over red, all-round: a pilot vessel on duty. Underway she shows sidelights and sternlight even when stopped (Rule 29 says underway, not making way), never a masthead light. At anchor she adds an anchor light.' },
   hover:   { name:'Hovercraft, skimming', short:'a hovercraft in non-displacement mode', model:'launch', spd:12, fog:'L', small:true,
-             lights:() => [['y','fl', .2, 5.5, 0], ['w','mh', .2, 4.5, 0], ...SIDES(3.4, 1.6, .05), ...STERN(1.2)],
+             lights:() => [['y','fl', .2, 7.5, 0], ['w','mh', .2, 4.5, 0], ...SIDES(3.4, 1.6, .05), ...STERN(1.2)],
              tell:'Power-driven lights with an all-round flashing yellow: an air-cushion vessel in non-displacement mode.' },
   anchor:  { name:'Vessel at anchor', short:'at anchor', model:'coaster', spd:0, fog:'B', anchored:true,
-             lights:v => v === 'big' ? [['w','ar', .4, 17, 0], ['w','ar', -.38, 12, 0], ]
-                       : v === 'mid' ? [['w','ar', .4, 17, 0], ['w','ar', -.38, 12, 0]]
-                       : [['w','ar', .38, 12, 0]],
+             lights:v => v ? [['w','ar', .4, 17, 0], ['w','ar', -.38, 12, 0]] : [['w','ar', .38, 12, 0]],
              modelV:{ big:'ship', mid:'midship' }, fogV:{ big:'BG' },
              work:v => v === 'big' ? [[.3, 9, 0, .7], [.1, 9, 0, .7], [-.1, 9, 0, .7], [-.28, 14, 0, .8], [-.36, 11, 6, .5], [-.36, 11, -6, .5]] : v === 'mid' ? [[-.3, 8, 0, .5], [.1, 6, 0, .4]] : [],
-             shapes:() => [['ball', .38, 8, 0]],
+             shapes:v => [['ball', .38, v === 'big' ? 16 : v === 'mid' ? 12 : 8, 0]],
              tell:'An all-round white forward and nothing else: at anchor. Fifty metres or more adds a second, lower, aft; a hundred metres or more lights the deck as well.' },
   aground: { name:'Vessel aground', short:'aground', model:'coaster', spd:0, fog:'bBb', anchored:true,
              lights:() => [['w','ar', .38, 12, 0], ['r','ar', -.05, 15, 0], ['r','ar', -.05, 12.5, 0]],
@@ -539,8 +538,8 @@ function builder(){
     else if (kind === 'cone') lathe([[0,-r],[r,r]], x, y, z);
     else if (kind === 'coneup') lathe([[r,-r],[0,r]], x, y, z);
     else if (kind === 'cones') { lathe([[r,r*2.1],[0,.1]], x, y, z); lathe([[0,-.1],[r,-r*2.1]], x, y, z); }
-    else if (kind === 'diamond') lathe([[0,-r*1.5],[r,0],[0,r*1.5]], x, y, z);
-    else if (kind === 'cyl') lathe([[0,-r*1.3],[r*.6,-r*1.3],[r*.6,r*1.3],[0,r*1.3]], x, y, z, 12); };
+    else if (kind === 'diamond') lathe([[0,-r*1.6],[r*1.35,0],[0,r*1.6]], x, y, z);
+    else if (kind === 'cyl') lathe([[0,-r*1.1],[r*1.05,-r*1.1],[r*1.05,r*1.1],[0,r*1.1]], x, y, z, 12); };
   const buf = () => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW); return { b, n:v.length/6 }; };
   const lbuf = () => { if (!lv.length) return null; const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lv), gl.STATIC_DRAW); return { b, n:lv.length/6, lines:true }; };
   return { tri, quad, box, lathe, hull, yachtHull, prism, shape, buf, lbuf, line, v };
@@ -561,9 +560,9 @@ function model(type, variant){
   for (const l of [...lights.filter(l => l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl'), ...shapes]) {
     const along = l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl' ? l[2] : l[1], h = l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl' ? l[3] : l[2], x = l[1] === 'ar' || l[1] === 'mh' || l[1] === 'fl' ? l[4] : l[3];
     const k = along.toFixed(2); posts[k] = Math.max(posts[k] || 0, h);
-    if (x) Mst.box(x/2, h - .15, along*m.L, Math.abs(x), .3, .3);
+    if (x) Mst.box(x/2, h - .25, along*m.L, Math.abs(x), .5, .5);
   }
-  for (const k in posts) { const along = +k, top = posts[k] - .25, w = m.L > 50 ? .9 : .35; Mst.box(0, 0, along*m.L, w, top, w); }
+  for (const k in posts) { const along = +k, top = posts[k] - .25, w = m.L > 50 ? .6 : .3; Mst.box(0, 0, along*m.L, w, top, w); }
   // lantern housings, so by day you can see where each light lives
   const lb = m.L > 50 ? .7 : m.L > 15 ? .45 : .25;
   for (const [, kind, along, h, x] of lights) { if (kind === 'sg' || kind === 'sr') Mst.box(x, h - lb/2, along*m.L, lb, lb, lb*1.4); else Mst.box(x || 0, h - lb/2, along*m.L, lb, lb, lb); }
@@ -646,7 +645,7 @@ function worldLights(v){ const d = V[v.type], m = model(v.type, v.variant).m, f 
     if (!vis) continue;
     const z = along*m.L; out.push({ x:v.x + f[0]*z + s[0]*across, y:h, z:v.z + f[2]*z + s[2]*across, col:LCOL[col], vis:vis*(dim || 1)*(kind === 'mh' ? 1 : kind === 'ar' || kind === 'fl' ? .75 : .55), kind, c:col });
   }
-  for (const [x, y, z] of model(v.type, v.variant).windows) out.push({ x:v.x + f[0]*z + s[0]*x, y, z:v.z + f[2]*z + s[2]*x, col:LCOL.win, vis:.2, kind:'win', dim:1 });
+  for (const [x, y, z] of model(v.type, v.variant).windows) out.push({ x:v.x + f[0]*z + s[0]*x, y, z:v.z + f[2]*z + s[2]*x, col:LCOL.win, vis:.11, kind:'win', dim:1 });
   // working lights: an anchored ship lights her decks, a fishing vessel working her gear is lit like a stadium. Nav lights hide inside the glare.
   const work = d.work ? d.work(v.variant, v.making) : [];
   for (const [along, h, x, vv] of work) { const z = along*m.L; out.push({ x:v.x + f[0]*z + s[0]*x, y:h, z:v.z + f[2]*z + s[2]*x, col:LCOL.win, vis:vv, kind:'deck', dim:1 }); }
@@ -846,11 +845,11 @@ function genStack(){
   const type = DEV.get('type') || pick(STACK_POOL);
   const variant = type === 'tow' ? pick(['short','long']) : type === 'anchor' ? pick([undefined,'mid']) : type === 'fish' ? pick([undefined,'gear','anchored']) : type === 'trawl' ? pick([undefined,undefined,'big']) : type === 'ram' ? pick([undefined,undefined,'anchored']) : type === 'pilot' ? pick([undefined,undefined,'anchored']) : undefined;
   const making = V[type].anchored || variant === 'anchored' ? false : type === 'dredge' ? false : Math.random() < .6;
-  let v = place(type, { variant, making, range: type === 'tow' ? rndf(480, 600) : undefined }); v.hdg = norm(v.b + (V[type].anchored || type === 'dredge' ? rndf(40, 320) : pick(ASPECT.slice(0, 3)).gen()));
+  let v = place(type, { variant, making, range: type === 'tow' ? rndf(480, 600) : undefined }); v.hdg = norm(v.b + (type === 'dredge' ? pick([rndf(150, 210), rndf(-30, 30)]) : V[type].anchored ? rndf(40, 320) : pick(ASPECT.slice(0, 3)).gen()));
   const vessels = type === 'tow' ? withTow(v) : [v];
   const pool = shuffle([...new Set(STACK_POOL)].filter(x => x !== type && V[x].name !== V[type].name)).slice(0, 4);
   const opts = shuffle([type, ...pool]);
-  const wayTell = V[type].anchored ? '' : variant === 'anchored' ? (type === 'fish' ? ' She is at anchor, but a fishing vessel shows only her fishing lights, never an anchor light.' : ' She is at anchor: anchor lights on top of the stack.') : making ? ' She is making way, so sidelights and sternlight show too.' : (['trawl','fish','nuc','ram'].includes(type) ? ' No sidelights: she is underway but stopped in the water.' : '');
+  const wayTell = V[type].anchored ? '' : variant === 'anchored' ? (type === 'fish' ? ' She is at anchor, but a fishing vessel shows only her fishing lights, never an anchor light.' : ' She is at anchor: anchor lights forward and aft, below the stack, and the anchor ball by day.') : making ? ' She is making way, so sidelights and sternlight show too.' : (['trawl','fish','nuc','ram'].includes(type) ? ' No sidelights: she is underway but stopped in the water.' : '');
   return { label:'The stacks', prompt:'Read the stack. What is she?', scene:{ mode:'night', vessels, hud:hudFor(v, 'night') },
     choices: opts.map(x => V[x].name), answer: opts.indexOf(type), risk:type,
     explain:`${V[type].tell}${wayTell}`,
