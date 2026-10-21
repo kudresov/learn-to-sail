@@ -310,12 +310,24 @@ void main(){vec3 d=normalize(uF+uR*v.x*uTan*uAsp+uU*v.y*uTan);float e=max(d.y,0.
 vec3 g=floor(d*700.);float h=hash(g);float s=step(.9985,h)*smoothstep(0.,.12,e)*(.85+.15*sin(uT*1.2+h*50.));c+=vec3(s*.9);
 float m=max(dot(d,uMoon),0.);c+=vec3(1.,.96,.82)*(smoothstep(.99975,.9999,m)*.9+pow(m,400.)*.3+pow(m,12.)*.04);
 if(d.y<0.)c=uHor;gl_FragColor=vec4(c,1.);}`);
-const SEA = gl && prog(`attribute vec2 p;uniform mat4 uVP;uniform float uTv,uAmp;varying vec3 vW;varying float vD;
-void main(){float r=length(p);float a=uAmp*clamp(1.-r/700.,0.,1.);float y=a*(sin(p.x*.09+uTv*1.2)+sin(p.y*.06-uTv*.9)+.6*sin((p.x+p.y)*.14+uTv*1.8));vW=vec3(p.x,y,p.y);vD=r;gl_Position=uVP*vec4(vW,1.);}`,
-`${P}varying vec3 vW;varying float vD;uniform vec3 uSea,uHor,uFogC,uEye;uniform float uFogD,uT;uniform vec4 uL[16];uniform vec3 uLC[16];uniform int uLN;
-void main(){vec3 Vv=normalize(uEye-vW);float fr=pow(1.-max(Vv.y,0.),4.);vec3 c=mix(uSea,uHor,fr*.9);
-for(int i=0;i<16;i++){if(i>=uLN)break;vec2 lp=uL[i].xy;vec2 d=uEye.xz-lp;float len=length(d);d/=len;vec2 w=vW.xz-lp;float al=dot(w,d);float pe=abs(w.x*d.y-w.y*d.x);
-if(al>0.&&al<len){float sg=uL[i].w*(1.+al/len*1.3);float k=exp(-pe*pe/(sg*sg))*pow(1.-al/len,1.4)*uL[i].z;float sh=.3+.7*abs(sin(al*1.9+uT*2.6+sin(vW.x*.9+uT)*1.2))*(.6+.4*abs(sin(al*.37-uT*.8)));c+=uLC[i]*k*sh;}}
+// the sea mesh is laid out round our own boat; uRot turns it into world axes, where the waves live.
+// A wave shorter than about two grid cells (vertex) or two pixels (fragment) fades out, and the slope it
+// would have had goes into the roughness instead, so the far sea turns to sheen rather than shimmering noise.
+const SEA = gl && prog(`attribute vec2 p;uniform mat4 uVP;uniform vec2 uRot;uniform vec4 uWa[16],uWb[16];varying vec3 vW;varying vec2 vG;varying float vD;
+void main(){float r=length(p);vec2 g=vec2(p.x*uRot.x-p.y*uRot.y,p.x*uRot.y+p.y*uRot.x);float sp=max(r*.1,.2);vec3 d=vec3(0.);
+for(int i=0;i<16;i++){vec4 a=uWa[i];float f=1.-smoothstep(.3,.7,a.z*sp/3.1416);float th=a.z*dot(a.xy,g)+uWb[i].x;d.y+=f*a.w*cos(th);d.xz-=f*uWb[i].y*a.xy*sin(th);}
+vW=vec3(p.x+d.x*uRot.x+d.z*uRot.y,d.y,p.y-d.x*uRot.y+d.z*uRot.x);vG=g;vD=r;gl_Position=uVP*vec4(vW,1.);}`,
+`${P}varying vec3 vW;varying vec2 vG;varying float vD;uniform vec3 uSea,uHor,uZen,uFogC,uEye;uniform float uFogD,uPix,uS2,uGain;uniform vec2 uRot,uHull;
+uniform vec4 uWa[16],uWb[16],uL[16];uniform vec3 uLC[16];uniform int uLN;
+void main(){vec2 hq=vW.xz/uHull;if(dot(hq,hq)<1.)discard;
+vec3 V=uEye-vW;float dist=length(V);V/=dist;float fp=dist*uPix/max(V.y,.03);vec3 n=vec3(0.,1.,0.);float s2=uS2,J=1.;
+for(int i=0;i<16;i++){vec4 a=uWa[i];float f=1.-smoothstep(.3,1.,a.z*fp/3.1416);float th=a.z*dot(a.xy,vG)+uWb[i].x;float ak=a.w*a.z,q=uWb[i].y*a.z*cos(th);
+n.xz+=f*ak*sin(th)*a.xy;n.y-=f*q;J-=f*q;s2+=(1.-f)*ak*ak*.25;}
+n=normalize(vec3(n.x*uRot.x+n.z*uRot.y,n.y,-n.x*uRot.y+n.z*uRot.x));
+float nv=max(dot(n,V),.02);vec3 R=reflect(-V,n);vec3 c=mix(uSea,mix(uHor,uZen,pow(max(R.y,0.),.55)),.02+.98*pow(1.-nv,5.));
+for(int i=0;i<16;i++){if(i>=uLN)break;vec3 L=normalize(uL[i].xyz-vW);vec3 H=normalize(L+V);float nh=max(dot(n,H),.05),t2=(1.-nh*nh)/(nh*nh);
+c+=uLC[i]*uL[i].w*uGain*exp(-t2/(2.*s2))/(25.13*s2*nh*nh*nh*nh*nv)*(.02+.98*pow(1.-max(dot(V,H),0.),5.));}
+c+=uHor*smoothstep(.3,-.1,J);
 float f=1.-exp(-vD*uFogD);c=mix(c,uFogC,f);gl_FragColor=vec4(c,1.);}`);
 const MESH = gl && prog(`attribute vec3 p,n;uniform mat4 uVP,uM;uniform vec3 uEye;varying vec3 vN,vL;varying float vD;
 void main(){vec4 w=uM*vec4(p,1.);vN=normalize((uM*vec4(n,0.)).xyz);vL=p;vD=length(w.xyz-uEye);gl_Position=uVP*w;}`,
@@ -416,8 +428,9 @@ function model(type, variant){
 }
 
 let seaBuf, skyBuf, ptBuf;
+const SEA_R = 96;
 if (gl) {
-  const s = [], R = 48, K = 80, r = i => 2 * Math.exp(i * 0.096);
+  const s = [], R = SEA_R, K = 80, r = i => 2 * Math.exp(i * 0.096);
   for (let i = 0; i < K; i++) for (let j = 0; j <= R; j++) { const a = j/R*Math.PI*2, r0 = r(i), r1 = r(i+1);
     s.push(r0*Math.cos(a), r0*Math.sin(a), r1*Math.cos(a), r1*Math.sin(a)); }
   seaBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, seaBuf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(s), gl.STATIC_DRAW);
@@ -425,12 +438,76 @@ if (gl) {
   ptBuf = gl.createBuffer();
   gl.enable(gl.DEPTH_TEST);
 }
-const seaStrips = []; if (gl) for (let i = 0; i < 80; i++) seaStrips.push(i * 49 * 2);
-const ENV = { zen:[.008,.012,.028], hor:[.05,.075,.12], sea:[.012,.02,.032], fogD:.00045, amb:[1,1,1], sunC:[.9,.9,1.1], hull:[.016,.02,.028], amp:.16 };
+const seaStrips = []; if (gl) for (let i = 0; i < 80; i++) seaStrips.push(i * (SEA_R + 1) * 2);
+const ENV = { zen:[.008,.012,.028], hor:[.05,.075,.12], sea:[.012,.02,.032], fogD:.00045, amb:[1,1,1], sunC:[.9,.9,1.1], hull:[.016,.02,.028], seaGain:.03 };
 
 // ---- world. x east, z north-negative: heading 000 is -z, matching fwd() below
 const fwd = h => [Math.sin(rad(h)), 0, -Math.cos(rad(h))];
 const stbd = h => [Math.cos(rad(h)), 0, Math.sin(rad(h))];
+
+// ---- the sea. Spectrum after web-ocean (github.com/Noniv/web-ocean, MIT, © 2026 Maksymilian Dendura): a
+// fetch-limited JONSWAP wind sea with Donelan-Banner spreading, plus a narrow swell. Rather than an FFT it is
+// sampled into sixteen Gerstner waves, cheap enough that the shader, every hull and the eye ride the same water.
+const GRAV = 9.81, NWAVE = 16;
+function makeSea({ U, travel, fetch, swellHs, swellLen, swellTravel, chop = 1, seed = 7 }){
+  let st = seed >>> 0; const r01 = () => ((st = (st * 1664525 + 1013904223) >>> 0) + .5) / 4294967296;
+  const toAng = b => Math.atan2(-Math.cos(rad(b)), Math.sin(rad(b)));   // bearing the waves run toward -> angle in x,z
+  const jonswap = (w, wp, al, ga) => { const sg = w <= wp ? .07 : .09, d = (w - wp)/(sg*wp);
+    return al*GRAV*GRAV/w**5 * Math.exp(-1.25*(wp/w)**4) * ga ** Math.exp(-.5*d*d); };
+  const beta = r => r < .95 ? 2.61*r**1.3 : r < 1.6 ? 2.28*r**-1.3 : 10 ** (-.4 + .8393*Math.exp(-.567*Math.log(r*r)));
+  const waves = [];
+  const add = (w, ang, a) => { const k = w*w/GRAV; waves.push({ w, k, a, dx:Math.cos(ang), dz:Math.sin(ang), ph:r01()*2*Math.PI,
+    qa:Math.min(chop*a, 1/(k*NWAVE)) }); };   // horizontal throw, capped so the summed crests never loop over
+  const wp = 22 * Math.cbrt(GRAV*GRAV/(U*fetch)), alpha = .076 * (U*U/(fetch*GRAV)) ** .22;
+  const NWIND = 12, lo = .75*wp, hi = 5.5*wp;
+  for (let i = 0; i < NWIND; i++) {
+    const w0 = lo*(hi/lo)**(i/NWIND), w1 = lo*(hi/lo)**((i+1)/NWIND), w = w0*(w1/w0)**r01(), b = beta(w/wp);
+    // a direction drawn from sech²(βθ), so the components spread the way the spectrum says
+    const th = Math.atanh((2*r01() - 1) * Math.tanh(b*Math.PI) * .999) / b;
+    add(w, toAng(travel) + th, Math.sqrt(2 * jonswap(w, wp, alpha, 3.3) * (w1 - w0)));
+  }
+  const ws = Math.sqrt(GRAV * 2*Math.PI/swellLen);
+  for (let i = 0; i < NWAVE - NWIND; i++) add(ws*(1 + (i - 1.5)*.05), toAng(swellTravel) + (r01() - .5)*.25, Math.sqrt(2*(swellHs/4)**2/(NWAVE - NWIND)));
+  // Cox and Munk's mean square slope for a clean sea; whatever the sixteen waves do not carry becomes roughness
+  const mss = .003 + .00512*U, carried = waves.reduce((s, v) => s + (v.a*v.k)**2/2, 0);
+  const S = { waves, s2:Math.max(mss - carried, .004)/2, Hs:4*Math.sqrt(waves.reduce((s, v) => s + v.a*v.a/2, 0)),
+    wa:new Float32Array(NWAVE*4), wb:new Float32Array(NWAVE*4) };
+  waves.forEach((v, i) => S.wa.set([v.dx, v.dz, v.k, v.a], i*4));
+  // the shader works in metres from our boat; fold her position and the time into each wave's phase here,
+  // in double precision, so the GPU never sees a big number
+  S.phase = (t, ox, oz) => waves.forEach((v, i) => { S.wb[i*4] = (v.ph - v.w*t + v.k*(v.dx*ox + v.dz*oz)) % (2*Math.PI); S.wb[i*4+1] = v.qa; });
+  // Gerstner water moves sideways as well as up, so walk back to the particle that ends up over (x, z)
+  S.height = (x, z, t) => { let gx = x, gz = z;
+    for (let it = 0; it < 3; it++) { let hx = 0, hz = 0;
+      for (const v of waves) { const s = Math.sin(v.k*(v.dx*gx + v.dz*gz) - v.w*t + v.ph); hx -= v.qa*v.dx*s; hz -= v.qa*v.dz*s; }
+      gx = x - hx; gz = z - hz; }
+    let y = 0; for (const v of waves) y += v.a*Math.cos(v.k*(v.dx*gx + v.dz*gz) - v.w*t + v.ph);
+    return y; };
+  return S;
+}
+// a hull averages the water over her length and beam, so a ship shrugs off waves a yacht climbs over, then
+// answers as a damped oscillator with her own periods: lagging, overshooting, rolling longer than she pitches
+function ride(st, sea, x, z, hdg, L, B, t, dt){
+  const f = fwd(hdg), s = stbd(hdg), h = (a, c) => sea.height(x + f[0]*a + s[0]*c, z + f[2]*a + s[2]*c, t);
+  const hb = (h(L*.4, 0) + h(L*.2, 0))/2, ha = (h(-L*.4, 0) + h(-L*.2, 0))/2, hm = h(0, 0), hs = h(0, B*.45), hp = h(0, -B*.45);
+  const tgt = [(hb + ha + hm + hs + hp)/5, Math.atan2(hb - ha, L*.6), Math.atan2(hs - hp, B*.9)];
+  const T = [Math.max(1.6, .55*Math.sqrt(L)), Math.max(1.6, .55*Math.sqrt(L)), Math.max(2.5, 2.2*Math.sqrt(B))], Z = [.35, .35, .2];
+  if (!st.q) { st.q = tgt.slice(); st.v = [0, 0, 0]; }
+  const n = Math.ceil(dt*60), hdt = dt/n;
+  for (let k = 0; k < n; k++) for (let j = 0; j < 3; j++) { const w = 2*Math.PI/T[j];
+    st.v[j] += (w*w*(tgt[j] - st.q[j]) - 2*Z[j]*w*st.v[j])*hdt; st.q[j] += st.v[j]*hdt; }
+  return st;
+}
+// her axes after rolling (positive lifts the starboard side) then pitching (positive lifts the bow); local
+// x to starboard, y up, z toward the bow
+function attM(hdg, x, z, heave, pitch, roll){
+  const f = fwd(hdg), s = stbd(hdg), cr = Math.cos(roll), sr = Math.sin(roll), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const s1 = [s[0]*cr, sr, s[2]*cr], u1 = [-s[0]*sr, cr, -s[2]*sr];
+  const f1 = [f[0]*cp + u1[0]*sp, u1[1]*sp, f[2]*cp + u1[2]*sp], u2 = [u1[0]*cp - f[0]*sp, u1[1]*cp, u1[2]*cp - f[2]*sp];
+  return [...s1, 0, ...u2, 0, ...f1, 0, x, heave, z, 1];
+}
+const atM = (M, x, y, z) => [M[0]*x + M[4]*y + M[8]*z + M[12], M[1]*x + M[5]*y + M[9]*z + M[13], M[2]*x + M[6]*y + M[10]*z + M[14]];
+let ocean = null;
 const W = {
   t:0, rate:1, running:false, over:false, windFrom:0,
   own:{ x:0, z:0, hdg:0, helm:0, spd:0 },
@@ -491,13 +568,14 @@ function arcVis(kind, rb){
 }
 // e is the ship in eye coordinates: x to starboard, -z ahead, our own bow fixed on screen
 function egoLights(e){
-  const d = V[e.type], mo = model(e.type, e.variant), f = fwd(e.hdg), s = stbd(e.hdg), rb = norm(Math.atan2(-e.x, e.z)*180/Math.PI - e.hdg), out = [];
+  const d = V[e.type], mo = model(e.type, e.variant), rb = norm(Math.atan2(-e.x, e.z)*180/Math.PI - e.hdg), out = [];
+  const M = e.M || attM(e.hdg, e.x, e.z, 0, 0, 0);
   for (const [col, kind, along, h, across] of d.lights()) {
     const vis = arcVis(kind, rb); if (!vis) continue;
-    const z = along*mo.m.L;
-    out.push({ x:e.x + f[0]*z + s[0]*across, y:h, z:e.z + f[2]*z + s[2]*across, col:LCOL[col], vis:vis*(kind === 'mh' ? 1.1 : kind === 'ar' ? .85 : .95), kind });
+    const [x, y, z] = atM(M, across, h, along*mo.m.L);
+    out.push({ x, y, z, col:LCOL[col], vis:vis*(kind === 'mh' ? 1.1 : kind === 'ar' ? .85 : .95), kind });
   }
-  for (const [x, y, z] of mo.windows) out.push({ x:e.x + f[0]*z + s[0]*x, y, z:e.z + f[2]*z + s[2]*x, col:LCOL.win, vis:.2, kind:'win' });
+  for (const [wx, wy, wz] of mo.windows) { const [x, y, z] = atM(M, wx, wy, wz); out.push({ x, y, z, col:LCOL.win, vis:.2, kind:'win' }); }
   return out;
 }
 const ARC_NAME = { mh:'masthead light', sg:'green sidelight', sr:'red sidelight', st:'sternlight' };
@@ -524,14 +602,19 @@ function frameInner(now){
   }
   resize();
   const o = W.own, c = Math.cos(rad(o.hdg)), s = Math.sin(rad(o.hdg));
-  const ego = v => ({ ...v, x:(v.x-o.x)*c + (v.z-o.z)*s, z:-(v.x-o.x)*s + (v.z-o.z)*c, hdg:norm(v.hdg - o.hdg) });
+  // the sea follows the true wind of this run, and runs on the wall clock so a faster passage never whips it up
+  if (!ocean || ocean.from !== W.windFrom) { ocean = makeSea({ U:7.2, travel:W.windFrom + 180, fetch:30000, swellHs:.4, swellLen:90, swellTravel:W.windFrom + 150 }); ocean.from = W.windFrom; }
+  ocean.phase(W.wall, o.x, o.z);
+  ride(o.att ||= {}, ocean, o.x, o.z, o.hdg, M.yacht.L, M.yacht.B, W.wall, dt);
+  for (const v of W.ships) { const m = model(v.type, v.variant).m; ride(v.att ||= {}, ocean, v.x, v.z, v.hdg, m.L, m.B, W.wall, dt); }
+  const ego = v => { const e = { ...v, x:(v.x-o.x)*c + (v.z-o.z)*s, z:-(v.x-o.x)*s + (v.z-o.z)*c, hdg:norm(v.hdg - o.hdg) };
+    e.M = attM(e.hdg, e.x, e.z, v.att.q[0], v.att.q[1], v.att.q[2] + heelOf(v)); return e; };
   const ships = W.ships.map(ego);
   const asp = cv.width/cv.height, fov = rad(W.binos ? 9 : 50);
-  const eye = [1.45, 2.9, 4.9];                              // at the helm, starboard side of the cockpit
-  const heel = heelOf({ ...o, sail:true });
-  // she heels to leeward, so the camera bolted to her deck rolls the same way and the horizon tilts the other
-  const pitch = rad(.5)*Math.sin(W.wall*.45), roll = -heel + rad(.6)*Math.sin(W.wall*.31 + 1);
-  const Rc = m4.mul(m4.rotY(-rad(W.look)), m4.mul(m4.rotX(pitch), m4.rotZ(roll)));
+  // she heels to leeward and rides the waves; the eye is bolted to her cockpit, at the helm on the starboard side
+  const Mo = attM(0, 0, 0, o.att.q[0], o.att.q[1], o.att.q[2] + heelOf({ ...o, sail:true }));
+  const eye = atM(Mo, 1.45, 2.9, -4.9);
+  const Rc = m4.mul([Mo[0],Mo[1],Mo[2],0, Mo[4],Mo[5],Mo[6],0, -Mo[8],-Mo[9],-Mo[10],0, 0,0,0,1], m4.rotY(-rad(W.look)));
   const view = m4.mul(m4.T3(Rc), m4.tr(-eye[0], -eye[1], -eye[2]));
   const VP = m4.mul(m4.persp(fov, asp, .5, 8000), view);
   gl.viewport(0, 0, cv.width, cv.height);
@@ -547,18 +630,21 @@ function frameInner(now){
   const fogA = d => Math.exp(-d * ENV.fogD * .8);
   const lights = [];
   for (const e of ships) for (const l of egoLights(e)) { l.vis *= fogA(Math.hypot(l.x, l.z)); if (l.vis > .01) lights.push(l); }
-  lights.push({ x:-.62, y:1.5, z:-5.3, col:LCOL.r, vis:.3, own:true, kind:'sr' }, { x:.62, y:1.5, z:-5.3, col:LCOL.g, vis:.3, own:true, kind:'sg' });
+  const ownL = (x, y, z, col, kind) => { const [px, py, pz] = atM(Mo, x, y, z); return { x:px, y:py, z:pz, col, vis:.3, own:true, kind }; };
+  lights.push(ownL(-.62, 1.5, 5.3, LCOL.r, 'sr'), ownL(.62, 1.5, 5.3, LCOL.g, 'sg'));
   const uL = [], uLC = []; let ln = 0;
-  uL.push(Math.sin(mb)*2600, -Math.cos(mb)*2600, .05, 4); uLC.push(.6,.58,.5); ln++;
+  uL.push(Math.sin(mb)*2600, 890, -Math.cos(mb)*2600, .6); uLC.push(.6,.58,.5); ln++;
   for (const l of lights) { if (ln >= 16) break; if (l.own || l.kind === 'win') continue;
-    uL.push(l.x, l.z, l.vis*.55*(l.kind === 'mh' ? 1.3 : 1), .65); uLC.push(...l.col); ln++; }
+    uL.push(l.x, l.y, l.z, l.vis*.55*(l.kind === 'mh' ? 1.3 : 1)); uLC.push(...l.col); ln++; }
   gl.useProgram(SEA.p);
   gl.bindBuffer(gl.ARRAY_BUFFER, seaBuf); gl.enableVertexAttribArray(SEA.a.p); gl.vertexAttribPointer(SEA.a.p, 2, gl.FLOAT, false, 0, 0);
-  gl.uniformMatrix4fv(SEA.u.uVP, false, VP); gl.uniform1f(SEA.u.uT, W.wall); gl.uniform1f(SEA.u.uTv, W.wall); gl.uniform1f(SEA.u.uAmp, ENV.amp);
+  gl.uniformMatrix4fv(SEA.u.uVP, false, VP); gl.uniform2f(SEA.u.uRot, c, s); gl.uniform4fv(SEA.u.uWa, ocean.wa); gl.uniform4fv(SEA.u.uWb, ocean.wb);
+  gl.uniform1f(SEA.u.uS2, ocean.s2); gl.uniform1f(SEA.u.uGain, ENV.seaGain); gl.uniform1f(SEA.u.uPix, 2*Math.tan(fov/2)/cv.height);
+  gl.uniform2f(SEA.u.uHull, 1.6, 5.4); gl.uniform3fv(SEA.u.uZen, ENV.zen);
   gl.uniform3fv(SEA.u.uSea, ENV.sea); gl.uniform3fv(SEA.u.uHor, ENV.hor); gl.uniform3fv(SEA.u.uFogC, ENV.hor); gl.uniform3fv(SEA.u.uEye, eye);
   gl.uniform1f(SEA.u.uFogD, ENV.fogD); gl.uniform1i(SEA.u.uLN, ln);
   if (ln) { gl.uniform4fv(SEA.u.uL, uL); gl.uniform3fv(SEA.u.uLC, uLC); }
-  for (const off of seaStrips) gl.drawArrays(gl.TRIANGLE_STRIP, off, 98);
+  for (const off of seaStrips) gl.drawArrays(gl.TRIANGLE_STRIP, off, (SEA_R + 1)*2);
   gl.useProgram(MESH.p);
   gl.uniformMatrix4fv(MESH.u.uVP, false, VP); gl.uniform3fv(MESH.u.uEye, eye); gl.uniform3fv(MESH.u.uFogC, ENV.hor); gl.uniform1f(MESH.u.uFogD, ENV.fogD);
   gl.uniform3f(MESH.u.uSunD, .4, .8, .45); gl.uniform3fv(MESH.u.uAmb, ENV.amb); gl.uniform3fv(MESH.u.uSunC, ENV.sunC);
@@ -567,8 +653,8 @@ function frameInner(now){
     gl.enableVertexAttribArray(MESH.a.n); gl.vertexAttribPointer(MESH.a.n, 3, gl.FLOAT, false, 24, 12);
     gl.drawArrays(mesh.lines ? gl.LINES : gl.TRIANGLES, 0, mesh.n); };
   for (const e of ships) {
-    const mo = model(e.type, e.variant), f = fwd(e.hdg), sv = stbd(e.hdg), hl = heelOf(e), ch = Math.cos(hl), sh = Math.sin(hl);
-    gl.uniformMatrix4fv(MESH.u.uM, false, [sv[0]*ch,sh,sv[2]*ch,0, -sv[0]*sh,ch,-sv[2]*sh,0, f[0],0,f[2],0, e.x,0,e.z,1]);
+    const mo = model(e.type, e.variant);
+    gl.uniformMatrix4fv(MESH.u.uM, false, e.M);
     drawMesh(mo.hull, ENV.hull); drawMesh(mo.mast, ENV.hull); drawMesh(mo.rig, ENV.hull); drawMesh(mo.sail, [.03,.035,.045]);
   }
   const drawLights = ls => {
@@ -588,7 +674,7 @@ function frameInner(now){
   };
   drawLights(lights.filter(l => !l.own));
   const own = model('sail', 'own');
-  gl.useProgram(MESH.p); gl.uniformMatrix4fv(MESH.u.uM, false, [1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1]);
+  gl.useProgram(MESH.p); gl.uniformMatrix4fv(MESH.u.uM, false, Mo);
   drawMesh(own.hull, [.045,.05,.06]); drawMesh(own.mast, [.035,.04,.05]); drawMesh(own.rig, [.03,.035,.045]);
   drawLights(lights.filter(l => l.own));
   drawHud();
@@ -963,6 +1049,9 @@ function setStage(i){
   renderStepper(); renderConcept();
   BUILD[STAGES[stage].id]();
   if (DEV.has('look')) W.look = norm(+DEV.get('look') || 0);
+  // review aids: skip=<s> sails the run on, lookT=<true bearing>|ship points the eye (the moon is at 320)
+  if (DEV.has('skip')) for (let t = 0; t < +DEV.get('skip'); t += 1/30) { stepOwn(1/30); for (const v of W.ships) stepShip(v, 1/30); W.t += 1/30; }
+  if (DEV.has('lookT')) W.look = norm((DEV.get('lookT') === 'ship' && W.ships[0] ? bearingTo(W.ships[0]) : +DEV.get('lookT')) - W.own.hdg);
   renderProgress(); renderHead(); renderBearings();
   $('blog').hidden = STAGES[stage].id === 'helm';
   $('concept').open = !store.stages[STAGES[stage].id].recent.length;
