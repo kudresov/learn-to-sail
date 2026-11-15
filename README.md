@@ -28,7 +28,7 @@ tutorials/<slug>/       one self-contained tutorial per folder (index.html)
 | 01 | Three Norths (true / magnetic / compass, variation, deviation, passage) | live |
 | 02 | Course to Steer (tidal vectors, leeway) | next |
 | 03 | Tidal Heights (datum, twelfths, tidal curve, secondary ports, harbour entry) | live |
-| 04 | Buoys and Lights (IALA A) | planned |
+| 04 | Buoys and Lights (IALA A: laterals, direction of buoyage, preferred channel, cardinals by day and night, light characters, pilotage by day and night) | live |
 | 05 | Rules of the Road (Rules 12–18, lights, shapes, sound signals, night encounters) | live |
 | 06 | Night Watch (WebGL: lights and arcs in 3D, buoys by night, who gives way, day shapes, fog signals, timed watch) | live |
 | 07 | Night Sim (real-time conn under sail: helm and tack, steady bearing, port tack gives way) | prototype |

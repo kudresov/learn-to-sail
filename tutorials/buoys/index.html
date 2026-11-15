@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Buoys and Lights · Learn to Sail</title>
+<meta name="description" content="Drill IALA A buoyage for the RYA Day Skipper: laterals, direction of buoyage, preferred channels, cardinals by day and by night, light characters, then a harbour approach where the wrong side puts you aground.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../shared/site.css">
+<style>
+/* paint and lamp colours are physical, so they stay the same in both themes */
+:root{--p-r:#C62828;--p-g:#1F8A43;--p-y:#F0C419;--p-k:#1B1B1B;--p-w:#F5F5F0;--p-b:#1E5BB8;--l-r:#FF5040;--l-g:#46F08E;--l-w:#FFF4D6;--l-y:#FFD23C;--l-b:#4D8DFF}
+.col{max-width:640px;margin:0 auto}
+.tut-head{padding-block:22px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tut-head h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:24px;margin:0}
+.tut-head .streak{font-size:13px;color:var(--ink-3)}
+.tut-head .streak b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:10px;padding-block:16px 4px;flex-wrap:wrap}
+.stepper .dots{display:flex;gap:6px;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;padding:0;cursor:pointer}
+.stepper .dot.done{background:var(--good);border-color:var(--good)}
+.stepper .dot.now{background:var(--magenta);border-color:var(--magenta);transform:scale(1.3)}
+.stepper .dot.locked{border-color:var(--rule);cursor:not-allowed}
+.stepper .name{font:italic 400 17px "Libre Caslon Text",Georgia,serif}
+.stepper .name small{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:8px;font-style:normal}
+.stepper .nav{margin-left:auto;display:flex;gap:4px}
+.stepper .nav button{font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:4px 9px;cursor:pointer;border-radius:2px}
+.stepper .nav button:disabled{opacity:.35;cursor:default}
+.concept{border:1px solid var(--rule);border-left:4px solid var(--magenta);background:var(--paper);margin-top:14px}
+.concept summary{list-style:none;cursor:pointer;padding:12px 16px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);display:flex;justify-content:space-between}
+.concept summary::after{content:"show";font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.concept[open] summary::after{content:"hide"}
+.concept .body{padding:0 16px 16px;display:grid;grid-template-columns:1fr 190px;gap:14px;align-items:start;font-size:15px}
+.concept .body.nofig{grid-template-columns:1fr}
+@media (max-width:540px){.concept .body{grid-template-columns:1fr}.concept .fig{max-width:240px}}
+.concept p{margin:0 0 8px;max-width:40em}
+.concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.6;color:var(--ink-2);white-space:pre-line}
+.concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.concept svg{width:100%;height:auto;display:block}
+.concept .fig text{font-family:"Source Sans 3",sans-serif}
+.q{margin-top:22px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
+.timer{font-size:13px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(20px,3vw,24px);line-height:1.35;margin:8px 0 16px;text-wrap:balance}
+.stagebox{display:grid;gap:12px;margin-bottom:16px}
+.stagebox.both{grid-template-columns:1.35fr 1fr;align-items:start}
+@media (max-width:600px){.stagebox.both{grid-template-columns:1fr}}
+.scene{border:1px solid var(--rule);background:var(--paper)}
+.scene svg{width:100%;height:auto;display:block}
+.scene text{font-family:"Source Sans 3",sans-serif}
+.nightsvg{--nb:#050A12;--nh:#16243A;--nt:#7D93A8}
+.chartbox{background:var(--paper);border:1px solid var(--rule);padding:8px}
+.chartbox svg{width:100%;height:auto;display:block}
+.boat{transition:transform 1.1s cubic-bezier(.4,0,.2,1)}
+.legs{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.leg{width:22px;height:7px;background:var(--rule);border-radius:2px}
+.leg.done{background:var(--good)}.leg.bad{background:var(--bad)}.leg.now{background:var(--magenta);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.strikes{font-size:12px;color:var(--ink-3);margin-left:auto}
+.strikes b{color:var(--bad);letter-spacing:.15em}
+.givens{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.givens:empty{display:none}
+.given{border:1px solid var(--rule);padding:9px 12px;background:var(--paper);min-width:110px}
+.given .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.given .v{font-size:18px;font-weight:500}
+.given .v.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.given .v.big{font-size:24px;letter-spacing:.03em}
+.given .v.txt{font-size:16px;font-weight:400;font-family:"Libre Caslon Text",serif;font-style:italic}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 14px "Source Sans 3",sans-serif;padding:10px 14px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:22px;min-height:44px;display:flex;align-items:center;gap:8px;text-align:left}
+.chip.mono{font:500 15px "IBM Plex Mono",monospace}
+.chip:hover:not(:disabled){border-color:var(--ink-2)}
+.chip:disabled{cursor:default;opacity:.7}
+.chip.picked{border-color:var(--good);background:var(--good-soft);opacity:1}
+.chip.picked::after{content:"✓";color:var(--good)}
+.chip.wrong{border-color:var(--bad);background:var(--bad-soft);animation:shake .3s;opacity:1}
+.chip.wrong::after{content:"✕";color:var(--bad)}
+.chip kbd{opacity:.7}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink)}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
+.feedback.show{display:block}
+.feedback.ok{border-color:var(--good);background:var(--good-soft)}
+.feedback.no{border-color:var(--bad);background:var(--bad-soft)}
+.feedback h3{margin:0 0 8px;font:700 15px "Source Sans 3",sans-serif}
+.feedback p{margin:6px 0 0;font-size:15px}
+.feedback .sum{margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+.tlrow{margin-top:10px;display:grid;gap:2px}
+.tlrow .mono{font:500 13px "IBM Plex Mono",monospace;color:var(--ink-2)}
+.tlrow svg{width:100%;max-width:420px;height:auto;display:block}
+.tl text{font:10px "IBM Plex Mono",monospace;fill:var(--ink-3)}
+.rule{font-size:13px;color:var(--ink-2);margin-top:8px;font-style:italic}
+.progress{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);flex-wrap:wrap}
+.progress .last{display:flex;gap:5px}
+.progress .last i{width:14px;height:14px;border-radius:3px;background:var(--rule);display:block}
+.progress .last i.y{background:var(--good)}.progress .last i.n{background:var(--bad)}
+.progress .cleared{color:var(--good);font-weight:600}
+.more{margin-top:28px;background:var(--paper);border:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 18px;font:italic 400 17px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
+.more[open] summary::after{content:"−"}
+.more .body{padding:0 18px 18px;font-size:15px}
+.more h4{margin:14px 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.more p{margin:0 0 6px;max-width:40em}
+.more .mono,.more td.mono{font-family:"IBM Plex Mono",monospace;font-size:13.5px}
+.more .tbl{overflow-x:auto}
+.more table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+.more td,.more th{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.more th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.empty{font-style:italic;color:var(--ink-3);font-family:"Libre Caslon Text",serif}
+kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
+.pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
+.pop.show{opacity:1;transform:translate(-50%,0)}
+.iconbtn{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-3);padding:4px 8px;cursor:pointer;border-radius:2px}
+@media (prefers-reduced-motion:reduce){.boat,.pop,.leg.now,.chip.wrong{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="pop" id="pop"></div>
+<div class="col">
+<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Buoys and Lights</a></div><button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button></nav>
+
+<header class="tut-head">
+  <h1>Buoys and Lights</h1>
+  <span class="streak">streak <b id="streak">0</b> · best <b id="best">0</b></span>
+</header>
+
+<div class="stepper" id="stepper"></div>
+
+<details class="concept" id="concept">
+  <summary>The idea</summary>
+  <div class="body" id="conceptBody"></div>
+</details>
+
+<section class="q" aria-label="Question">
+  <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
+  <p class="prompt" id="prompt"></p>
+  <div class="stagebox" id="stagebox">
+    <div class="chartbox" id="chartbox" hidden><svg viewBox="-160 -160 320 320" id="chart" role="img" aria-label="Chart of the harbour approach"></svg><div class="legs" id="legs"></div></div>
+    <div class="scene" id="scene" hidden></div>
+  </div>
+  <div class="givens" id="givens"></div>
+  <div class="chips" id="chips" role="group" aria-label="Answers"></div>
+  <div class="actions">
+    <button class="btn" type="button" id="next" hidden>Next ›</button>
+    <button class="btn ghost" type="button" id="skip">Show me</button>
+  </div>
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<details class="more" id="logbox" hidden>
+  <summary>Ship's log</summary>
+  <div class="body" id="logbody"></div>
+</details>
+
+<details class="more">
+  <summary>The rules, in one breath</summary>
+  <div class="body">
+    <h4>Lateral marks · IALA A</h4>
+    <div class="tbl"><table><thead><tr><th>Mark</th><th>By day</th><th>By night</th></tr></thead><tbody>
+      <tr><td>Port hand</td><td>Red; can, pillar or spar; red can topmark</td><td>Red, any rhythm but Fl(2+1)</td></tr>
+      <tr><td>Starboard hand</td><td>Green; cone, pillar or spar; green cone topmark, point up</td><td>Green, any rhythm but Fl(2+1)</td></tr>
+      <tr><td>Preferred channel to starboard</td><td>Red with one broad green band; can; red can topmark</td><td class="mono">Fl(2+1) R</td></tr>
+      <tr><td>Preferred channel to port</td><td>Green with one broad red band; cone; green cone topmark</td><td class="mono">Fl(2+1) G</td></tr>
+    </tbody></table></div>
+    <p><em>Is there any red port left?</em> The rule follows the <strong>direction of buoyage</strong>: from seaward into harbour, up rivers and estuaries, clockwise round a landmass, or the magenta arrow on the chart. Going the other way, flip it. IALA B (the Americas, Japan, Korea, the Philippines) is the mirror image.</p>
+    <h4>Cardinal marks · pass on the named side</h4>
+    <div class="tbl"><table><thead><tr><th>Mark</th><th>Topmark</th><th>Body</th><th>Light, white</th></tr></thead><tbody>
+      <tr><td>North</td><td>Both cones up</td><td>Black over yellow</td><td class="mono">Q · VQ</td></tr>
+      <tr><td>East</td><td>Base to base</td><td>Black, broad yellow band</td><td class="mono">Q(3) 10s · VQ(3) 5s</td></tr>
+      <tr><td>South</td><td>Both cones down</td><td>Yellow over black</td><td class="mono">Q(6)+LFl 15s · VQ(6)+LFl 10s</td></tr>
+      <tr><td>West</td><td>Point to point</td><td>Yellow, broad black band</td><td class="mono">Q(9) 15s · VQ(9) 10s</td></tr>
+    </tbody></table></div>
+    <p>The cones point to where the black is. The flashes are a clock face: 3 at three o'clock, 6 at six, 9 at nine, continuous at twelve. South's long flash stops six being misread as nine.</p>
+    <h4>The other four</h4>
+    <div class="tbl"><table><thead><tr><th>Mark</th><th>By day</th><th>By night</th><th>Meaning</th></tr></thead><tbody>
+      <tr><td>Isolated danger</td><td>Black, broad red band(s), two black balls</td><td class="mono">Fl(2)</td><td>Sits on a small danger, water all round</td></tr>
+      <tr><td>Safe water</td><td>Red and white vertical stripes, one red ball</td><td class="mono">Iso · Oc · LFl 10s · Mo(A)</td><td>Landfall or mid-channel, water all round</td></tr>
+      <tr><td>Special</td><td>Yellow, yellow X</td><td class="mono">Fl Y, any rhythm</td><td>Not navigational: the chart says what</td></tr>
+      <tr><td>Emergency wreck</td><td>Blue and yellow vertical stripes, yellow upright cross</td><td class="mono">Al.Bu.Y</td><td>New wreck, not yet charted: keep clear</td></tr>
+    </tbody></table></div>
+    <h4>Light characters</h4>
+    <div class="tbl"><table><tbody>
+      <tr><td class="mono">Fl · Fl(3)</td><td>Flash shorter than the dark · a group of three</td></tr>
+      <tr><td class="mono">Fl(2+1)</td><td>Two flashes then one: preferred channel</td></tr>
+      <tr><td class="mono">Q · VQ</td><td>Quick, about 60 a minute · very quick, about 120</td></tr>
+      <tr><td class="mono">Iso</td><td>Equal light and dark</td></tr>
+      <tr><td class="mono">Oc</td><td>Light longer than dark</td></tr>
+      <tr><td class="mono">LFl</td><td>A flash of 2 s or more</td></tr>
+      <tr><td class="mono">Mo(A)</td><td>Morse A, short then long</td></tr>
+      <tr><td class="mono">Al</td><td>Alternating colours</td></tr>
+    </tbody></table></div>
+    <p>No colour letter means white. The period (<span class="mono">10s</span>) runs from the start of one sequence to the start of the next.</p>
+    <p class="mono">Fl(3) WRG 15s 21m 18M</p>
+    <p>Groups of three flashes, white, red and green sectors depending on your bearing, every 15 seconds, the light 21 metres above high water, nominal range 18 nautical miles.</p>
+    <h4>Keys</h4>
+    <p><kbd>1</kbd>–<kbd>5</kbd> pick an answer, <kbd>Enter</kbd> moves on. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
+  </div>
+</details>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="../../">More tutorials</a></footer>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const norm = d => ((d % 360) + 360) % 360;
+const pad = d => String(norm(Math.round(d))).padStart(3,'0');
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[rnd(0,a.length-1)];
+const shuffle = a => { a = a.slice(); for (let i = a.length-1; i > 0; i--) { const j = rnd(0,i); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const sgnDeg = (a,b) => { let d = norm(a) - norm(b); if (d > 180) d -= 360; if (d < -180) d += 360; return d; };
+const rad = d => d * Math.PI/180;
+const along = (p, h, k) => [p[0] + Math.sin(rad(h))*k, p[1] - Math.cos(rad(h))*k];
+const f1 = n => (+n).toFixed(1);
+const bearing = (a,b) => norm(Math.atan2(b[0]-a[0], -(b[1]-a[1])) * 180/Math.PI);
+
+// ---- persistence
+const KEY = 'lts:buoys:v1';
+let store = { streak:0, best:0, stages:{}, log:[], muted:false, seenConcept:{} };
+try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
+
+// ---- the marks. chars are chart light characters; no colour letter means white
+const MARKS = {
+  port:    { name:'Port-hand lateral', bodies:['can','can','pillar'], paint:{h:['r']}, top:'can', chars:['Fl R 4s','Fl(2) R 6s','Fl(3) R 10s','Fl(4) R 12s','Q R','Fl R 2.5s'],
+             tell:'Red, and a can (or a pillar with a red can on top): a port-hand lateral mark. Going in the direction of buoyage, leave it to port.' },
+  stbd:    { name:'Starboard-hand lateral', bodies:['cone','cone','pillar'], paint:{h:['g']}, top:'cone', chars:['Fl G 4s','Fl(2) G 6s','Fl(3) G 10s','Fl(4) G 12s','Q G','Fl G 2.5s'],
+             tell:'Green, and a cone (or a pillar with a green cone on top, point up): a starboard-hand lateral mark. Going in the direction of buoyage, leave it to starboard.' },
+  prefS:   { name:'Preferred channel to starboard', bodies:['can','pillar'], paint:{h:['r','g','r']}, top:'can', chars:['Fl(2+1) R 10s','Fl(2+1) R 15s'],
+             tell:'Red with one broad green band, can-shaped: preferred channel to starboard. The channel divides here and the main one lies to starboard, so treat it as a port-hand mark and leave it to port. By night, Fl(2+1) R.' },
+  prefP:   { name:'Preferred channel to port', bodies:['cone','pillar'], paint:{h:['g','r','g']}, top:'cone', chars:['Fl(2+1) G 10s','Fl(2+1) G 15s'],
+             tell:'Green with one broad red band, cone-shaped: preferred channel to port. The main channel lies to port, so treat it as a starboard-hand mark and leave it to starboard. By night, Fl(2+1) G.' },
+  N:       { name:'North cardinal', bodies:['pillar'], paint:{h:['k','y']}, top:'N', chars:['VQ','Q'],
+             tell:'Both cones up, black over yellow: north cardinal. The safe water is north of it; pass north. By night, quick or very quick and never stopping.' },
+  E:       { name:'East cardinal', bodies:['pillar'], paint:{h:['k','y','k']}, top:'E', chars:['VQ(3) 5s','Q(3) 10s'],
+             tell:'Cones base to base, like an egg; black with a yellow band: east cardinal. Pass east of it. By night, three flashes: three o\'clock.' },
+  S:       { name:'South cardinal', bodies:['pillar'], paint:{h:['y','k']}, top:'S', chars:['VQ(6)+LFl 10s','Q(6)+LFl 15s'],
+             tell:'Both cones down, yellow over black: south cardinal. Pass south of it. By night, six flashes and a long one: six o\'clock.' },
+  W:       { name:'West cardinal', bodies:['pillar'], paint:{h:['y','k','y']}, top:'W', chars:['VQ(9) 10s','Q(9) 15s'],
+             tell:'Cones point to point, like a wine glass; yellow with a black band: west cardinal. Pass west of it. By night, nine flashes: nine o\'clock.' },
+  danger:  { name:'Isolated danger', bodies:['pillar'], paint:{h:['k','r','k']}, top:'balls', chars:['Fl(2) 5s','Fl(2) 10s'],
+             tell:'Black with a broad red band, two black balls on top: isolated danger. It sits right on a small danger with navigable water all round; give it a good berth either side. By night, Fl(2) white.' },
+  safe:    { name:'Safe water', bodies:['sphere','pillar'], paint:{v:['r','w']}, top:'ball', chars:['Iso 4s','Iso 8s','Oc 6s','LFl 10s','Mo(A) 10s'],
+             tell:'Red and white vertical stripes, one red ball on top: safe water. Navigable water all round; a landfall or mid-channel mark. By night, white and lit longer than dark (Iso, Oc), one long flash every 10 s, or Morse A.' },
+  special: { name:'Special mark', bodies:['pillar','sphere'], paint:{h:['y']}, top:'x', chars:['Fl Y 5s','Fl(4) Y 10s','Fl(5) Y 20s'],
+             tell:'Yellow with a yellow X on top: special mark. Not for navigation: spoil ground, an outfall, a cable, a racing mark, an exercise area. The chart says which. By night, a yellow light.' },
+  wreck:   { name:'Emergency wreck', bodies:['pillar'], paint:{v:['b','y']}, top:'cross', chars:['Al BuY 3s'],
+             tell:'Blue and yellow vertical stripes, a yellow upright cross: emergency wreck marking buoy. A new wreck not yet on your chart. Keep well clear. By night, alternating blue and yellow.' },
+};
+const CARDS = ['N','E','S','W'], SAFE = { N:0, E:90, S:180, W:270 }, DIRNAME = { N:'north', E:'east', S:'south', W:'west' };
+const CARDNAMES = CARDS.map(c => MARKS[c].name), PASSES = CARDS.map(c => `Pass ${DIRNAME[c]} of it`);
+const disp = s => s.replace('BuY', 'Bu.Y');
+
+const RULE = {
+  lat:'IALA A: red to port, green to starboard, going in the direction of buoyage. Can is port, cone is starboard. Is there any red port left?',
+  out:'Direction of buoyage: into harbour, up rivers, clockwise round a landmass, or the magenta arrow on the chart. Going the other way, flip it.',
+  pref:'Modified lateral: the shape and main colour say how to treat it; the band says the channel divides. Red with a green band: main channel to starboard, leave it to port. Fl(2+1).',
+  card:'Cardinals: pass on the named side. Cones point to the black: both up north, both down south, egg east, wine glass west.',
+  light:'Fl flash · Q 60 a minute · VQ 120 · Iso equal · Oc on more than off · LFl 2 s or more · Mo(A) short-long. Period: start of one sequence to the next. No colour letter means white.',
+  cardN:'Cardinals by night: white, Q or VQ, the clock face. North continuous, east 3, south 6 + long, west 9.',
+  other:'Two balls, Fl(2): isolated danger. Red ball, red and white stripes, Iso · Oc · LFl 10s · Mo(A): safe water. Yellow X: special. Yellow cross, blue and yellow: new wreck.',
+  pass:'Name the mark first, then the side. Laterals flip against the direction of buoyage. A cardinal: where is its named side relative to your heading?',
+};
+
+// ---- stages
+const STAGES = [
+  { id:'lat', kind:'drill', title:'Port and starboard', gen: genLat, fig:'lat',
+    intro:'Lateral marks line the two sides of a channel. In IALA region A (Europe, Africa, most of Asia and Australasia) red is the port side and green the starboard side when you go in the direction of buoyage, which for now means entering harbour from seaward. Shape says it too, so you can read a mark into the sun: a can is port, a cone is starboard, and a topmark, if fitted, repeats the shape.',
+    ex:'Red can → leave it to port entering\nGreen cone → leave it to starboard entering\n"Is there any red port left?"' },
+  { id:'out', kind:'drill', title:'Which way is in?', gen: genOut, fig:'out',
+    intro:'The rule is tied to the direction of buoyage, not to you. It runs from seaward into harbour, up a river or estuary, and clockwise round a landmass; where that is not obvious, the chart shows it with a magenta arrow. Going the other way (leaving harbour, heading downriver, against the arrow) everything flips.',
+    ex:'Entering, red can → leave it to port\nLeaving, red can → leave it to starboard\nAgainst the chart arrow → flip' },
+  { id:'pref', kind:'drill', title:'The channel divides', gen: genPref, fig:'pref',
+    intro:'Where a channel divides, a modified lateral mark shows which branch is the main one. It has the shape and main colour of the side you treat it as, with one broad band of the other colour. Red with a green band is a port-hand mark for the main channel, which therefore lies to starboard of it. By night it flashes two, then one: Fl(2+1).',
+    ex:'Red can, green band → preferred channel to starboard → leave it to port entering\nGreen cone, red band → preferred channel to port → leave it to starboard' },
+  { id:'card', kind:'drill', title:'Cardinals by day', gen: genCardDay, fig:'card',
+    intro:'A cardinal mark sits on one side of a danger and is named for the side the safe water is on. Pass north of a north cardinal. Read the two black cones: they point to where the black is on the body. Both up: north. Both down: south. Base to base, like an egg: east. Point to point, like a wine glass: west.',
+    ex:'Cones up, black over yellow → north\nCones down, yellow over black → south\nBase to base, black-yellow-black → east\nPoint to point, yellow-black-yellow → west' },
+  { id:'light', kind:'drill', title:'Reading a light', gen: genLight, fig:'light',
+    intro:'At night a mark is only a colour and a rhythm, printed on the chart as an abbreviation. Fl is a flash shorter than the dark, Fl(3) a group of three, Q quick, VQ very quick, Iso equal light and dark, Oc light longer than dark, LFl a flash of 2 s or more, Mo(A) Morse A. The number before s is the period: the time for the whole sequence to repeat. No colour letter means white. Watch a whole cycle and count; the clock in the corner helps.',
+    ex:'Fl(2) R 6s → two red flashes, every 6 s\nOc 6s → on, a short eclipse, every 6 s\nFl(3) WRG 15s 21m 18M → threes, sectors, 15 s, 21 m up, 18 miles' },
+  { id:'cardN', kind:'drill', title:'Cardinals by night', gen: genCardNight, fig:'clock',
+    intro:'Cardinals by night are always white and always quick or very quick. Count the flashes as a clock face: three at three o\'clock for east, six at six for south, nine at nine for west, and continuous at twelve for north. South adds one long flash after the six so it can never be miscounted as nine.',
+    ex:'Q · VQ continuous → north\nQ(3) 10s · VQ(3) 5s → east\nQ(6)+LFl 15s · VQ(6)+LFl 10s → south\nQ(9) 15s · VQ(9) 10s → west' },
+  { id:'other', kind:'drill', title:'Danger, safe water, special', gen: genOther, fig:'other',
+    intro:'Four marks that are not about the sides of a channel, by day and by night. Isolated danger: black and red, two black balls, Fl(2) white; it sits on the danger. Safe water: red and white stripes, one red ball, a white light that is on longer than off or one long flash; water all round. Special: yellow, a yellow X, a yellow light; look it up on the chart. Emergency wreck: blue and yellow, a yellow cross, alternating blue and yellow; keep clear.',
+    ex:'Two balls · Fl(2) → isolated danger\nOne red ball · Iso, Oc, LFl 10s, Mo(A) → safe water\nYellow X · Fl Y → special\nYellow cross · Al.Bu.Y → new wreck' },
+  { id:'pday', kind:'passage', title:'Pilotage by day', night:false,
+    intro:'A harbour approach, in or out. Each mark comes up fine on the bow; the chart fills in once you are past it. Your plan follows the main channel. Name the mark, then decide which side to leave it, given your heading. A cardinal needs one more step: is its named side on your port hand or your starboard hand? A wrong call shows where you end up. Three and you are aground.' },
+  { id:'pnight', kind:'passage', title:'Pilotage by night', night:true,
+    intro:'The same approach after dark. Now all you have is the light: its colour and its rhythm. Count it before you answer.' },
+  { id:'watch', kind:'watch', title:'Quick identification',
+    intro:'Twelve marks, everything mixed, day and night. Thirty seconds each, which is enough to watch a slow light through one cycle and no more. Run out of time and it counts as wrong.' },
+];
+const GATE = { drill:'6 of your last 8', passage:'arrive with at most one wrong call', watch:'12 marks, 30 s each, at most 1 wrong' };
+const WATCH_N = 12, WATCH_SECS = 30;
+for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
+
+// ---- sound (WebAudio, tiny)
+let actx = null;
+function tone(seq){
+  if (store.muted) return;
+  try {
+    actx ??= new (window.AudioContext || window.webkitAudioContext)();
+    let t = actx.currentTime;
+    for (const [f, d, type] of seq) {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d); t += d * 0.8;
+    }
+  } catch(e) {}
+}
+const bell = () => tone([[1568, .35],[2093, .5]]);
+const thud = () => tone([[110, .25, 'triangle'],[82, .35, 'triangle']]);
+const fanfare = () => tone([[784,.18],[988,.18],[1175,.18],[1568,.5]]);
+const aground = () => tone([[160,.3,'sawtooth'],[120,.3,'sawtooth'],[80,.6,'sawtooth']]);
+
+// ---- light characters → on/off sequence (same parser as Night Watch)
+function charSeq(str){
+  const m = str.match(/^(VQ|Q|LFl|Fl|Iso|Oc|Mo\(A\)|Al)(?:\((\d+)(?:\+(\d+))?\))?(\+LFl)?\s*(R|G|W|Y|BuY)?\s*(?:([\d.]+)s)?$/);
+  const [, kind, n, n2, lfl, col, per] = m; const c = col === 'BuY' ? 'b' : (col || 'w').toLowerCase(); let seq = [], T = per ? +per : 0;
+  const qp = kind === 'VQ' ? .5 : 1; // one quick flash per second, very quick twice that
+  if (kind === 'Q' || kind === 'VQ') { const k = n ? +n : 0; if (!k) { T = qp; seq = [[0, qp*.4, c]]; } else { for (let i = 0; i < k; i++) seq.push([i*qp, qp*.4, c]); if (lfl) seq.push([k*qp + .5, 2, c]); } }
+  else if (kind === 'Fl') { const k = n ? +n : 1; for (let i = 0; i < k; i++) seq.push([i, .5, c]); if (n2) for (let i = 0; i < +n2; i++) seq.push([k + 1 + i, .5, c]); T ||= 4; }
+  else if (kind === 'LFl') { seq = [[0, 2, c]]; T ||= 10; }
+  else if (kind === 'Iso') { T ||= 4; seq = [[0, T/2, c]]; }
+  else if (kind === 'Oc') { T ||= 4; seq = [[0, T*.75, c]]; }
+  else if (kind === 'Mo(A)') { T ||= 8; seq = [[0, .5, c], [1.2, 1.8, c]]; }
+  else if (kind === 'Al') { T ||= 3; seq = [[0, 1, 'b'], [1.5, 1, 'y']]; }
+  return { T, seq, c };
+}
+const charOn = (ch, t) => { const u = t % ch.T; for (const [s0, l, c] of ch.seq) if (u >= s0 && u < s0 + l) return c; return null; };
+const withCol = (s, c) => c === 'W' ? s : s.includes(' ') ? s.replace(' ', ` ${c} `) : `${s} ${c}`;
+
+// ---- drawing: a buoy, waterline at y=0, centred on x=0, about 115 units tall
+const PAINT = { r:'var(--p-r)', g:'var(--p-g)', y:'var(--p-y)', k:'var(--p-k)', w:'var(--p-w)', b:'var(--p-b)' };
+const SHAPE = { can:'M-24,4 L-24,-50 Q0,-56 24,-50 L24,4 Z', cone:'M-27,4 L-4,-64 Q0,-68 4,-64 L27,4 Z',
+  pillar:'M-30,4 L-30,-12 L-17,-12 L-9,-74 L9,-74 L17,-12 L30,-12 L30,4 Z', sphere:'M-26,-22 A26,26 0 1 1 26,-22 A26,26 0 1 1 -26,-22 Z' };
+const BODYTOP = { can:-54, cone:-66, pillar:-82, sphere:-48 };
+let uid = 0;
+function drawBuoy(id, o = {}){
+  const m = MARKS[id], body = o.body || m.bodies[0], sil = !!o.sil, k = 'bc' + (++uid), top = BODYTOP[body];
+  const fill = c => sil ? 'var(--ink)' : PAINT[c], line = sil ? 'none' : 'var(--ink)';
+  let bands = '';
+  if (m.paint.h) { const y0 = top - 2, H = 6 - y0, n = m.paint.h.length; m.paint.h.forEach((c,i) => bands += `<rect x="-32" y="${f1(y0 + i*H/n)}" width="64" height="${f1(H/n + .5)}" fill="${fill(c)}"/>`); }
+  else { const n = 8, w = 64/n; for (let i = 0; i < n; i++) bands += `<rect x="${-32 + i*w}" y="${top-2}" width="${w + .3}" height="${8 - top}" fill="${fill(m.paint.v[i%2])}"/>`; }
+  let s = `<clipPath id="${k}"><path d="${SHAPE[body]}"/></clipPath><g clip-path="url(#${k})">${bands}</g><path d="${SHAPE[body]}" fill="none" stroke="${line}" stroke-width="1.3"/>`;
+  if (body === 'pillar') s += `<rect x="-5" y="-82" width="10" height="8" fill="${sil ? 'var(--ink)' : 'var(--ink-2)'}"/>`;
+  if (o.top === false) return s;
+  const b = top - 9, K = fill('k'), st = `stroke="${line}" stroke-width=".8"`;
+  const cone = (y0, y1, up, f) => `<path d="${up ? `M-9,${y1} L9,${y1} L0,${y0}` : `M-9,${y0} L9,${y0} L0,${y1}`} Z" fill="${f}" ${st}/>`;
+  s += `<line x1="0" y1="${top}" x2="0" y2="${b}" stroke="${sil ? 'var(--ink)' : 'var(--ink-2)'}" stroke-width="2"/>`;
+  const two = (u1, u2) => cone(b-27, b-15, u1, K) + cone(b-12, b, u2, K);
+  const xs = (d, w) => `<path d="${d}" stroke="${sil ? 'none' : 'var(--ink)'}" stroke-width="${w + 2}" fill="none"/><path d="${d}" stroke="${fill('y')}" stroke-width="${w}" fill="none"/>`;
+  s += ({ can: `<rect x="-8" y="${b-13}" width="16" height="13" fill="${fill('r')}" ${st}/>`, cone: cone(b-14, b, true, fill('g')),
+    N: two(true,true), S: two(false,false), E: two(true,false), W: two(false,true),
+    balls: `<circle cy="${b-7}" r="6.5" fill="${K}" ${st}/><circle cy="${b-21}" r="6.5" fill="${K}" ${st}/>`,
+    ball: `<circle cy="${b-8}" r="7.5" fill="${fill('r')}" ${st}/>`,
+    x: xs(`M-8,${b-16} L8,${b} M8,${b-16} L-8,${b}`, 3.5), cross: xs(`M0,${b-18} L0,${b} M-8,${b-10} L8,${b-10}`, 3.5) })[m.top];
+  return s;
+}
+const waves = (y, w) => `<path d="M0,${y} q10,-3 20,0${' t20,0'.repeat(Math.ceil(w/20))}" fill="none" stroke="var(--ink-3)" stroke-width=".8"/>`;
+function dayScene(id, o = {}){
+  return `<svg viewBox="0 0 400 170" role="img" aria-label="${o.sil ? 'A buoy in silhouette against a low sun' : 'A buoy'}"><rect width="400" height="170" fill="${o.sil ? 'var(--brass-soft)' : 'var(--paper)'}"/>` +
+    (o.sil ? '<circle cx="290" cy="58" r="24" fill="var(--brass)" opacity=".35"/>' : '') +
+    `<g transform="translate(200,140)">${drawBuoy(id, o)}</g><rect y="140" width="400" height="30" fill="${o.sil ? 'var(--ink-3)' : 'var(--deep)'}"/>${waves(141, 400)}</svg>`;
+}
+function nightScene(ch){
+  return `<svg class="nightsvg" viewBox="0 0 400 150" role="img" aria-label="Night: a light ahead. Watch its rhythm."><rect width="400" height="150" fill="var(--nb)"/><line x1="0" y1="80" x2="400" y2="80" stroke="var(--nh)"/>` +
+    `<g data-char="${ch}" style="opacity:0"><circle cx="200" cy="74" r="18" fill="currentColor" opacity=".22"/><circle cx="200" cy="74" r="5" fill="currentColor"/><ellipse cx="200" cy="104" rx="3" ry="16" fill="currentColor" opacity=".25"/></g>` +
+    `<text data-tick x="388" y="22" text-anchor="end" fill="var(--nt)" font-size="13" font-family="IBM Plex Mono,monospace">0 s</text><text x="12" y="140" fill="var(--nt)" font-size="11">watch a full cycle</text></svg>`;
+}
+const TLC = { r:'var(--p-r)', g:'var(--p-g)', w:'var(--brass)', y:'var(--p-y)', b:'var(--p-b)' };
+function timeline(str, w = 320){
+  const ch = charSeq(str), span = ch.T < 2 ? 6 : ch.T <= 8 ? 2*ch.T : ch.T, sc = (w - 20)/span, X = t => f1(10 + t*sc);
+  let s = `<svg class="tl" viewBox="0 0 ${w} 54" aria-hidden="true"><line x1="10" y1="26" x2="${w-10}" y2="26" stroke="var(--rule)"/>`;
+  for (let t = 0; t <= span; t++) s += `<line x1="${X(t)}" y1="26" x2="${X(t)}" y2="${t % 5 ? 29 : 31}" stroke="var(--ink-3)" stroke-width=".7"/>`;
+  for (let k = 0; k*ch.T < span; k++) for (const [a, l, c] of ch.seq) { const x0 = 10 + (k*ch.T + a)*sc, x1 = Math.min(10 + (k*ch.T + a + l)*sc, w - 10); if (x0 < w - 10) s += `<rect x="${f1(x0)}" y="11" width="${f1(x1 - x0)}" height="15" fill="${TLC[c]}"/>`; }
+  s += ch.T >= 2 ? `<path d="M10,36 V40 H${X(ch.T)} V36" fill="none" stroke="var(--ink-3)" stroke-width=".8"/><text x="${X(ch.T/2)}" y="52" text-anchor="middle">${ch.T} s period</text>`
+    : `<text x="10" y="50">no break: about ${ch.T < 1 ? 120 : 60} a minute</text>`;
+  return s + '</svg>';
+}
+
+// ---- concept figures
+function fig(kind){
+  const B = (id, x, y, sc, o = {}) => `<g transform="translate(${x},${y}) scale(${sc})">${drawBuoy(id, o)}</g>`;
+  const T = (x, y, t, a = 'middle', sz = 10) => `<text x="${x}" y="${y}" font-size="${sz}" text-anchor="${a}" fill="var(--ink-2)">${t}</text>`;
+  if (kind === 'lat') return `<svg viewBox="0 0 180 130" aria-hidden="true">${B('port',52,104,.8,{body:'can'})}${B('stbd',128,104,.8,{body:'cone'})}<rect y="104" width="180" height="26" fill="var(--deep)"/>${T(52,121,'port')}${T(128,121,'starboard')}</svg>`;
+  if (kind === 'out') { let s = `<svg viewBox="0 0 180 170" aria-hidden="true"><rect width="180" height="170" fill="var(--deep)"/>`;
+    for (const y of [55, 120]) s += B('port', 38, y, .36, {body:'can'}) + B('stbd', 142, y, .36, {body:'cone'});
+    return s + `<path d="M90,150 V30" stroke="var(--magenta)" stroke-width="2"/><path d="M83,40 L90,26 L97,40 Z" fill="var(--magenta)"/>${T(90,18,'direction of buoyage','middle',9)}${T(90,164,'in from seaward','middle',9)}</svg>`; }
+  if (kind === 'pref') return `<svg viewBox="0 0 180 130" aria-hidden="true">${B('prefS',52,104,.8,{body:'can'})}${B('prefP',128,104,.8,{body:'cone'})}<rect y="104" width="180" height="26" fill="var(--deep)"/>${T(52,121,'main channel ▸ stbd',undefined,8.5)}${T(128,121,'main channel ◂ port',undefined,8.5)}</svg>`;
+  if (kind === 'card') return `<svg viewBox="-100 -100 200 200" aria-hidden="true"><rect x="-100" y="-100" width="200" height="200" fill="var(--deep)"/><circle cy="8" r="13" fill="var(--shallow)" stroke="var(--ink-2)" stroke-dasharray="2 2"/><path d="M-5,8H5M0,3V13" stroke="var(--ink)" stroke-width="1.4"/>` +
+    B('N',0,-36,.4) + B('S',0,96,.4) + B('E',66,52,.4) + B('W',-66,52,.4) + T(0,-90,'N · pass north',undefined,9) + T(66,66,'E',undefined,9) + T(-66,66,'W',undefined,9) + T(30,92,'S',undefined,9) + '</svg>';
+  if (kind === 'light') return ['Fl(2) R 6s','Q','Oc 6s','LFl 10s'].map(s => `<div class="tlrow"><span class="mono">${s}</span>${timeline(s, 260)}</div>`).join('');
+  if (kind === 'clock') { let s = `<svg viewBox="-80 -80 160 160" aria-hidden="true"><circle r="66" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.2"/>`;
+    for (let h = 0; h < 12; h++) { const a = rad(h*30); s += `<line x1="${f1(60*Math.sin(a))}" y1="${f1(-60*Math.cos(a))}" x2="${f1(66*Math.sin(a))}" y2="${f1(-66*Math.cos(a))}" stroke="var(--ink-3)"/>`; }
+    return s + T(0,-44,'12 · N',undefined,11) + T(0,-32,'continuous',undefined,8.5) + T(44,4,'3 · E','middle',11) + T(0,40,'6 · S',undefined,11) + T(0,52,'+ long flash',undefined,8.5) + T(-44,4,'9 · W','middle',11) + '</svg>'; }
+  if (kind === 'other') return `<svg viewBox="0 0 220 120" aria-hidden="true">${B('danger',30,96,.55)}${B('safe',85,96,.55,{body:'sphere'})}${B('special',140,96,.55)}${B('wreck',192,96,.55)}<rect y="96" width="220" height="24" fill="var(--deep)"/>${T(30,112,'danger',undefined,8.5)}${T(85,112,'safe water',undefined,8.5)}${T(140,112,'special',undefined,8.5)}${T(192,112,'wreck',undefined,8.5)}</svg>`;
+  return '';
+}
+
+// ---- question generators. Each returns q = {label, prompt, scene, givens, choices, answer, explain, rule, tl?, after?, mono?}
+const giv = (k, v, cls = '') => `<div class="given"><div class="k">${k}</div><div class="v ${cls}">${v}</div></div>`;
+const SIDES = ['Leave it to port','Leave it to starboard'];
+function genLat(){
+  const id = pick(['port','stbd']), m = MARKS[id], body = pick(m.bodies), sil = Math.random() < .3, top = body === 'pillar' || Math.random() < .6;
+  const sc = dayScene(id, { body, sil, top }), ans = id === 'port' ? 0 : 1;
+  const note = sil ? ` Into the sun you lose the colour but not the shape: ${body === 'pillar' ? 'the topmark' : 'a ' + body} says ${id === 'port' ? 'port' : 'starboard'}.` : '';
+  if (Math.random() < .55) return { label:'Lateral · which side', prompt: sil ? 'Into a low sun you see only its shape. Entering harbour, which side do you leave it?' : 'Entering harbour from seaward. Which side do you leave this mark?', scene: sc, choices: SIDES, answer: ans, explain: m.tell + note, rule: RULE.lat };
+  return { label:'Lateral · name it', prompt: sil ? 'Shape only, into the sun. What is it?' : 'What is this mark?', scene: sc, choices:['Port-hand lateral','Starboard-hand lateral'], answer: ans, explain: m.tell + note, rule: RULE.lat };
+}
+const SITS = [['Entering harbour from seaward', true], ['Leaving harbour, bound out to sea', false], ['Heading up the river to the town quay', true], ['Heading downriver to the estuary mouth', false], ['Going the way of the magenta buoyage arrow on the chart', true], ['Going against the magenta buoyage arrow on the chart', false]];
+function genOut(){
+  const id = pick(['port','stbd']), m = MARKS[id], [sit, withB] = pick(SITS), body = pick(m.bodies), toPort = (id === 'port') === withB;
+  return { label:'Direction of buoyage', prompt:'Which side do you leave this mark?', scene: dayScene(id, { body, top: body === 'pillar' || Math.random() < .6 }), givens: giv('You are', sit, 'txt'), choices: SIDES, answer: toPort ? 0 : 1,
+    explain:`${id === 'port' ? 'Red, can-shaped' : 'Green, cone-shaped'}: a ${id === 'port' ? 'port' : 'starboard'}-hand mark. ${withB ? 'You are going with the direction of buoyage, so it means what it says' : 'You are going against the direction of buoyage, so the rule flips'}: leave it to ${toPort ? 'port' : 'starboard'}.`, rule: RULE.out };
+}
+const LATIDS = ['port','stbd','prefS','prefP'], LATNAMES = LATIDS.map(x => MARKS[x].name);
+function genPref(){
+  const id = pick(['prefS','prefP','prefS','prefP','port','stbd']), m = MARKS[id], sc = dayScene(id, { body: pick(m.bodies) }), pref = id.startsWith('pref');
+  const t = pick(pref ? ['name','side','branch'] : ['name','side']), portish = id === 'port' || id === 'prefS';
+  if (t === 'name') return { label:'Modified lateral · name it', prompt:'What is this mark?', scene: sc, choices: LATNAMES, answer: LATIDS.indexOf(id), explain: m.tell, rule: RULE.pref };
+  if (t === 'side') return { label:'Modified lateral · which side', prompt:'Entering harbour on the main channel. Which side do you leave it?', scene: sc, choices: SIDES, answer: portish ? 0 : 1, explain: m.tell, rule: RULE.pref };
+  return { label:'The channel divides', prompt:'Entering harbour, the channel divides at this mark. Which way does the main channel go?', scene: sc, choices:['To starboard of the mark','To port of the mark'], answer: id === 'prefS' ? 0 : 1, explain: m.tell, rule: RULE.pref };
+}
+const TOPDESC = { N:'Both cones point up', E:'Base to base', S:'Both cones point down', W:'Point to point' };
+function genCardDay(){
+  const c = pick(CARDS), m = MARKS[c], sil = Math.random() < .3, t = pick(['name','name','pass','where','top']), sc = dayScene(c, { sil }), a = CARDS.indexOf(c);
+  const silNote = sil ? ' Into the sun the colours go; the topmark is all you need.' : '';
+  if (t === 'name') return { label:'Cardinal · name it', prompt: sil ? 'Silhouette only. What is it?' : 'What is this mark?', scene: sc, choices: CARDNAMES, answer: a, explain: m.tell + silNote, rule: RULE.card };
+  if (t === 'pass') return { label:'Cardinal · which side', prompt: sil ? 'Silhouette only. Which side of it is safe?' : 'Which side of it do you pass?', scene: sc, choices: PASSES, answer: a, explain: m.tell + silNote, rule: RULE.card };
+  if (t === 'where') return { label:'Cardinal · placing', prompt:`A rock in the approach, and the safe water is to the ${DIRNAME[c]} of it. Which mark do you expect to find there?`, scene: null, after: dayScene(c), choices: CARDNAMES, answer: a,
+    explain:`A cardinal sits on the safe side of the danger and is named for it: safe water to the ${DIRNAME[c]}, ${m.name.toLowerCase()}. ${m.tell}`, rule: RULE.card };
+  return { label:'Cardinal · topmark', prompt:`What topmark does a ${m.name.toLowerCase()} carry?`, scene: null, after: dayScene(c), choices: CARDS.map(x => TOPDESC[x]), answer: a, explain: m.tell, rule: RULE.card };
+}
+const LIGHTS = [
+  { s:'Fl 5s', sig:'Fl1', d:'One flash every 5 seconds' }, { s:'Fl(2) 10s', sig:'Fl2', d:'Groups of two flashes, every 10 seconds' },
+  { s:'Fl(3) 10s', sig:'Fl3', d:'Groups of three flashes, every 10 seconds' }, { s:'Fl(4) 15s', sig:'Fl4', d:'Groups of four flashes, every 15 seconds' },
+  { s:'Fl(2+1) 10s', sig:'Fl21', d:'Two flashes, then one, every 10 seconds' }, { s:'Q', sig:'Q', d:'Quick, about 60 flashes a minute, without a break' },
+  { s:'VQ', sig:'VQ', d:'Very quick, about 120 flashes a minute, without a break' }, { s:'Q(3) 10s', sig:'Q3', d:'Three quick flashes, every 10 seconds' },
+  { s:'Iso 4s', sig:'Iso', d:'Light and dark for equal times, a 4 second cycle' }, { s:'Oc 6s', sig:'Oc', d:'Lit longer than dark: one short eclipse every 6 seconds' },
+  { s:'LFl 10s', sig:'LFl', d:'One long flash, 2 seconds or more, every 10 seconds' }, { s:'Mo(A) 10s', sig:'Mo', d:'Morse A, short then long, every 10 seconds' },
+];
+const uniq4 = (ans, decoys) => shuffle([ans, ...shuffle([...new Set(decoys)].filter(x => x !== ans)).slice(0, 3)]);
+function genLight(){
+  const t = pick(['abbr','abbr','desc','period','label','label']);
+  if (t === 'abbr' || t === 'desc') {
+    const L = pick(LIGHTS), c = pick(['W','W','R','G']), ch = withCol(L.s, c), opts = shuffle([L, ...shuffle(LIGHTS.filter(x => x.sig !== L.sig)).slice(0, 3)]);
+    const ex = `${disp(ch)}: ${L.d.toLowerCase()}${c === 'W' ? ', white (no colour letter)' : c === 'R' ? ', red' : ', green'}.`;
+    if (t === 'abbr') return { label:'Read the light', prompt:'Watch it through a full cycle. Which chart abbreviation is it?', scene: nightScene(ch), choices: opts.map(o => disp(withCol(o.s, c))), answer: opts.indexOf(L), mono: true, explain: ex, tl: ch, rule: RULE.light };
+    return { label:'Read the chart', prompt:'The chart prints this beside a buoy. What will you see?', scene: null, after: nightScene(ch), givens: giv('Chart', disp(ch), 'mono big'), choices: opts.map(o => o.d), answer: opts.indexOf(L), explain: ex, tl: ch, rule: RULE.light };
+  }
+  if (t === 'period') {
+    const n = pick([1,1,2,3]), c = pick(['W','R','G']), Ps = [3,4,5,6,8,10,12,15].filter(p => p >= n + 2), P = pick(Ps), ch = withCol(`Fl${n > 1 ? `(${n})` : ''} ${P}s`, c), opts = uniq4(P, Ps);
+    return { label:'Time the light', prompt:'Time it with the clock in the corner. What is its period?', scene: nightScene(ch), choices: opts.map(p => `${p} s`), answer: opts.indexOf(P),
+      explain:`${disp(ch)}. The period runs from the start of one ${n > 1 ? 'group' : 'flash'} to the start of the next: ${P} seconds.`, tl: ch, rule: RULE.light };
+  }
+  let n, col, P, H, R;
+  do { n = rnd(1,4); col = pick(['','WR','WRG']); P = pick([5,10,15,20]); H = rnd(9,48); R = pick([8,10,12,14,16,18,21,24]); } while (new Set([P,H,R]).size < 3);
+  const lab = `Fl${n > 1 ? `(${n})` : ''}${col ? ' ' + col : ''} ${P}s ${H}m ${R}M`;
+  const ex = `${lab}: ${n > 1 ? `groups of ${n} flashes` : 'single flashes'}, ${col === 'WR' ? 'white and red sectors' : col === 'WRG' ? 'white, red and green sectors' : 'white'}, every ${P} s; the light is ${H} m above high water and its nominal range is ${R} nautical miles. Read it in order: rhythm, colour, period, height (m), range (M).`;
+  const base = { label:'Read the lighthouse', scene: null, givens: giv('On the chart', lab, 'mono big'), explain: ex, rule: RULE.light, mono: false };
+  const kind = pick(col ? ['range','elev','period','group','sector'] : ['range','elev','period','group']);
+  if (kind === 'range') { const o = uniq4(R, [H, P, n, R + 4]); return { ...base, prompt:'How far is its nominal range?', choices: o.map(x => `${x} nautical miles`), answer: o.indexOf(R) }; }
+  if (kind === 'elev') { const o = uniq4(H, [R, P, H + 10]); return { ...base, prompt:'How high is the light?', choices: o.map(x => `${x} m`), answer: o.indexOf(H) }; }
+  if (kind === 'period') { const o = uniq4(P, [5,10,15,20]); return { ...base, prompt:'How long does one full sequence take?', choices: o.map(x => `${x} s`), answer: o.indexOf(P) }; }
+  if (kind === 'group') return { ...base, prompt:'How many flashes in each group?', choices:['1','2','3','4'], answer: n - 1 };
+  const right = 'Different colours on different bearings: sectors', o = shuffle([right, 'It cycles through the colours in turn', 'Each flash in a group is a different colour', 'The colour changes with the visibility']);
+  return { ...base, prompt:`What does ${col} tell you?`, choices: o, answer: o.indexOf(right), explain: `${ex} ${col}: what you see depends on your bearing from the light. The white sector usually marks the safe approach; red and green the sides to keep off.` };
+}
+const NIGHTTELL = { N:'continuous, twelve o\'clock: north cardinal. Pass north of it.', E:'three flashes, three o\'clock: east cardinal. Pass east of it.', S:'six flashes and a long one, six o\'clock: south cardinal. The long flash stops six being miscounted as nine. Pass south of it.', W:'nine flashes, nine o\'clock: west cardinal. Pass west of it.' };
+function genCardNight(){
+  const c = pick(CARDS), ch = pick(MARKS[c].chars), pass = Math.random() < .35;
+  return { label:'Cardinal by night', prompt: pass ? 'A white light, flashing quickly. Which side of it do you pass?' : 'A white light ahead, flashing quickly. Count it. Which cardinal is it?', scene: nightScene(ch), choices: pass ? PASSES : CARDNAMES, answer: CARDS.indexOf(c), explain:`${disp(ch)}: ${NIGHTTELL[c]}`, tl: ch, rule: RULE.cardN };
+}
+const OTHERS = ['danger','safe','special','wreck'];
+const MEAN = { danger:'A small danger right under it: water all round, keep a good berth', safe:'Water all round: a landfall or mid-channel mark', special:'Not a navigation mark: the chart says what it is', wreck:'A new wreck, not yet on the chart: keep well clear' };
+function genOther(){
+  const id = pick(OTHERS), m = MARKS[id], night = Math.random() < .45, ch = pick(m.chars), sc = night ? nightScene(ch) : dayScene(id, { body: pick(m.bodies) });
+  const ex = m.tell + (night ? ` This one: ${disp(ch)}.` : ''), tl = night ? ch : null;
+  if (Math.random() < .6) {
+    const decoy = pick(night ? (id === 'danger' ? ['East cardinal','Port-hand lateral'] : ['North cardinal','Port-hand lateral']) : ['Port-hand lateral','North cardinal','Preferred channel to port']), names = shuffle([...OTHERS.map(x => MARKS[x].name), decoy]);
+    return { label: night ? 'Light · name it' : 'Mark · name it', prompt: night ? 'A light ahead. What is it?' : 'What is this mark?', scene: sc, choices: names, answer: names.indexOf(m.name), explain: ex, tl, rule: RULE.other };
+  }
+  const opts = shuffle([...OTHERS.map(x => MEAN[x]), 'Pass on the side it names']);
+  return { label: night ? 'Light · what it means' : 'Mark · what it means', prompt: night ? 'A light ahead. What is it telling you?' : 'What is this mark telling you?', scene: sc, choices: opts, answer: opts.indexOf(MEAN[id]), explain: ex, tl, rule: RULE.other };
+}
+const DRILLS = [genLat, genOut, genPref, genCardDay, genLight, genCardNight, genOther];
+
+// ---- pilotage passage (chart coords: x right, y down, 320 units ≈ 4 nm; harbour at the top)
+const HARBOURS = ['Port Ellery','Wrenhaven','Saltmouth','Kestle','Thornwick','Polcarrow','Haddon','Merrow Quay'];
+function segDist(p, a, b){ const dx = b[0]-a[0], dy = b[1]-a[1], t = Math.max(0, Math.min(1, ((p[0]-a[0])*dx + (p[1]-a[1])*dy) / (dx*dx + dy*dy || 1))); return Math.hypot(a[0] + t*dx - p[0], a[1] + t*dy - p[1]); }
+const pathDist = (p, path) => Math.min(...path.slice(1).map((b,i) => segDist(p, path[i], b)));
+function genPassage(night){
+  for (let tries = 0; tries < 2000; tries++) {
+    const entering = Math.random() < .55, P0 = entering ? 0 : 180;
+    const plan = entering ? ['safe','app','app','lat','lat','lat','lat'] : ['lat','lat','lat','lat','app','app','safe'];
+    let pos = [rnd(-60,60), entering ? 150 : -126]; const start = pos.slice(), legs = []; let pref = false, cards = 0;
+    plan.forEach((kind, i) => {
+      let id, side, h, L;
+      // leg lengths stretch so the approach ends at the harbour mouth (in) or out by the fairway buoy (out)
+      if (kind === 'safe') { id = 'safe'; side = 'either'; h = P0 + rnd(-15,15); L = entering ? 26 : Math.max(26, Math.min(90, Math.round((112 - pos[1]) / .97))); }
+      else if (kind === 'lat') { const base = pick(['port','stbd']); id = base; if (!pref && Math.random() < .22) { id = base === 'port' ? 'prefS' : 'prefP'; pref = true; }
+        side = (base === 'port') === entering ? 'port' : 'starboard'; h = P0 + rnd(-28,28);
+        L = entering ? Math.max(18, Math.min(50, Math.round((pos[1] + 118) / (plan.length - i) / .93 - 14))) : rnd(26,44); }
+      else {
+        if (Math.random() < .25 && (cards || plan[i+1] === 'app')) { id = 'danger'; side = 'either'; h = P0 + rnd(-35,35); }
+        else { const cand = []; for (const c of CARDS) for (const s of ['port','starboard']) { const hh = norm(SAFE[c] + (s === 'starboard' ? 90 : -90)); if (Math.abs(sgnDeg(hh, P0)) <= 95) cand.push([c, s, hh]); }
+          const toward = cand.filter(x => Math.sin(rad(x[2])) * pos[0] <= 0), pool = Math.abs(pos[0]) > 50 && toward.length ? toward : cand;
+          const cc = pick([...new Set(pool.map(x => x[0]))]), [c, s, hh] = pick(pool.filter(x => x[0] === cc));
+          id = c; side = s; h = hh + rnd(-14,14); cards++; }
+        L = rnd(38,52);
+      }
+      h = norm(h);
+      const M = along(pos, h, L), perp = h + (side === 'port' ? 90 : side === 'starboard' ? -90 : pick([90,-90]));
+      const before = along(M, h, -18), after = along(along(M, perp, 15), h, 14);
+      let hz = null;
+      if (id === 'port' || id === 'stbd') hz = { type:'bank', at: along(M, perp + 180, 15), h, dry: (rnd(2,15)/10).toFixed(1) };
+      else if (id.startsWith('pref')) hz = { type:'branch', at: along(M, perp + 180, 30), from: M, label: pick(['marina','fish quay','boatyard']) };
+      else if (CARDS.includes(id)) hz = { type:'rock', at: along(M, SAFE[id] + 180, 13) };
+      else if (id === 'danger') hz = { type:'rock', at: M };
+      legs.push({ id, side, h, M, before, after, hz, body: pick(MARKS[id].bodies), char: pick(MARKS[id].chars) });
+      pos = after;
+    });
+    const harbour = entering ? legs[legs.length-1].after : start, [hx, hy] = harbour;
+    const coast = x => hy - 6 - .14*Math.abs(x - hx) + 3*Math.sin(x*.07);
+    const pts = [start, ...legs.flatMap(g => [g.M, g.before, g.after]), ...legs.filter(g => g.hz).map(g => g.hz.at)];
+    if (pts.some(([x,y]) => Math.abs(x) > 140 || y < -150 || y > 156 || (Math.abs(x - hx) > 12 && y < coast(x) + 8))) continue;
+    if (Math.abs(hx) > 110 || (entering ? hy < -138 || hy > -96 : legs[legs.length-1].M[1] < 70)) continue;
+    const path = [start, ...legs.flatMap(g => [g.before, g.after])];
+    if (legs.some(g => g.hz && g.id !== 'danger' && pathDist(g.hz.at, path) < 10)) continue;
+    if (legs.some((g, i) => legs.some((o, j) => j !== i && Math.hypot(g.M[0]-o.M[0], g.M[1]-o.M[1]) < 16))) continue;
+    let l = `M-160,-160 L${f1(hx-13)},-160 L${f1(hx-13)},${f1(hy+3)}`, r = `M160,-160 L${f1(hx+13)},-160 L${f1(hx+13)},${f1(hy+3)}`;
+    for (let x = hx - 20; x > -160; x -= 14) l += ` L${f1(x)},${f1(coast(x))}`;
+    for (let x = hx + 20; x < 160; x += 14) r += ` L${f1(x)},${f1(coast(x))}`;
+    return { night, entering, legs, start, harbour, name: pick(HARBOURS), land: [l + ` L-160,${f1(coast(-160))} Z`, r + ` L160,${f1(coast(160))} Z`], seed: rnd(1,999), leg: 0, strikes: 0, errors: 0, results: [], wrong: [], done: false };
+  }
+}
+const CHOICES_PASS = ['Leave it to port','Leave it to starboard','Either side: water all round'], SIDEIDX = { port:0, starboard:1, either:2 };
+function passageQ(){
+  const g = pas.legs[pas.leg], n = pas.legs.length;
+  const lead = pas.leg === 0 ? (pas.entering ? `Making landfall off ${pas.name}. ` : `Slipped from ${pas.name}, bound out. `) : '';
+  return { m:'passage', g, label:`Leg ${pas.leg + 1} of ${n} · ${pas.night ? 'by night' : 'by day'}`,
+    prompt: lead + (pas.night ? 'A light fine on the bow. Count its rhythm. Which side do you leave it?' : 'A mark fine on the bow. Which side do you leave it?'),
+    scene: pas.night ? nightScene(g.char) : dayScene(g.id, { body: g.body }),
+    givens: giv('Heading', `${pad(g.h)}°T`, 'mono') + giv('Bound', pas.entering ? 'In, from seaward' : 'Out, to sea', 'txt'),
+    choices: CHOICES_PASS, answer: SIDEIDX[g.side], explain: passExplain(g), tl: pas.night ? g.char : null, rule: RULE.pass };
+}
+function passExplain(g){
+  const m = MARKS[g.id], lit = pas.night ? ` (${disp(g.char)})` : '';
+  if (g.side === 'either') return `${m.name}${lit}: water all round, so either side${g.id === 'danger' ? ', with a good berth: the danger is right under it' : ''}.`;
+  if (CARDS.includes(g.id)) { const rel = norm(SAFE[g.id] - g.h) < 180 ? 'starboard' : 'port';
+    return `${m.name}${lit}: the safe water is to the ${DIRNAME[g.id]}. Heading ${pad(g.h)}°T, ${DIRNAME[g.id]} is on your ${rel} hand, so keep to that side of it: the mark stays on your ${g.side}.`; }
+  const base = g.id === 'port' || g.id === 'prefS' ? 'port' : 'starboard';
+  return `${m.name}${lit}: ${g.id.startsWith('pref') ? `for the main channel treat it as a ${base}-hand mark. ` : ''}${pas.entering ? 'entering, with' : 'leaving, against'} the direction of buoyage, so leave it to ${g.side}.`;
+}
+function passConsequence(g, i){
+  const ch = ['port','starboard','either'][i], how = ch === 'either' ? 'Holding your course' : `Leaving it to ${ch}`;
+  if (g.side === 'either') return `Either side was fine here, but calling a side means you read it as a lateral or a cardinal. Next time it might be one.`;
+  if (g.hz.type === 'branch') return `${how} takes you up the secondary channel towards the ${g.hz.label}: off your plan and into shoaler water.`;
+  if (g.hz.type === 'bank') return `${how} takes you out of the channel and onto the bank. It dries <strong>${g.hz.dry} m</strong>.`;
+  return `${how} takes you <strong>over the rock</strong> the ${MARKS[g.id].name.toLowerCase()} is there to guard.`;
+}
+
+// ---- drawing: chart
+const chart = $('chart');
+function drawChart(res){
+  const P = pas, cur = P.leg, g = P.legs[cur], shown = i => i < cur || (i === cur && res);
+  let s = `<rect x="-160" y="-160" width="320" height="320" fill="var(--deep)"/>`;
+  for (let i = 0; i < 34; i++) s += `<text x="${-150 + (i*37 + P.seed) % 300}" y="${-150 + (i*53 + P.seed*3) % 300}" font-size="6" fill="var(--ink-3)" opacity=".5" font-family="IBM Plex Mono,monospace">${3 + (i*7 + P.seed) % 22}</text>`;
+  P.legs.forEach((L, i) => { if (!shown(i) || !L.hz) return; const z = L.hz, [x, y] = z.at.map(f1);
+    if (z.type === 'bank') s += `<ellipse cx="${x}" cy="${y}" rx="8" ry="17" transform="rotate(${f1(z.h)} ${x} ${y})" fill="var(--shallow)" stroke="var(--ink-3)" stroke-width=".7" stroke-dasharray="2 2"/><text x="${x}" y="${f1(+y + 2)}" font-size="6" text-anchor="middle" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace" text-decoration="underline">${z.dry}</text>`;
+    else if (z.type === 'rock') s += `<g transform="translate(${x},${y})"><circle r="7" fill="var(--shallow)" stroke="var(--ink-2)" stroke-width=".7" stroke-dasharray="1.5 1.5"/><path d="M-3.5,0H3.5M0,-3.5V3.5" stroke="var(--ink)"/></g>`;
+    else s += `<line x1="${f1(z.from[0])}" y1="${f1(z.from[1])}" x2="${x}" y2="${y}" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="4 3"/><text x="${x}" y="${f1(+y - 4)}" font-size="6.5" text-anchor="middle" fill="var(--ink-2)" font-style="italic">to ${z.label}</text>`; });
+  for (const d of P.land) s += `<path d="${d}" fill="var(--land)" stroke="var(--ink-2)" stroke-width=".8"/>`;
+  s += `<text x="${f1(P.harbour[0])}" y="-146" font-size="8" text-anchor="middle" fill="var(--ink)" font-family="Libre Caslon Text,serif" font-style="italic">${P.name}</text>`;
+  s += `<g transform="translate(144,-118)"><path d="M0,-12 l4,8 h-8 z" fill="var(--ink)"/><line y1="-6" y2="8" stroke="var(--ink)"/><text y="17" font-size="7" text-anchor="middle" fill="var(--ink)">N</text></g>`;
+  const pts = [P.start]; for (let i = 0; i < cur; i++) pts.push(P.legs[i].before, P.legs[i].after); pts.push(g.before);
+  s += `<polyline points="${pts.map(p => p.map(f1).join(',')).join(' ')}" fill="none" stroke="var(--ink)" stroke-width="1.1"/>`;
+  for (const w of P.wrong) s += `<line x1="${f1(w.from[0])}" y1="${f1(w.from[1])}" x2="${f1(w.to[0])}" y2="${f1(w.to[1])}" stroke="var(--bad)" stroke-width="1.2" stroke-dasharray="3 2"/>` + (w.hit ? `<text x="${f1(w.to[0])}" y="${f1(w.to[1])}" font-size="12" fill="var(--bad)" text-anchor="middle" dominant-baseline="middle" font-weight="700">✕</text>` : '');
+  P.legs.forEach((L, i) => { const [x, y] = L.M.map(f1);
+    if (shown(i)) s += `<path transform="translate(${x},${y}) rotate(125)" d="M0,0 C-2.4,-4 -2.4,-8 0,-12 C2.4,-8 2.4,-4 0,0Z" fill="var(--magenta)" opacity=".7"/><g transform="translate(${x},${y}) scale(.15)">${drawBuoy(L.id, { body: L.body })}</g><circle cx="${x}" cy="${y}" r="1.6" fill="var(--ink)"/><text x="${f1(+x + 6)}" y="${f1(+y + 10)}" font-size="6.5" font-style="italic" fill="var(--magenta)">${disp(L.char)}</text>`;
+    else if (i === cur) s += `<circle cx="${x}" cy="${y}" r="7" fill="var(--paper)" fill-opacity=".7" stroke="var(--magenta)" stroke-width="1.2" stroke-dasharray="2 2"/><text x="${x}" y="${f1(+y + 3)}" font-size="8" font-weight="700" text-anchor="middle" fill="var(--magenta)">?</text>`; });
+  const col = !res ? 'var(--ink)' : res.ok ? 'var(--good)' : 'var(--bad)';
+  s += `<g class="boat" style="transform:translate(${f1(g.before[0])}px,${f1(g.before[1])}px) rotate(${f1(g.h)}deg)"><path d="M0,-8 L4.5,4.5 L0,2.2 L-4.5,4.5 Z" fill="${col}" stroke="var(--paper)" stroke-width=".8"/></g>`;
+  chart.innerHTML = s;
+  if (res) { const to = res.to, hd = res.ok ? g.h : bearing(g.before, to), b = chart.querySelector('.boat');
+    requestAnimationFrame(() => requestAnimationFrame(() => { if (b) b.style.transform = `translate(${f1(to[0])}px,${f1(to[1])}px) rotate(${f1(hd)}deg)`; })); }
+}
+
+// ---- night lights: one rAF loop for every [data-char] on the page
+let raf = 0;
+function startLights(){
+  cancelAnimationFrame(raf);
+  const els = [...document.querySelectorAll('[data-char]')].map(el => { const ch = charSeq(el.dataset.char); return { el, ch, ph: Math.random()*ch.T }; });
+  const ticks = [...document.querySelectorAll('[data-tick]')];
+  if (!els.length) return;
+  const t0 = performance.now();
+  const frame = now => { const t = (now - t0)/1000;
+    for (const L of els) { const c = charOn(L.ch, t + L.ph); L.el.style.opacity = c ? 1 : 0; if (c) L.el.style.color = `var(--l-${c})`; }
+    for (const k of ticks) k.textContent = `${Math.floor(t)} s`;
+    raf = requestAnimationFrame(frame); };
+  raf = requestAnimationFrame(frame);
+}
+
+// ---- state
+let stage = null, q = null, answered = false, watch = null, pas = null;
+
+function ask(){
+  q = stage.kind === 'passage' ? passageQ() : (stage.kind === 'watch' ? pick(DRILLS) : stage.gen)();
+  answered = false;
+  const passage = q.m === 'passage';
+  $('chartbox').hidden = !passage;
+  $('stagebox').className = 'stagebox' + (passage ? ' both' : '');
+  if (passage) { renderLegs(); drawChart(null); }
+  $('qtype').textContent = q.label;
+  $('prompt').textContent = q.prompt;
+  $('scene').hidden = !q.scene; $('scene').innerHTML = q.scene || '';
+  $('givens').innerHTML = q.givens || '';
+  $('chips').innerHTML = q.choices.map((c, i) => `<button class="chip${q.mono ? ' mono' : ''}" type="button" data-i="${i}"><kbd>${i + 1}</kbd>${c}</button>`).join('');
+  $('fb').className = 'feedback'; $('fb').innerHTML = '';
+  $('next').hidden = true; $('skip').hidden = false;
+  startLights();
+  if (watch) armWatch();
+}
+
+function renderLegs(){
+  $('legs').innerHTML = pas.legs.map((_, i) => `<span class="leg ${i < pas.results.length ? (pas.results[i] ? 'done' : 'bad') : i === pas.leg ? 'now' : ''}"></span>`).join('') + `<span class="strikes">strikes <b>${'✕'.repeat(pas.strikes)}${'·'.repeat(Math.max(0, 3 - pas.strikes))}</b></span>`;
+}
+function finish(i, revealed){
+  if (answered) return;
+  answered = true;
+  const ok = i === q.answer, credit = ok && !revealed;
+  [...$('chips').children].forEach((b, k) => { b.disabled = true; if (k === q.answer) b.classList.add('picked'); else if (k === i) b.classList.add('wrong'); });
+  const fb = $('fb');
+  fb.className = 'feedback show ' + (ok && !revealed ? 'ok' : 'no');
+  const title = revealed ? (watch && watch.timedOut ? `Time. ${q.choices[q.answer]}.` : `Answer: ${q.choices[q.answer]}.`)
+    : ok ? pick(['Aye.','Correct.','Clean.','That would pass.','Steady as she goes.','Good lookout.']) : `Not quite. ${q.choices[q.answer]}.`;
+  let extra = '';
+  if (q.m === 'passage' && !ok && !revealed) extra = `<p>${passConsequence(q.g, i)}</p>`;
+  fb.innerHTML = `<h3>${title}</h3><p>${q.explain}</p>${extra}${q.tl ? `<div class="tlrow"><span class="mono">${disp(q.tl)}</span>${timeline(q.tl)}</div>` : ''}<div class="rule">${q.rule}</div>`;
+  if (q.after) { $('scene').hidden = false; $('scene').innerHTML = q.after; startLights(); }
+  $('next').hidden = false; $('skip').hidden = true;
+  $('next').textContent = 'Next ›';
+
+  if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); if (watch) watch.score++; }
+  else { store.streak = 0; if (watch) watch.miss++; }
+  if (watch) { clearTimeout(watch.t); watch.used += WATCH_SECS - watch.left; watch.left = 0; watchTimer(); }
+  if (credit && store.streak % 10 === 0) pop(`${store.streak} in a row`);
+
+  if (q.m === 'passage') {
+    const g = q.g; pas.results[pas.leg] = credit;
+    let to = g.after;
+    if (!credit) { pas.strikes++; pas.errors++;
+      if (!ok && !revealed) { const wrongSide = i < 2 ? ['port','starboard'][i] : null;
+        to = g.side === 'either' ? along(along(g.M, g.h + (wrongSide === 'port' ? 90 : -90), 15), g.h, 14) : g.hz.at;
+        pas.wrong.push({ from: g.before, to, hit: g.side !== 'either' && g.hz.type !== 'branch' }); } }
+    drawChart({ ok: credit || revealed, to }); renderLegs();
+    if (credit) bell(); else thud();
+    if (pas.strikes >= 3) passageOver(false); else if (pas.leg === pas.legs.length - 1) passageOver(true);
+  } else {
+    if (credit) bell(); else thud();
+    if (stage.kind === 'drill') recordStage(credit);
+  }
+  $('next').focus();
+  save(); renderStatus();
+}
+function passageOver(made){
+  const fb = $('fb'), legs = pas.legs.length, right = pas.results.filter(Boolean).length;
+  pas.done = true;
+  const entry = { when: new Date().toISOString().slice(0,10), name: pas.name, night: pas.night, entering: pas.entering, legs, right, strikes: pas.strikes };
+  if (made) {
+    setTimeout(fanfare, 500);
+    fb.innerHTML += `<div class="sum"><h3>${pas.entering ? `Alongside in ${pas.name}.` : `Clear of the ${pas.name} approaches.`}</h3><p>${right} of ${legs} marks called right${pas.errors === 0 ? '. Not one wrong call: a skipper\'s pilotage.' : `, ${pas.errors} corrected on the way. Logged.`}</p></div>`;
+    if (pas.errors <= 1) completeStage();
+  } else {
+    setTimeout(aground, 500); entry.aground = true;
+    fb.innerHTML += `<div class="sum"><h3>Aground.</h3><p>Three wrong calls on one approach. Name each mark out loud before you pick a side, then try the passage again.</p></div>`;
+  }
+  store.log.unshift(entry); store.log = store.log.slice(0, 30);
+  $('next').textContent = 'New passage ›';
+  renderLog();
+}
+function pop(t){ const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2000); }
+
+// ---- watch mode: one countdown per question, started when it is shown
+function startWatch(){ watch = { asked: 0, left: 0, used: 0, score: 0, miss: 0, timedOut: false, t: null }; }
+function armWatch(){
+  watch.asked++; watch.left = WATCH_SECS; watch.timedOut = false; clearTimeout(watch.t);
+  const tick = () => { watchTimer(); if (watch.left <= 0) { watch.timedOut = true; finish(-1, true); } else { watch.left--; watch.t = setTimeout(tick, 1000); } };
+  tick();
+}
+function watchTimer(){ $('timer').textContent = `${watch.asked}/${WATCH_N} · ${watch.left}s · ${watch.score} right · ${watch.miss} wrong`; }
+const mmss = s => `${Math.floor(s/60)}m ${String(s % 60).padStart(2,'0')}s`;
+function endWatch(){
+  clearTimeout(watch.t); const w = watch; watch = null; $('timer').textContent = '';
+  const passed = w.asked >= WATCH_N && w.miss <= 1;
+  const fb = $('fb'); fb.className = 'feedback show ' + (passed ? 'ok' : '');
+  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} of ${w.asked} right in ${mmss(w.used)}. ${passed ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Speed comes with reps.' : 'Slow down. Name the mark out loud before you answer.'}</p>`;
+  [...$('chips').children].forEach(b => b.disabled = true);
+  if (passed && stage.kind === 'watch') completeStage();
+  save(); renderStatus();
+  answered = true; $('next').hidden = false; $('skip').hidden = true; $('next').textContent = 'Again ›'; $('next').focus();
+}
+
+// ---- stages
+const DEVP = new URLSearchParams(location.search), DEV = DEVP.has('dev');
+const ss = () => store.stages[stage.id];
+const idx = () => STAGES.indexOf(stage);
+function unlocked(i){ return i === 0 || DEV || store.stages[STAGES[i-1].id].done; }
+function recordStage(ok){
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 8) s.recent.shift();
+  if (!s.done && s.recent.length >= 8 && s.recent.filter(Boolean).length >= 6) completeStage();
+}
+function completeStage(){
+  const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
+  const nxt = STAGES[idx() + 1];
+  pop(nxt ? `Stage cleared · next: ${nxt.title}` : 'Ladder complete');
+  renderStatus();
+}
+function renderStatus(){
+  $('streak').textContent = store.streak; $('best').textContent = store.best;
+  $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted));
+  const i = idx(), s = ss();
+  $('stepper').innerHTML = `<div class="dots">` + STAGES.map((st, k) => { const lock = !unlocked(k), d = store.stages[st.id].done;
+      return `<button class="dot ${d ? 'done' : ''} ${k === i ? 'now' : ''} ${lock ? 'locked' : ''}" data-i="${k}" title="${k + 1}. ${st.title}${lock ? ' (locked)' : ''}" aria-label="Stage ${k + 1}: ${st.title}${lock ? ', locked' : ''}" ${lock ? 'disabled' : ''}></button>`; }).join('') + `</div>` +
+    `<span class="name"><small>Stage ${i + 1} of ${STAGES.length}</small>${stage.title}</span>` +
+    `<span class="nav"><button type="button" data-step="-1" ${i === 0 ? 'disabled' : ''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i + 1) || i === STAGES.length - 1 ? 'disabled' : ''} aria-label="Next stage">›</button></span>`;
+  const last = stage.kind === 'drill' ? s.recent : [];
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last">${Array.from({length: 8}, (_, k) => `<i class="${last[k] === true ? 'y' : last[k] === false ? 'n' : ''}"></i>`).join('')}</span>` : '') +
+    `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
+}
+function renderConcept(){
+  const f = stage.fig ? fig(stage.fig) : '';
+  $('conceptBody').className = 'body' + (f ? '' : ' nofig');
+  $('conceptBody').innerHTML = `<div><p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p></div>${f ? `<div class="fig">${f}</div>` : ''}`;
+  $('concept').open = !store.seenConcept[stage.id];
+  store.seenConcept[stage.id] = true; save();
+}
+function renderLog(){
+  const box = $('logbox'), b = $('logbody');
+  box.hidden = !store.log.length && stage.kind !== 'passage';
+  if (!store.log.length) { b.innerHTML = `<p class="empty">No approaches logged yet.</p>`; return; }
+  b.innerHTML = `<div class="tbl"><table><thead><tr><th>Date</th><th>Approach</th><th>Marks</th><th>Remarks</th></tr></thead><tbody>` +
+    store.log.slice(0, 12).map(e => `<tr><td class="mono">${e.when}</td><td>${e.name}, ${e.entering ? 'in' : 'out'} by ${e.night ? 'night' : 'day'}</td><td class="mono">${e.right}/${e.legs}</td><td>${e.aground ? 'Aground. Approach abandoned.' : e.strikes ? `${e.strikes} wrong call${e.strikes > 1 ? 's' : ''}.` : 'Clean.'}</td></tr>`).join('') + `</tbody></table></div>`;
+}
+function setStage(i){
+  if (!unlocked(i) || i < 0 || i >= STAGES.length) return;
+  if (watch) { clearTimeout(watch.t); watch = null; $('timer').textContent = ''; }
+  stage = STAGES[i];
+  renderConcept();
+  if (stage.kind === 'passage') pas = genPassage(stage.night);
+  if (stage.kind === 'watch') startWatch();
+  ask(); renderStatus(); renderLog();
+}
+
+// ---- wiring
+function next(){
+  if (stage.kind === 'passage') { if (pas.done) pas = genPassage(stage.night); else pas.leg++; return ask(); }
+  if (stage.kind === 'watch') { if (watch && watch.asked >= WATCH_N) return endWatch(); if (!watch) startWatch(); }
+  ask();
+}
+$('stepper').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) return setStage(+d.dataset.i); const n = e.target.closest('[data-step]'); if (n) setStage(idx() + +n.dataset.step); });
+$('chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b && !answered) finish(+b.dataset.i, false); });
+$('next').addEventListener('click', next);
+$('skip').addEventListener('click', () => { if (!answered) finish(q.answer, true); });
+$('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) bell(); });
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); return setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'Enter' && answered) { e.preventDefault(); return next(); }
+  if (/^[1-5]$/.test(e.key) && !answered && q.choices[+e.key - 1] != null) { e.preventDefault(); return finish(+e.key - 1, false); }
+});
+
+setStage(DEV && DEVP.get('dev') ? +DEVP.get('dev') : Math.max(0, STAGES.findIndex(st => !store.stages[st.id].done)));
+// review hooks: ?dev=<stage>&legs=<n> sails n passage legs, &ans=<i> answers the question on screen
+if (DEV) { for (let k = +(DEVP.get('legs') || 0); k > 0 && pas && !pas.done; k--) { finish(q.answer, false); next(); } if (DEVP.has('ans')) finish(+DEVP.get('ans'), false); }
+})();
+</script>
+</body>
+</html>
