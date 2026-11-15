@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Weather · Learn to Sail</title>
+<meta name="description" content="Drill RYA Day Skipper weather: the Beaufort scale, shipping forecast vocabulary, veering and backing, the barometer, isobars and Buys Ballot, a depression passing, fog and sea breezes, and a go/no-go call on a real-looking forecast.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../shared/site.css">
+<style>
+.col{max-width:720px;margin:0 auto}
+.tut-head{padding-block:22px 14px;border-bottom:1.5px solid var(--ink);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tut-head h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:400;font-size:24px;margin:0}
+.tut-head .streak{font-size:13px;color:var(--ink-3)}
+.tut-head .streak b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:10px;padding-block:16px 4px;flex-wrap:wrap}
+.stepper .dots{display:flex;gap:6px;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;padding:0;cursor:pointer}
+.stepper .dot.done{background:var(--good);border-color:var(--good)}
+.stepper .dot.now{background:var(--magenta);border-color:var(--magenta);transform:scale(1.3)}
+.stepper .dot.locked{border-color:var(--rule);cursor:not-allowed}
+.stepper .name{font:italic 400 17px "Libre Caslon Text",Georgia,serif}
+.stepper .name small{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-right:8px;font-style:normal}
+.stepper .nav{margin-left:auto;display:flex;gap:4px}
+.stepper .nav button{font:600 12px "Source Sans 3",sans-serif;border:1px solid var(--rule);background:transparent;color:var(--ink-2);padding:4px 9px;cursor:pointer;border-radius:2px}
+.stepper .nav button:disabled{opacity:.35;cursor:default}
+.concept{border:1px solid var(--rule);border-left:4px solid var(--magenta);background:var(--paper);margin-top:14px}
+.concept summary{list-style:none;cursor:pointer;padding:12px 16px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);display:flex;justify-content:space-between}
+.concept summary::after{content:"show";font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.concept[open] summary::after{content:"hide"}
+.concept .body{padding:0 16px 16px;font-size:15px}
+.concept p{margin:0 0 8px;max-width:42em}
+.concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;color:var(--ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
+.concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
+.figbox{margin-top:16px;background:var(--paper);border:1px solid var(--rule);padding:12px}
+.figbox svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin-top:8px;color:var(--ink-2)}
+.legend:empty{display:none}
+.legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle;border-radius:2px;background:currentColor}
+.legend .wf{color:var(--bad)}.legend .cf{color:var(--focus)}.legend .lim{color:var(--ink-3)}.legend .wk{color:var(--brass)}.legend .mg{color:var(--magenta)}
+.note{font-size:12px;color:var(--ink-3);margin-top:4px}
+.legs{display:flex;gap:6px;margin:10px 0 0;flex-wrap:wrap;align-items:center}
+.legs:empty{display:none}
+.leg{width:26px;height:8px;background:var(--rule);border-radius:2px}
+.leg.done{background:var(--good)}.leg.bad{background:var(--bad)}.leg.now{background:var(--magenta);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.strikes{font-size:13px;color:var(--ink-3);margin-left:auto}
+.strikes b{color:var(--bad);letter-spacing:.15em}
+.fcast{margin:16px 0 0;padding:12px 14px;background:var(--paper);border:1px solid var(--rule);border-left:4px solid var(--ink-2);font:13.5px/1.6 "IBM Plex Mono",monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.fcast b{font-weight:600;color:var(--magenta)}
+.q{margin-top:22px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
+.timer{font-size:13px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.prompt{font-family:"Libre Caslon Text",Georgia,serif;font-size:clamp(19px,2.6vw,23px);line-height:1.35;margin:8px 0 16px;text-wrap:balance}
+.givens{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px;margin-bottom:16px}
+.givens:empty{display:none}
+.given{border:1px solid var(--rule);padding:9px 12px;background:var(--paper);min-width:0}
+.given .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.given .v{font-size:19px;font-weight:500;overflow-wrap:anywhere}
+.given.hi{border-color:var(--magenta)}.given.hi .v{color:var(--magenta)}
+.answer{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.answer input{font-family:"IBM Plex Mono",monospace;font-size:32px;font-weight:500;width:150px;max-width:100%;padding:8px 14px;border:1.5px solid var(--ink-2);background:var(--paper);color:var(--ink);letter-spacing:.06em;border-radius:2px}
+.answer .unit{align-self:center;font-size:19px;color:var(--ink-3)}
+.choices{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.choices[hidden]{display:none}
+.choices button{font:500 16px "Source Sans 3",sans-serif;padding:10px 16px;border:1.5px solid var(--ink-2);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:2px;text-align:left;min-height:44px}
+.choices button:hover{border-color:var(--magenta)}
+.choices button .kb{font:500 11px "IBM Plex Mono",monospace;color:var(--ink-3);margin-right:8px}
+.choices button.picked{border-color:var(--magenta);background:var(--magenta-soft)}
+.choices button:disabled{cursor:default;opacity:.75}
+.choices button.right{border-color:var(--good);background:var(--good-soft);opacity:1}
+.choices button.right::after{content:" ✓";color:var(--good);font-weight:700}
+.btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--ink)}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
+.feedback.show{display:block}
+.feedback.ok{border-color:var(--good);background:var(--good-soft)}
+.feedback.no{border-color:var(--bad);background:var(--bad-soft)}
+.feedback.hint{border-color:var(--brass);background:var(--brass-soft)}
+.feedback h3{margin:0 0 8px;font:700 15px "Source Sans 3",sans-serif}
+.feedback p{margin:6px 0 0}
+.steps{margin:0;padding:0;list-style:none;font-size:15px}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:3px 0}
+.steps li .s{font-weight:500}
+.rule{font-size:13px;color:var(--ink-2);margin-top:8px;font-style:italic}
+.progress{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3);flex-wrap:wrap}
+.progress .last{display:flex;gap:5px}
+.progress .last i{width:14px;height:14px;border-radius:3px;background:var(--rule);display:block}
+.progress .last i.y{background:var(--good)}.progress .last i.n{background:var(--bad)}
+.progress .cleared{color:var(--good);font-weight:600}
+.more{margin-top:28px;background:var(--paper);border:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 18px;font:italic 400 17px "Libre Caslon Text",Georgia,serif;list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:"+";font-style:normal;font-family:"IBM Plex Mono",monospace}
+.more[open] summary::after{content:"−"}
+.more .body{padding:0 18px 18px;font-size:15px;overflow-x:auto}
+.more h4{margin:14px 0 4px;font:600 12px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta)}
+.more p{margin:0 0 6px;max-width:42em}
+.more .mono{font-family:"IBM Plex Mono",monospace;font-size:14px}
+.more table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+.more td,.more th{padding:5px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.more th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.empty{font-style:italic;color:var(--ink-3);font-family:"Libre Caslon Text",serif}
+kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
+.pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
+.pop.show{opacity:1;transform:translate(-50%,0)}
+.iconbtn{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);background:transparent;color:var(--ink-3);padding:4px 8px;cursor:pointer;border-radius:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="pop" id="pop" aria-live="polite"></div>
+<div class="col">
+<nav class="site-nav"><div class="crumb"><a href="../../">Learn to Sail</a><span>/</span><a href="./" aria-current="page">Weather</a></div><button class="iconbtn" id="mute" type="button" aria-pressed="false">Sound on</button></nav>
+
+<header class="tut-head">
+  <h1>Weather</h1>
+  <span class="streak">streak <b id="streak">0</b> · best <b id="best">0</b></span>
+</header>
+
+<div class="stepper" id="stepper"></div>
+
+<details class="concept" id="concept">
+  <summary>The idea</summary>
+  <div class="body" id="conceptBody"></div>
+</details>
+
+<pre class="fcast" id="fcast" hidden></pre>
+
+<section class="figbox" id="figbox" hidden>
+  <svg id="fig" viewBox="0 0 600 300" role="img" aria-label="Weather diagram"></svg>
+  <div class="legend" id="legend"></div>
+  <div class="note" id="fignote"></div>
+  <div class="legs" id="legs"></div>
+</section>
+
+<section class="q" aria-label="Question">
+  <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
+  <p class="prompt" id="prompt"></p>
+  <div class="givens" id="givens"></div>
+  <form class="answer" id="form" autocomplete="off">
+    <input id="ans" inputmode="numeric" aria-label="Your answer">
+    <span class="unit" id="unit"></span>
+    <div class="choices" id="choices" hidden></div>
+    <button class="btn" type="submit" id="check">Check</button>
+    <button class="btn ghost" type="button" id="skip">Show me</button>
+  </form>
+  <div class="feedback" id="fb" aria-live="polite"></div>
+  <div class="progress" id="progress"></div>
+</section>
+
+<details class="more" id="logbox">
+  <summary>Ship's log</summary>
+  <div class="body" id="logbody"></div>
+</details>
+
+<details class="more">
+  <summary>The rules, in one breath</summary>
+  <div class="body">
+    <h4>Beaufort</h4>
+    <table>
+      <tr><th>F</th><th>Knots</th><th>Name</th><th>At sea</th></tr>
+      <tr><td class="mono">3</td><td class="mono">7–10</td><td>Gentle breeze</td><td>Crests begin to break, scattered white horses</td></tr>
+      <tr><td class="mono">4</td><td class="mono">11–16</td><td>Moderate</td><td>Fairly frequent white horses</td></tr>
+      <tr><td class="mono">5</td><td class="mono">17–21</td><td>Fresh</td><td>Many white horses, some spray</td></tr>
+      <tr><td class="mono">6</td><td class="mono">22–27</td><td>Strong</td><td>Large waves, foam crests everywhere</td></tr>
+      <tr><td class="mono">7</td><td class="mono">28–33</td><td>Near gale</td><td>Sea heaps up, foam blown in streaks</td></tr>
+      <tr><td class="mono">8</td><td class="mono">34–40</td><td>Gale</td><td>Spindrift, well-marked streaks</td></tr>
+    </table>
+    <p>Forecast forces are the mean wind. Gusts are stronger.</p>
+    <h4>Forecast words</h4>
+    <p><b>Imminent</b> within 6 h of issue · <b>soon</b> 6–12 h · <b>later</b> more than 12 h. <b>Gale</b> F8 or gusts 43–51 kn · <b>severe gale</b> F9 or gusts 52–60 · <b>storm</b> F10 or gusts 61–68 · <b>violent storm</b> F11 or gusts 69+ · <b>hurricane force</b> F12.</p>
+    <p>Visibility: <b>good</b> more than 5 nm · <b>moderate</b> 2–5 nm · <b>poor</b> 1000 m – 2 nm · <b>very poor</b> less than 1000 m. Sea: smooth &lt;0.5 m · slight 0.5–1.25 · moderate 1.25–2.5 · rough 2.5–4 · very rough 4–6 · high 6–9 m.</p>
+    <h4>Veer and back</h4>
+    <p>Wind is named for where it blows <b>from</b>. <b>Veer</b> = clockwise (SW → W). <b>Back</b> = anticlockwise (SW → S). Directions in three figures, true: <span class="mono">270°T</span>.</p>
+    <h4>The glass, change in 3 h</h4>
+    <p><b>Slowly</b> 0.1–1.5 mb · plain <b>rising/falling</b> 1.6–3.5 · <b>quickly</b> 3.6–6.0 · <b>very rapidly</b> more than 6.0. Systems move <b>slowly</b> &lt;15 kn · <b>steadily</b> 15–25 · <b>rather quickly</b> 25–35 · <b>rapidly</b> 35–45 · <b>very rapidly</b> 45+. Long foretold, long last; short notice, soon past.</p>
+    <h4>Isobars and Buys Ballot</h4>
+    <p>Northern hemisphere: wind goes <b>anticlockwise round a low</b>, clockwise round a high, angled about 15° in towards the low over the sea. Close isobars, strong wind. <b>Back to the wind, low on your left.</b></p>
+    <h4>A depression passing north of you</h4>
+    <p>High cloud thickens, glass falls, wind backs and freshens. <b>Warm front</b>: steady rain, wind <b>veers</b>, glass steadies. <b>Warm sector</b>: mild, drizzle, poor visibility. <b>Cold front</b>: squalls, heavy rain, wind <b>veers sharply</b>, glass rises. Behind: showers, gusty northwesterly, good visibility.</p>
+    <h4>Fog and breezes</h4>
+    <p><b>Advection</b> fog: warm moist air over cold sea, spring and early summer, a breeze does not clear it. <b>Radiation</b> fog: clear calm night over land, burns off in the morning. <b>Sea breeze</b>: sunny day, onshore by afternoon, dies at sunset. Wind against tide: short steep seas.</p>
+    <h4>Keys</h4>
+    <p><kbd>Enter</kbd> checks, <kbd>Enter</kbd> again moves on. <kbd>1</kbd>–<kbd>4</kbd> pick an option. <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> change stage. Progress is saved in this browser.</p>
+  </div>
+</details>
+
+<footer class="site-foot"><span>Learn to Sail · open drills for the RYA syllabus</span><a href="../../">More tutorials</a></footer>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+// ?dev unlocks every stage without touching saved progress; ?dev&stage=5 opens stage 5
+const QS = new URLSearchParams(location.search), DEV = QS.has('dev');
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[rnd(0,a.length-1)];
+const hhmm = t => { const n = ((Math.round(t)%1440)+1440)%1440; return String(Math.floor(n/60)).padStart(2,'0') + String(n%60).padStart(2,'0'); };
+const dur = t => `${Math.floor(t/60)} h ${String(Math.round(t%60)).padStart(2,'0')} m`;
+const norm = d => ((d%360)+360)%360;
+const b3 = d => String(norm(Math.round(d))).padStart(3,'0') + '°T';
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const PTS = ['N','NE','E','SE','S','SW','W','NW'];
+const WORD = ['north','northeast','east','southeast','south','southwest','west','northwest'];
+const ADJ = ['northerly','northeasterly','easterly','southeasterly','southerly','southwesterly','westerly','northwesterly'];
+const pt = i => ((i%8)+8)%8;
+const ptOf = deg => pt(Math.round(norm(deg)/45));
+// a seeded rng, so a figure redrawn after the answer is the same picture
+const srng = seed => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+// ---- Beaufort, after the Met Office table. Mean wind in knots.
+const BF = [
+  ['Calm',0,0,'Sea like a mirror.'],
+  ['Light air',1,3,'Ripples like scales, no foam crests.'],
+  ['Light breeze',4,6,'Small wavelets, glassy crests that do not break.'],
+  ['Gentle breeze',7,10,'Large wavelets, crests begin to break, scattered white horses.'],
+  ['Moderate breeze',11,16,'Small waves growing longer, fairly frequent white horses.'],
+  ['Fresh breeze',17,21,'Moderate waves of a longer form, many white horses, chance of some spray.'],
+  ['Strong breeze',22,27,'Large waves begin to form, white foam crests everywhere, probably some spray.'],
+  ['Near gale',28,33,'Sea heaps up, and foam from breaking waves is blown in streaks along the wind.'],
+  ['Gale',34,40,'Moderately high waves of greater length, crests break into spindrift, foam in well-marked streaks.'],
+  ['Severe gale',41,47,'High waves, dense streaks of foam, crests topple and roll over, spray affects visibility.'],
+  ['Storm',48,55,'Very high waves with long overhanging crests, the sea takes on a white look, heavy tumbling.'],
+  ['Violent storm',56,63,'Exceptionally high waves, the sea covered in long white patches of foam.'],
+  ['Hurricane force',64,Infinity,'Air filled with foam and spray, sea completely white.'],
+].map(([name,lo,hi,sea],f) => ({f,name,lo,hi,sea}));
+const knR = f => f === 0 ? 'under 1 kn' : f === 12 ? '64 kn or more' : `${BF[f].lo}–${BF[f].hi} kn`;
+
+// ---- persistence
+const KEY = 'lts:weather:v1';
+let store = { streak:0, best:0, stages:{}, log:[], muted:false, seenConcept:{} };
+try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
+
+const STAGES = [
+  { id:'w1', kind:'drill', title:'Beaufort', mode:'beaufort',
+    intro:'Every forecast speaks in Beaufort forces, and every force has a number of knots and a look on the water. Learn the middle of the scale cold — Force 3 to 8 is where a Day Skipper decides to go, reef, or stay in.',
+    ex:'14 kn mean → Force 4, moderate, fairly frequent white horses\n“westerly 6” → 22–27 kn mean, and the gusts above that' },
+  { id:'w2', kind:'drill', title:'The forecast’s words', mode:'words',
+    intro:'The shipping and inshore forecasts use a fixed vocabulary, and each word has a definition. “Soon” is not a mood, it is six to twelve hours from the time of issue. Read the words as numbers.',
+    ex:'issued 0500, “gale 8 soon” → between 1100 and 1700\n“visibility poor” → 1000 m to 2 nm' },
+  { id:'w3', kind:'drill', title:'Veering and backing', mode:'veer',
+    intro:'A wind is named for where it comes from. When it shifts clockwise it veers, anticlockwise it backs. Forecasts say which, and that one word tells you whether the new wind will free you or head you.',
+    ex:'SW → W → NW: veering, clockwise\n230°T veers 50° → 280°T. Three figures, always' },
+  { id:'w4', kind:'drill', title:'The barometer', mode:'baro',
+    intro:'The glass is the only forecast you carry aboard. What matters is the change over three hours, and the forecast has a word for each band. The faster it moves, the sooner and harder the weather.',
+    ex:'1013.2 → 1008.8 mb in 3 h = 4.4 mb fall → falling quickly\nLong foretold, long last; short notice, soon past' },
+  { id:'w5', kind:'drill', title:'Isobars and Buys Ballot', mode:'syn',
+    intro:'On a synoptic chart the wind runs along the isobars: anticlockwise round a low, clockwise round a high, angled about 15° in towards the low over the sea. The closer the lines, the harder it blows. On deck, put your back to the wind and the low is on your left.',
+    ex:'east side of a low → wind from about south-southeast\nwind from SW, back to it → the low lies to the NW' },
+  { id:'w6', kind:'drill', title:'A depression passes', mode:'front',
+    intro:'The classic UK depression drags a warm front, a warm sector and a cold front over you, west to east. Each part has its own sky, wind and glass, in a fixed order. Know the order and the sky tells you what is next.',
+    ex:'cirrus → halo → rain, glass falling → warm front coming\nsquall, wind veers hard, glass jumps → cold front through' },
+  { id:'w7', kind:'drill', title:'Fog, breezes and the coast', mode:'local',
+    intro:'The forecast covers a whole sea area. The coast adds its own weather: fog that a breeze will not shift, a sea breeze that arrives every sunny afternoon, seas that stand up where wind meets tide.',
+    ex:'warm moist air over a cold sea → advection fog, stays in a breeze\nclear calm night → radiation fog off the river at dawn, gone by mid-morning' },
+  { id:'w8', kind:'passage', title:'Go or no go',
+    intro:'A real decision on a forecast. Decode the force, the timing, the shift and the glass, then choose: the far harbour, the near one, or a day ashore. Wrong reads show you where the boat is when the wind arrives. Three wrong and you meet it at sea.' },
+  { id:'w9', kind:'watch', title:'Forecast watch',
+    intro:'Twelve questions, everything mixed, sixty seconds each. That is the pace of the general paper. Run out of time and it counts against you.' },
+];
+const GATE = { drill:'6 of your last 8', passage:'make a safe call with at most one wrong read', watch:'12 questions, 60 seconds each, at most 1 wrong' };
+const WATCH_N = 12, WATCH_SECS = 60;
+for (const st of STAGES) store.stages[st.id] ??= { recent:[], done:false };
+
+// ---- sound
+let actx = null;
+function tone(seq){
+  if (store.muted) return;
+  try {
+    actx ??= new (window.AudioContext || window.webkitAudioContext)();
+    let t = actx.currentTime;
+    for (const [f, d, type] of seq) {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = type || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.12, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + 0.02); t += d * 0.7;
+    }
+  } catch(e) {}
+}
+const bell = () => tone([[1568,.35],[2093,.5]]);
+const thud = () => tone([[110,.25,'triangle'],[82,.35,'triangle']]);
+const fanfare = () => tone([[784,.18],[988,.18],[1175,.18],[1568,.5]]);
+const caught = () => tone([[220,.3,'sawtooth'],[185,.3,'sawtooth'],[147,.6,'sawtooth']]);
+
+// ---- svg helpers
+const T = (x,y,s,a='') => `<text x="${x.toFixed?x.toFixed(1):x}" y="${y.toFixed?y.toFixed(1):y}" ${a}>${s}</text>`;
+const arrowHead = (x,y,ang,c,sz=9) => { // ang: svg radians the arrow points along
+  const a1 = ang + 2.7, a2 = ang - 2.7;
+  return `<path d="M${x.toFixed(1)} ${y.toFixed(1)} L${(x+sz*Math.cos(a1)).toFixed(1)} ${(y+sz*Math.sin(a1)).toFixed(1)} L${(x+sz*Math.cos(a2)).toFixed(1)} ${(y+sz*Math.sin(a2)).toFixed(1)} Z" fill="${c}"/>`;
+};
+function setFig(vb, html, legend='', note=''){
+  const svg = $('fig'); svg.setAttribute('viewBox', vb); svg.innerHTML = html;
+  $('legend').innerHTML = legend; $('fignote').textContent = note;
+}
+
+// ---- the sea, drawn per force
+function drawSea(f, seed, show){
+  const R = srng(seed), W = 600, H = 220, base = 122;
+  const amp = [0,.6,1.5,4,7,11,15,20,25,30,35,40,44][f];
+  const lam = 46 + f*13, ph = R()*6.28, ph2 = R()*6.28;
+  const yAt = x => base - amp*Math.sin(2*Math.PI*x/lam + ph) - .35*amp*Math.sin(2*Math.PI*x/(lam*.43) + ph2);
+  const g = [`<rect x="0" y="0" width="${W}" height="${H}" fill="var(--paper)"/>`];
+  let d = `M0 ${H} `; for (let x = 0; x <= W; x += 3) d += `L${x} ${yAt(x).toFixed(1)} `; d += `L${W} ${H} Z`;
+  g.push(`<path d="${d}" fill="var(--deep)" stroke="var(--ink-3)" stroke-width="1"/>`);
+  if (f === 1) for (let i = 0; i < 26; i++) { const x = R()*W, y = base + 8 + R()*90; g.push(`<path d="M${x.toFixed(0)} ${y.toFixed(0)} q5 -3 10 0" fill="none" stroke="var(--ink-3)" stroke-width="1"/>`); }
+  if (f === 0) for (let i = 0; i < 5; i++) g.push(`<line x1="${(R()*W).toFixed(0)}" y1="${(base+15+R()*80).toFixed(0)}" x2="${(R()*W).toFixed(0)}" y2="${(base+15+R()*80).toFixed(0)}" stroke="var(--paper)" stroke-width="1" opacity=".6"/>`);
+  const frac = [0,0,0,.18,.42,.66,.86,1,1,1,1,1,1][f];
+  for (let x = 2; x < W; x += 2) {
+    if (yAt(x) < yAt(x-2) && yAt(x) <= yAt(x+2) && R() < frac) {
+      const y = yAt(x), w = 5 + f*2.2;
+      g.push(`<path d="M${(x-w).toFixed(1)} ${(y+2).toFixed(1)} Q${x} ${(y-3).toFixed(1)} ${(x+w).toFixed(1)} ${(y+2).toFixed(1)} Q${(x+w*.4).toFixed(1)} ${(y+5+f*.5).toFixed(1)} ${(x-w).toFixed(1)} ${(y+2).toFixed(1)} Z" fill="var(--foam)"/>`);
+      if (f >= 6) for (let k = 0; k < f-4; k++) g.push(`<circle cx="${(x+R()*w*1.6).toFixed(1)}" cy="${(y-3-R()*f*1.6).toFixed(1)}" r="${(0.8+R()).toFixed(1)}" fill="var(--foam)"/>`);
+    }
+  }
+  if (f >= 7) for (let i = 0; i < (f-6)*9; i++) { const x = R()*W, y = base + 4 + R()*95, l = 18 + R()*36; if (y > yAt(x) + 3) g.push(`<line x1="${x.toFixed(0)}" y1="${y.toFixed(0)}" x2="${(x+l).toFixed(0)}" y2="${(y+l*.04).toFixed(0)}" stroke="var(--foam)" stroke-width="${f>=9?2.2:1.5}" stroke-linecap="round" opacity=".9"/>`); }
+  if (f >= 9) g.push(`<rect x="0" y="0" width="${W}" height="${H}" fill="var(--foam)" opacity="${((f-8)*.09).toFixed(2)}"/>`);
+  // a pennant on a post: hangs limp in a calm, flies straight out by Force 5
+  const px = 58, top = 26, fh = 24, fl = 58, ang = Math.min(86, 4 + f*17) * Math.PI/180, flap = Math.min(4, f*.8);
+  const tx = px + fl*Math.sin(ang), ty = top + fh/2 + fl*Math.cos(ang);
+  g.push(`<line x1="${px}" y1="${top-4}" x2="${px}" y2="${base+10}" stroke="var(--ink)" stroke-width="3"/>`);
+  g.push(`<path d="M${px} ${top} Q${((px+tx)/2).toFixed(1)} ${((top+ty)/2 - flap).toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)} Q${((px+tx)/2).toFixed(1)} ${((top+fh+ty)/2 + flap).toFixed(1)} ${px} ${top+fh} Z" fill="var(--magenta)" opacity=".9"/>`);
+  g.push(T(W-8, 18, 'wind →', 'font-size="11" fill="var(--ink-3)" text-anchor="end"'));
+  if (show) g.push(T(W-8, H-10, `Force ${f} · ${BF[f].name}`, 'font-size="13" font-weight="600" fill="var(--ink)" text-anchor="end" font-family="IBM Plex Mono,monospace"'));
+  setFig(`0 0 ${W} ${H}`, g.join(''), '', show ? `Force ${f}, ${knR(f)}: ${BF[f].sea}` : 'Wind blowing left to right. Read the water, not the flag.');
+}
+
+// ---- the compass rose, for wind shifts
+function drawRose(F, show){
+  const cx = 300, cy = 150, r = 112, g = [];
+  const P = (b, rr) => [cx + rr*Math.sin(b*Math.PI/180), cy - rr*Math.cos(b*Math.PI/180)];
+  g.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--shallow)" stroke="var(--ink-2)" stroke-width="1.2"/>`);
+  for (let b = 0; b < 360; b += 10) { const [x1,y1] = P(b, r), [x2,y2] = P(b, r - (b%45===0?12:5)); g.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--ink-3)" stroke-width="1"/>`); }
+  PTS.forEach((p,i) => { const [x,y] = P(i*45, r+16); g.push(T(x, y+4, p, `font-size="${i%2?11:13}" font-weight="600" fill="var(--ink-2)" text-anchor="middle"`)); });
+  const wind = (b, c, lab) => {
+    const [x1,y1] = P(b, r+2), [x2,y2] = P(b, 30), a = Math.atan2(y2-y1, x2-x1);
+    const [lx,ly] = P(b, r-26);
+    return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${c}" stroke-width="3"/>` + arrowHead(x2, y2, a, c, 12) +
+      T(lx + 14*Math.cos(a+1.57), ly + 14*Math.sin(a+1.57) + 4, lab, `font-size="11" font-weight="600" fill="${c}" text-anchor="middle"`);
+  };
+  g.push(wind(F.from, 'var(--ink-2)', F.lab0 || 'now'));
+  if (F.to != null && (F.showTo || show)) {
+    g.push(wind(F.to, 'var(--magenta)', F.lab1 || 'later'));
+    let d = norm(F.to - F.from); if (d > 180) d -= 360;
+    if (show && d) {
+      const steps = 24, rr = 64; let path = '';
+      for (let i = 0; i <= steps; i++) { const [x,y] = P(F.from + d*i/steps, rr); path += (i?'L':'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' '; }
+      const [ex,ey] = P(F.to, rr), [px,py] = P(F.to - Math.sign(d)*4, rr);
+      g.push(`<path d="${path}" fill="none" stroke="var(--brass)" stroke-width="2"/>` + arrowHead(ex, ey, Math.atan2(ey-py, ex-px), 'var(--brass)', 10));
+    }
+  }
+  if (F.low != null && show) {
+    const [lx,ly] = P(F.low, 70), [hx,hy] = P(F.low+180, 70);
+    g.push(T(lx, ly+8, 'L', 'font-size="24" font-weight="700" fill="var(--bad)" text-anchor="middle" font-family="Libre Caslon Text,serif"'));
+    g.push(T(hx, hy+8, 'H', 'font-size="24" font-weight="700" fill="var(--focus)" text-anchor="middle" font-family="Libre Caslon Text,serif"'));
+  }
+  g.push(`<circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/>`);
+  const legend = `<span class="lim">${F.lab0 || 'now'}</span>` + (F.to != null && (F.showTo || show) ? `<span class="mg">${F.lab1 || 'later'}</span>` : '') + (show && F.to != null ? '<span class="wk">the shift</span>' : '');
+  setFig('0 0 600 300', g.join(''), legend, 'Arrows fly in from where the wind blows from. A wind is named for where it comes from.');
+}
+
+// ---- the barograph
+function drawBaro(B, show){
+  const x0 = 60, x1 = 540, y0 = 24, y1 = 220, hrs = 12;
+  const lo = Math.floor(Math.min(...B.pts) - 1), hi = Math.ceil(Math.max(...B.pts) + 1);
+  const X = h => x0 + (h + hrs)/hrs * (x1 - x0), Y = p => y1 - (p - lo)/(hi - lo) * (y1 - y0);
+  const g = [`<rect x="${x0}" y="${y0}" width="${x1-x0}" height="${y1-y0}" fill="var(--paper)" stroke="var(--ink-2)"/>`];
+  for (let p = lo; p <= hi; p++) { const step = hi - lo > 14 ? 2 : 1; if ((p - lo) % step) continue;
+    g.push(`<line x1="${x0}" y1="${Y(p).toFixed(1)}" x2="${x1}" y2="${Y(p).toFixed(1)}" stroke="var(--rule)" stroke-width=".6"/>`);
+    g.push(T(x0-6, Y(p)+3, p, 'font-size="9" fill="var(--ink-3)" text-anchor="end" font-family="IBM Plex Mono,monospace"')); }
+  for (let h = -hrs; h <= 0; h += 3) { g.push(`<line x1="${X(h)}" y1="${y0}" x2="${X(h)}" y2="${y1}" stroke="var(--rule)" stroke-width="${h===0?1.2:.6}"/>`);
+    g.push(T(X(h), y1+14, hhmm(B.now + h*60), 'font-size="10" fill="var(--ink-3)" text-anchor="middle" font-family="IBM Plex Mono,monospace"')); }
+  let d = ''; B.pts.forEach((p,i) => { d += (i?'L':'M') + X(-hrs + i*hrs/(B.pts.length-1)).toFixed(1) + ' ' + Y(p).toFixed(1) + ' '; });
+  g.push(`<path d="${d}" fill="none" stroke="var(--magenta)" stroke-width="2"/>`);
+  const pA = B.pts[B.pts.length-1-12], pN = B.pts[B.pts.length-1];
+  for (const [h,p] of [[-3,pA],[0,pN]]) { g.push(`<circle cx="${X(h)}" cy="${Y(p).toFixed(1)}" r="4" fill="var(--ink)"/>`);
+    g.push(T(X(h) + (h ? -8 : -8), Y(p) + (pN < pA ? (h ? -10 : 18) : (h ? 18 : -10)), p.toFixed(1), 'font-size="11" font-weight="600" fill="var(--ink)" text-anchor="end" font-family="IBM Plex Mono,monospace"')); }
+  if (show) g.push(`<path d="M${X(-3)} ${Y(pA).toFixed(1)} L${X(0)} ${Y(pA).toFixed(1)} L${X(0)} ${Y(pN).toFixed(1)}" fill="none" stroke="var(--brass)" stroke-width="2" stroke-dasharray="4 3"/>` +
+    T(X(0)+6, (Y(pA)+Y(pN))/2+4, `${pN<pA?'−':'+'}${Math.abs(pN-pA).toFixed(1)}`, 'font-size="12" font-weight="600" fill="var(--brass)" font-family="IBM Plex Mono,monospace"'));
+  g.push(T(x0, y1+30, 'mb', 'font-size="9" fill="var(--ink-3)" text-anchor="end"'));
+  setFig('0 0 600 240', g.join(''), show ? '<span class="mg">barograph trace</span><span class="wk">the 3-hour change</span>' : '<span class="mg">barograph trace</span>', 'The last twelve hours. Tendency is always the change over the last three.');
+}
+
+// ---- the synoptic chart: one system, isobars every 4 mb, closer on one side
+function rho(S, x, y){ const mx = x - S.cx, my = S.cy - y, r = Math.hypot(mx, my), th = Math.atan2(my, mx); return r / (S.s * (1 + S.e*Math.cos(th - S.phi))); }
+const pAt = (S, x, y) => S.p0 + (S.low ? 4 : -4) * rho(S, x, y);
+function windFrom(S, x, y){
+  const h = .5, gx = (pAt(S,x+h,y) - pAt(S,x-h,y))/(2*h), gy = -(pAt(S,x,y+h) - pAt(S,x,y-h))/(2*h); // math coords, y up
+  // geostrophic: low pressure on the left of the wind (NH), then 15° in towards the low
+  const a = 105 * Math.PI/180, vx = gx*Math.cos(a) - gy*Math.sin(a), vy = gx*Math.sin(a) + gy*Math.cos(a);
+  return norm(Math.atan2(-vx, -vy) * 180/Math.PI);
+}
+const ptAt = (S, k, th) => { const r = k * S.s * (1 + S.e*Math.cos(th - S.phi)); return [S.cx + r*Math.cos(th), S.cy - r*Math.sin(th)]; };
+const onChart = ([x,y]) => x > 40 && x < 560 && y > 34 && y < 300;
+function genSyn(minE){
+  const low = Math.random() < .65;
+  return { low, cx:rnd(220,380), cy:rnd(130,200), s:rnd(32,42), e:rnd(minE||12, 34)/100, phi:rnd(0,359)*Math.PI/180,
+    p0: low ? 4*rnd(244,250) : 4*rnd(256,259), pts:[] };
+}
+function drawSyn(S, show){
+  const g = [`<defs><clipPath id="synclip"><rect x="0" y="0" width="600" height="330"/></clipPath></defs><rect x="0" y="0" width="600" height="330" fill="var(--paper)"/><g clip-path="url(#synclip)">`];
+  for (let k = 1; k <= 9; k++) {
+    let d = ''; for (let a = 0; a <= 360; a += 4) { const [x,y] = ptAt(S, k, a*Math.PI/180); d += (a?'L':'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' '; }
+    g.push(`<path d="${d}Z" fill="none" stroke="var(--ink-2)" stroke-width="1.2"/>`);
+    for (const la of [S.phi + 2.4, S.phi - 2.4, S.phi + 1.2]) { const p = ptAt(S, k, la); if (onChart(p)) {
+      g.push(T(p[0], p[1]+4, S.p0 + (S.low?4:-4)*k, 'font-size="10" fill="var(--ink)" text-anchor="middle" font-family="IBM Plex Mono,monospace" paint-order="stroke" stroke="var(--paper)" stroke-width="4"')); break; } }
+  }
+  const hideCentre = S.hide && !show;
+  g.push(T(S.cx, S.cy+6, hideCentre ? '?' : (S.low ? 'L' : 'H'), `font-size="26" font-weight="700" fill="${hideCentre ? 'var(--ink-3)' : S.low ? 'var(--bad)' : 'var(--focus)'}" text-anchor="middle" font-family="Libre Caslon Text,serif"`));
+  if (!hideCentre) g.push(T(S.cx, S.cy+22, S.p0, 'font-size="10" fill="var(--ink-2)" text-anchor="middle" font-family="IBM Plex Mono,monospace"'));
+  for (const P of S.pts) {
+    g.push(`<circle cx="${P.x.toFixed(1)}" cy="${P.y.toFixed(1)}" r="5" fill="var(--magenta)" stroke="var(--paper)" stroke-width="2"/>`);
+    g.push(T(P.x+9, P.y-7, P.n, 'font-size="15" font-weight="700" fill="var(--magenta)" paint-order="stroke" stroke="var(--paper)" stroke-width="4"'));
+    if (show && P.wind) {
+      const b = windFrom(S, P.x, P.y) * Math.PI/180, L = 46, sx = P.x + L*Math.sin(b), sy = P.y - L*Math.cos(b);
+      g.push(`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${P.x.toFixed(1)}" y2="${P.y.toFixed(1)}" stroke="var(--brass)" stroke-width="2.5"/>` + arrowHead(P.x, P.y, Math.atan2(P.y-sy, P.x-sx), 'var(--brass)', 10));
+    }
+  }
+  g.push('</g>');
+  // a north arrow, because every direction answer depends on it
+  g.push(`<path d="M575 50 L569 66 L575 62 L581 66 Z" fill="var(--ink)"/>` + T(575, 44, 'N', 'font-size="11" font-weight="600" fill="var(--ink)" text-anchor="middle"'));
+  setFig('0 0 600 330', g.join(''), show && S.pts.some(p => p.wind) ? '<span class="wk">surface wind</span>' : '', 'Northern hemisphere. Isobars every 4 mb.');
+}
+
+// ---- the frontal depression, in plan, moving east
+const WF = [[250,58],[440,95],[535,300]], CF = [[250,58],[232,205],[115,300]];
+const qb = (P, t) => [0,1].map(i => (1-t)*(1-t)*P[0][i] + 2*(1-t)*t*P[1][i] + t*t*P[2][i]);
+const xAtY = (P, y) => { let best = null; for (let t = 0; t <= 1; t += .002) { const p = qb(P,t); if (!best || Math.abs(p[1]-y) < Math.abs(best[1]-y)) best = p; } return best[0]; };
+const TRACK = 236;
+const ZX = (() => { const w = xAtY(WF, TRACK), c = xAtY(CF, TRACK); return { A:Math.min(576, w+68), B:w, C:(w+c)/2, D:c, E:Math.max(26, c-70) }; })();
+function frontPath(P, kind){
+  let d = '', out = '';
+  for (let t = 0; t <= 1.0001; t += .02) { const p = qb(P,t); d += (t?'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ' '; }
+  const c = kind === 'warm' ? 'var(--bad)' : 'var(--focus)';
+  for (let t = .14; t < .97; t += .1) {
+    const p = qb(P,t), q = qb(P,t+.01), ux = q[0]-p[0], uy = q[1]-p[1], l = Math.hypot(ux,uy), u = [ux/l, uy/l];
+    let n = [-u[1], u[0]]; if (n[0] < 0) n = [-n[0], -n[1]];
+    if (kind === 'warm') { let s = ''; for (let a = 0; a <= 180; a += 20) { const r = a*Math.PI/180, x = p[0] + 7*(Math.cos(r)*u[0] + Math.sin(r)*n[0]), y = p[1] + 7*(Math.cos(r)*u[1] + Math.sin(r)*n[1]); s += (a?'L':'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' '; } out += `<path d="${s}Z" fill="${c}"/>`; }
+    else out += `<path d="M${(p[0]-7*u[0]).toFixed(1)} ${(p[1]-7*u[1]).toFixed(1)} L${(p[0]+7*u[0]).toFixed(1)} ${(p[1]+7*u[1]).toFixed(1)} L${(p[0]+11*n[0]).toFixed(1)} ${(p[1]+11*n[1]).toFixed(1)} Z" fill="${c}"/>`;
+  }
+  return `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.5"/>` + out;
+}
+function drawFront(F, show){
+  const g = [`<rect x="0" y="0" width="600" height="300" fill="var(--paper)"/>`];
+  let sector = ''; for (let t = 0; t <= 1.0001; t += .02) { const p = qb(WF,t); sector += (t?'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ' '; }
+  for (let t = 1; t >= -.0001; t -= .02) { const p = qb(CF,t); sector += 'L' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ' '; }
+  g.push(`<path d="${sector}Z" fill="var(--brass-soft)"/>`);
+  g.push(T(330, 170, 'warm sector', 'font-size="11" fill="var(--brass)" text-anchor="middle" font-style="italic"'));
+  // a few isobars round the low, kinked at the fronts
+  g.push(frontPath(WF, 'warm'), frontPath(CF, 'cold'));
+  g.push(T(228, 50, 'L', 'font-size="24" font-weight="700" fill="var(--bad)" text-anchor="middle" font-family="Libre Caslon Text,serif"'));
+  g.push(`<line x1="470" y1="30" x2="560" y2="30" stroke="var(--ink-2)" stroke-width="2"/>` + arrowHead(560, 30, 0, 'var(--ink-2)', 10) + T(470, 22, 'system moving east', 'font-size="11" fill="var(--ink-2)"'));
+  g.push(`<line x1="10" y1="${TRACK}" x2="590" y2="${TRACK}" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="4 4"/>`);
+  for (const k of 'ABCDE') {
+    const hot = F.pos === k && (!F.ask || show);
+    g.push(`<circle cx="${ZX[k].toFixed(1)}" cy="${TRACK}" r="${hot?13:10}" fill="${hot?'var(--magenta)':'var(--paper)'}" stroke="${hot?'var(--magenta)':'var(--ink-2)'}" stroke-width="1.5"/>`);
+    g.push(T(ZX[k], TRACK+5, k, `font-size="13" font-weight="700" fill="${hot?'var(--paper)':'var(--ink)'}" text-anchor="middle"`));
+  }
+  setFig('0 0 600 300', g.join(''), '<span class="wf">warm front (semicircles)</span><span class="cf">cold front (triangles)</span>',
+    'You are south of the centre. The system passes over you in the order A, B, C, D, E.');
+}
+
+// ---- question pools. Answer first; shuf() moves it.
+function shuf(q){
+  if (q.ansType !== 'choice') return q;
+  const order = q.choices.map((_,i) => i);
+  for (let i = order.length - 1; i > 0; i--) { const j = rnd(0,i); [order[i], order[j]] = [order[j], order[i]]; }
+  q.choices = order.map(i => q.choices[i]); q.target = order.indexOf(q.target);
+  return q;
+}
+const CQ = {
+  beaufort: [
+    ['A forecast of “Force 6” describes which wind?', ['The mean wind; gusts will be stronger','The strongest gust expected','The wind in the lulls','The wind at the masthead only'], 'forecast forces are mean winds — expect gusts well above'],
+    ['In a UK forecast, what does “hurricane force” mean?', ['Force 12, 64 kn or more — not a tropical hurricane','A tropical cyclone has reached British waters','Any wind above Force 10','Gusts of 50 kn or more'], 'the Met Office says hurricane force; a hurricane is a tropical cyclone'],
+    ['White horses first become fairly frequent at about which force?', ['Force 4','Force 2','Force 6','Force 8'], 'F3 scattered, F4 fairly frequent, F5 many'],
+    ['Foam starts to blow in streaks along the wind at which force?', ['Force 7','Force 4','Force 5','Force 10'], 'near gale: the sea heaps up and the foam streaks'],
+    ['Why do many cruising crews call Force 6 a “yachtsman’s gale”?', ['22–27 kn is where a small cruiser is hard work and needs a reef or two','It is the legal limit for yachts','The Coastguard issues a gale warning at Force 6','Yachts cannot sail in Force 6'], 'not a warning, a working limit — know your crew’s'],
+  ],
+  words: [
+    ['In a forecast, what does “soon” mean?', ['6 to 12 hours from the time of issue','Within 6 hours of the time of issue','More than 12 hours from the time of issue','Within the hour'], 'imminent < 6 h, soon 6–12 h, later > 12 h — all from issue time'],
+    ['In a forecast, what does “imminent” mean?', ['Within 6 hours of the time of issue','Within the hour','6 to 12 hours from the time of issue','Already blowing'], 'imminent < 6 h, soon 6–12 h, later > 12 h'],
+    ['“Becoming cyclonic” in a sea-area forecast means what?', ['The wind will change direction a lot as a depression crosses the area','A tropical cyclone is approaching','The wind will rise to hurricane force','The wind will blow clockwise'], 'a low crossing the area: the direction depends on where you are in it'],
+    ['What does an inshore waters forecast give you for each stretch of coast?', ['Wind, sea state, weather and visibility','Wind and visibility only','Tidal heights and streams','Pressure readings from coastal stations'], 'wind, sea state, weather, visibility'],
+    ['Gusts reach 45 kn though the mean wind is Force 7. Is a gale warning issued?', ['Yes — gusts of 43–51 kn count as a gale','No — only the mean wind counts','No — a warning needs Force 9','Only if the visibility is poor'], 'gale: Force 8, or gusts reaching 43–51 kn'],
+  ],
+  veer: [
+    ['A “southwesterly” wind blows which way?', ['From the southwest, towards the northeast','Towards the southwest','Along the southwest coast','From the south, then the west'], 'winds are named for where they blow from'],
+    ['Which word describes a wind shifting clockwise?', ['Veering','Backing','Freshening','Cyclonic'], 'veer clockwise, back anticlockwise'],
+    ['The wind backs. On a compass card it moves which way?', ['Anticlockwise, e.g. SW to S','Clockwise, e.g. SW to W','It drops in strength','It reverses direction'], 'back = anticlockwise, SE to NE'],
+    ['Why do directions get written as three figures, like 060°T?', ['So 60, 600 and 006 cannot be confused or misheard','Because the exam requires decimals','It shows the wind speed too','It is only for compass courses'], 'three figures and a suffix, every time'],
+  ],
+  baro: [
+    ['“Long foretold, long last; short notice, soon past.” What does it tell you?', ['A slow, steady fall brings long-lasting weather; a sudden fall brings a short, sharp blow','The forecast is always late','Long passages are safer than short ones','High pressure lasts longer than low'], 'the rate of change hints at the size and speed of what is coming'],
+    ['The station report says “now falling”. What does that mean?', ['It was rising or steady, and is now definitely falling','It has fallen for more than 3 hours','It fell more than 6 mb in 3 hours','It is falling slowly'], 'a turn in the tendency at the time of observation'],
+    ['The glass is high and steady for days. What weather do you expect?', ['Settled, light winds, perhaps haze or fog','Gales and heavy rain','Squally showers','A cold front within hours'], 'a high: settled, light, can be persistent'],
+    ['What is the useful number on a barometer?', ['The change over the last three hours','The reading itself, against 1013','The highest reading that day','The reading at midnight'], 'tendency, not level'],
+    ['The glass rises sharply just after a low has passed. What does lore say?', ['First rise after low foretells a stronger blow — watch for squalls','The bad weather is over','The warm front is coming','Fog is on the way'], 'the cold front and the gusty air behind it'],
+  ],
+  syn: [
+    ['In the northern hemisphere, which way does the wind blow round a low?', ['Anticlockwise, angled slightly in towards the centre','Clockwise, angled out','Straight in towards the centre','Anticlockwise, angled out'], 'low anticlockwise and in; high clockwise and out'],
+    ['Isobars close together on the chart mean what?', ['Strong wind','Light wind','Rain','High pressure'], 'tight isobars, strong wind'],
+    ['Why is the surface wind over the sea not exactly along the isobars?', ['Friction turns it about 15° in towards the low pressure','It always blows straight to the low','The tide drags it','The Earth’s rotation stops at the surface'], 'friction: about 15° over sea, more over land'],
+  ],
+  front: [
+    ['Cirrus thickens into a milky sheet with a halo round the sun. What is coming?', ['A warm front, with rain within hours','A cold front and squalls','A high and fine weather','Radiation fog'], 'high cloud thickening and lowering is the first sign'],
+    ['“Mares’ tails and mackerel scales make tall ships carry low sails.” What does it warn of?', ['High cloud ahead of a depression: wind and rain on the way','Fog by morning','A sea breeze in the afternoon','Settled weather for days'], 'cirrus and cirrocumulus run ahead of the warm front'],
+    ['A tall cumulonimbus with an anvil top is upwind. What do you prepare for?', ['Squalls, heavy rain, perhaps hail and thunder','Steady drizzle','Fog','A long calm'], 'reef before it arrives, not as it does'],
+    ['What is an occlusion?', ['The cold front catching the warm front and lifting the warm sector off the surface','Two highs meeting','The warm front overtaking the cold front','A front that has stopped moving'], 'the cold front is faster and catches up'],
+    ['A depression’s centre passes to the south of you. What does the wind do?', ['Backs steadily, e.g. east through northeast to north — no warm sector','Veers at each front as usual','Stays in the southwest','Drops to calm'], 'north of the track you miss the fronts and the wind backs'],
+    ['Which way do Atlantic depressions usually track across the UK?', ['Roughly west to east, often northeastwards','East to west','South to north','They do not move'], 'the westerlies carry them'],
+  ],
+  local: [
+    ['Spring. A warm, moist southwesterly blows over a cold sea, Force 4, and visibility drops to 300 m. Which fog, and will it clear?', ['Advection fog — the breeze will not clear it','Radiation fog — it will burn off by mid-morning','Sea smoke — it clears as the wind rises','Haze — it is dust and harmless'], 'warm moist air cooled from below by the sea'],
+    ['A clear, calm autumn night. At dawn the river mouth is thick with fog. Which fog, and what next?', ['Radiation fog — it formed over land and usually burns off in the morning','Advection fog — it will last for days','Frontal fog — rain is coming','Sea fog — it will spread inland'], 'land cools under clear skies, the fog drifts out of the river'],
+    ['A sunny summer morning with a light gradient wind. What happens on the coast by the afternoon?', ['An onshore sea breeze fills in, often Force 3–4, and dies around sunset','An offshore land breeze builds','Fog forms over the land','The wind backs into the east whatever the gradient'], 'land heats, air rises, sea air flows in under it'],
+    ['What drives a sea breeze?', ['The land heats faster than the sea, air rises over it and sea air flows in','The tide coming in','The sea warming faster than the land','Pressure falling at sea'], 'a temperature difference, so it needs sun'],
+    ['At night, near the shore, which way does a light local breeze blow?', ['Offshore — a land breeze','Onshore — a sea breeze','Along the coast','There is never any wind at night'], 'the land cools faster than the sea after dark'],
+    ['Force 5 blows against a spring tide off a headland. What do you get?', ['Short, steep, breaking seas, worse in the race','A flatter sea than usual','Less wind than forecast','Fog'], 'wind against tide shortens and steepens the waves'],
+    ['Why expect more wind than forecast off a headland or through a gap?', ['The wind accelerates round headlands and funnels through gaps','The forecast ignores the sea','Headlands make their own sea breeze','Cliffs reflect the tide'], 'plan the reef before the headland'],
+    ['Where do you hear Maritime Safety Information on VHF?', ['Coastguard broadcasts on a working channel, announced first on Ch 16','Ch 16 itself, read in full','Ch 70 only','Only on Navtex'], 'listen to the Ch 16 announcement, then switch'],
+    ['What is Navtex?', ['A receiver that prints forecasts and safety warnings, on 518 kHz in English','A VHF channel for weather','A barometer that logs to a chart','The name of the inshore forecast'], 'MSI as text, automatically, at sea'],
+  ],
+};
+const CONCEPT_RULE = {
+  beaufort:'Forces are mean winds over ten minutes. Learn Force 3 to 8 cold: 7, 11, 17, 22, 28, 34 kn are the doors between them.',
+  words:'Imminent within 6 h, soon 6–12 h, later beyond 12 h — counted from the time of issue, not from when you heard it.',
+  veer:'Named for where it comes from. Veer clockwise, back anticlockwise. Three figures and a T.',
+  baro:'Tendency is the change over three hours. The faster the change, the sooner and the harder.',
+  syn:'Northern hemisphere: back to the wind, low on your left. Anticlockwise round a low, about 15° in over the sea.',
+  front:'Warm front: rain, wind veers. Warm sector: drizzle, murk. Cold front: squalls, veers hard, glass jumps. Behind: showers and sunshine.',
+  local:'Advection fog stays in a breeze; radiation fog burns off. Sea breeze by day onshore, land breeze by night offshore.',
+};
+function conceptQ(mode){
+  const [p, c, why] = pick(CQ[mode]);
+  return { qtype:'The idea behind it', prompt:p, givens:[], ansType:'choice', choices:c.slice(), target:0,
+    steps:[[c[0].split(' — ')[0], why, '']], rule:CONCEPT_RULE[mode] };
+}
+function choicesNear(list, i, n=4){ // the right one plus its neighbours, never out of range
+  const idx = [i]; for (let d = 1; idx.length < n; d++) { if (list[i+d] !== undefined) idx.push(i+d); if (idx.length < n && list[i-d] !== undefined) idx.push(i-d); }
+  return idx;
+}
+
+const B = {};
+B.beaufort = () => {
+  if (Math.random() < .16) return conceptQ('beaufort');
+  const v = rnd(0,4), f = v === 3 ? rnd(2,9) : rnd(1,10), b = BF[f], fig = { k:'sea', f, seed:rnd(1,1e6) };
+  if (v === 0) { const kn = rnd(b.lo, b.hi); return { qtype:'Knots → force', prompt:`The wind averages ${kn} kn over ten minutes. What force is that?`, givens:[['Mean wind', kn+' kn', true]],
+    ansType:'force', target:f, fig, steps:[[kn+' kn', `sits in ${knR(f)}`, `Force ${f}, ${b.name.toLowerCase()}`]],
+    rule:'The doors to remember: 7, 11, 17, 22, 28, 34 kn open Forces 3 to 8.' }; }
+  if (v === 1) { const ix = choicesNear(BF.slice(1,12), f-1).map(i => i+1);
+    return { qtype:'Force → knots', prompt:`The forecast gives Force ${f}. What mean wind is that?`, givens:[], ansType:'choice',
+      choices:ix.map(knR), target:0, fig, steps:[[`Force ${f}`, b.name.toLowerCase(), knR(f)]],
+      rule:'The top of a force is one less than the start of the next. Plan for the top of the range, then add the gusts.' }; }
+  if (v === 2) { const ix = choicesNear(BF, f);
+    return { qtype:'Force → name', prompt:`What is the Beaufort name for Force ${f}?`, givens:[], ansType:'choice',
+      choices:ix.map(i => BF[i].name), target:0, fig, steps:[[`Force ${f}`, knR(f), b.name]],
+      rule:'Moderate 4, fresh 5, strong 6, near gale 7, gale 8. The names are the forecast’s words.' }; }
+  if (v === 3) return { qtype:'Sea → force', prompt:`You look out and see: “${b.sea}” What force is it?`, givens:[],
+    ansType:'force', target:f, tol:0, fig, steps:[['the sea', b.sea.toLowerCase().replace(/\.$/,''), `Force ${f}`]],
+    rule:'White horses scattered at 3, fairly frequent at 4, many at 5. Streaks of foam mean 7 or more.' };
+  return { qtype:'Top of the force', prompt:`The forecast says “${pick(['westerly','southwest','northerly','easterly'])} ${f}”. What is the top of that mean wind, in knots?`, givens:[['Forecast', `Force ${f}`, true]],
+    ansType:'kn', target:b.hi, tol:0, fig, steps:[[`Force ${f}`, knR(f), `plan for ${b.hi} kn, gusts more`]],
+    rule:'Plan for the top of the forecast force, then expect gusts of about half as much again in squally air.' };
+};
+
+const VIS = [['Good','more than 5 nm',()=>pick(['6 nm','8 nm','10 nm'])],['Moderate','2 to 5 nm',()=>pick(['3 nm','4 nm','2.5 nm'])],['Poor','1000 m to 2 nm',()=>pick(['1.5 nm','1 nm','1500 m'])],['Very poor','less than 1000 m',()=>pick(['400 m','200 m','800 m'])]];
+const SEA = [['Smooth','under 0.5 m',0.3],['Slight','0.5 to 1.25 m',1],['Moderate','1.25 to 2.5 m',2],['Rough','2.5 to 4 m',3],['Very rough','4 to 6 m',5],['High','6 to 9 m',7.5]];
+const GALE = [['Gale',8,'43–51'],['Severe gale',9,'52–60'],['Storm',10,'61–68'],['Violent storm',11,'69 or more']];
+B.words = () => {
+  if (Math.random() < .16) return conceptQ('words');
+  const v = rnd(0,4);
+  if (v === 0) {
+    const I = pick([5,6,11,12,17,18,23,0]) * 60, w = pick(['imminent','soon','later']), what = pick(['gale 8','severe gale 9','southwest 7']);
+    const end = w === 'soon' && Math.random() < .5;
+    const target = I + (w === 'imminent' ? 360 : w === 'soon' ? (end ? 720 : 360) : 720);
+    const ask = w === 'imminent' ? 'By what time is it expected?' : w === 'soon' ? (end ? 'By what time, at the latest, is it expected?' : 'From what time is it expected?') : 'Not before what time?';
+    return { qtype:'Timing words', prompt:`A forecast issued at ${hhmm(I)} says “${what} ${w}”. ${ask}`, givens:[['Issued', hhmm(I)],['Word', w, true]],
+      ansType:'time', target:target%1440, tol:0, steps:[[w, w==='imminent'?'within 6 h of issue':w==='soon'?'6 to 12 h after issue':'more than 12 h after issue', ''],[hhmm(I), `+ ${(target-I)/60} h`, hhmm(target)]],
+      rule:'Count from the time of issue, not from when you heard it. A forecast heard at noon may be seven hours old.' };
+  }
+  if (v === 1) {
+    const i = rnd(0,3), g = GALE[i];
+    if (Math.random() < .5) return { qtype:'Warnings', prompt:`Force ${g[1]}, or gusts reaching ${g[2]} kn. What does the forecast call it?`, givens:[], ansType:'choice',
+      choices:GALE.map(x => x[0]), target:i, steps:[[`Force ${g[1]}`, `or gusts ${g[2]} kn`, g[0]]], rule:'Gale 8, severe gale 9, storm 10, violent storm 11, hurricane force 12 — each one force, or the gusts that go with it.' };
+    return { qtype:'Warnings', prompt:`A “${g[0].toLowerCase()}” warning means a mean wind of at least which force?`, givens:[], ansType:'force', target:g[1],
+      steps:[[g[0], `Force ${g[1]}, ${knR(g[1])}`, `or gusts ${g[2]} kn`]], rule:'Gale 8, severe gale 9, storm 10, violent storm 11, hurricane force 12.' };
+  }
+  if (v === 2) {
+    const i = rnd(0,3), s = VIS[i];
+    if (Math.random() < .5) { const dist = s[2](); return { qtype:'Visibility', prompt:`You can see about ${dist}. Which forecast word fits?`, givens:[['Visibility', dist, true]], ansType:'choice',
+      choices:VIS.map(x => x[0]), target:i, steps:[[dist, s[1], s[0]]], rule:'Good beyond 5 nm, moderate 2–5 nm, poor 1000 m to 2 nm, very poor under 1000 m.' }; }
+    return { qtype:'Visibility', prompt:`The forecast says visibility “${s[0].toLowerCase()}”. How far can you expect to see?`, givens:[], ansType:'choice',
+      choices:VIS.map(x => x[1]), target:i, steps:[[s[0], s[1], '']], rule:'Good beyond 5 nm, moderate 2–5 nm, poor 1000 m to 2 nm, very poor under 1000 m.' };
+  }
+  if (v === 3) {
+    const i = rnd(0,5), s = SEA[i], ix = choicesNear(SEA, i);
+    if (Math.random() < .5) return { qtype:'Sea state', prompt:`Waves are about ${s[2]} m high. Which sea-state word fits?`, givens:[['Wave height', s[2]+' m', true]], ansType:'choice',
+      choices:ix.map(k => SEA[k][0]), target:0, steps:[[s[2]+' m', s[1], s[0]]], rule:'Smooth, slight, moderate, rough, very rough, high: 0.5, 1.25, 2.5, 4, 6, 9 m are the doors.' };
+    return { qtype:'Sea state', prompt:`The forecast gives the sea as “${s[0].toLowerCase()}”. What wave height is that?`, givens:[], ansType:'choice',
+      choices:ix.map(k => SEA[k][1]), target:0, steps:[[s[0], s[1], '']], rule:'Smooth, slight, moderate, rough, very rough, high: 0.5, 1.25, 2.5, 4, 6, 9 m are the doors.' };
+  }
+  return conceptQ('words');
+};
+
+B.veer = () => {
+  if (Math.random() < .14) return conceptQ('veer');
+  const v = rnd(0,3), d0 = rnd(0,7), steps = pick([1,2,3]) * (Math.random() < .5 ? 1 : -1), d1 = pt(d0 + steps);
+  const turn = steps > 0 ? 'veered' : 'backed';
+  if (v === 0) return { qtype:'Veer or back?', prompt:`The wind was ${WORD[d0]}. It is now ${WORD[d1]}. Has it veered or backed?`, givens:[],
+    ansType:'choice', choices:['Veered — it went clockwise','Backed — it went anticlockwise'], target:steps > 0 ? 0 : 1,
+    fig:{ k:'rose', from:d0*45, to:d1*45, showTo:true, lab0:'was', lab1:'now' },
+    steps:[[PTS[d0]+' → '+PTS[d1], `the short way round is ${steps>0?'clockwise':'anticlockwise'}`, turn]], rule:'Veer clockwise, back anticlockwise. Picture it on the compass card, from where it was to where it is.' };
+  if (v === 1) { const ang = Math.abs(steps)*45, w = steps > 0 ? 'veers' : 'backs';
+    const wrong = pt(d0 - steps);
+    return { qtype:'Where does it end up?', prompt:`The wind is ${WORD[d0]}. It ${w} ${ang}°. Where does it come from now?`, givens:[],
+      ansType:'choice', choices:[cap(WORD[d1]), cap(WORD[wrong]), cap(WORD[pt(d1+4)]), cap(WORD[pt(d0+4)])].filter((x,i,a) => a.indexOf(x) === i),
+      target:0, fig:{ k:'rose', from:d0*45, to:d1*45 },
+      steps:[[PTS[d0], `${w} ${ang}°, ${steps>0?'clockwise':'anticlockwise'}`, PTS[d1]]], rule:'Turn the way the word says, then name the wind for where it now comes from — not where it is blowing to.' }; }
+  if (v === 2) { const from = rnd(0,35)*10, by = rnd(2,9)*10 * (Math.random() < .5 ? 1 : -1), to = norm(from + by);
+    return { qtype:'In degrees', prompt:`The wind is from ${b3(from)}. It ${by>0?'veers':'backs'} ${Math.abs(by)}°. What is the new direction?`, givens:[['Now', b3(from)],[by>0?'Veers':'Backs', Math.abs(by)+'°', true]],
+      ansType:'brg', target:to, tol:0, unit:'°T', fig:{ k:'rose', from, to },
+      steps:[[b3(from), `${by>0?'+':'−'} ${Math.abs(by)}° (${by>0?'veer adds':'back subtracts'})`, b3(to)]], rule:'Veer adds, back subtracts, and wrap through 360. Three figures and the T, every time.' }; }
+  const w = steps > 0 ? 'veering' : 'backing', f0 = rnd(3,5);
+  const path = [d0]; for (let i = 1; i <= Math.abs(steps); i++) path.push(pt(d0 + Math.sign(steps)*i));
+  const lng = [d0]; for (let i = 1; i <= 8 - Math.abs(steps); i++) lng.push(pt(d0 - Math.sign(steps)*i));
+  return { qtype:'Read the forecast', prompt:`“${cap(WORD[d0])} ${f0}, ${w} ${WORD[d1]} ${f0+1} later.” What does the wind do?`, givens:[],
+    ansType:'choice', choices:[`Swings ${steps>0?'clockwise':'anticlockwise'}: ${path.map(i=>PTS[i]).join(' → ')}`, `Swings ${steps>0?'anticlockwise':'clockwise'}: ${lng.map(i=>PTS[i]).join(' → ')}`, `Ends up blowing from the ${WORD[pt(d1+4)]}`],
+    target:0, fig:{ k:'rose', from:d0*45, to:d1*45 }, steps:[[w, steps>0?'clockwise':'anticlockwise', path.map(i=>PTS[i]).join(' → ')]],
+    rule:'The forecast word gives the direction of the swing; the compass point names where the new wind comes from.' };
+};
+
+const TEND = [['slowly',0.1,1.5],['',1.6,3.5],['quickly',3.6,6.0],['very rapidly',6.0,9.0]];
+const MOVE = [['Slowly','less than 15 kn',0,15],['Steadily','15 to 25 kn',15,25],['Rather quickly','25 to 35 kn',25,35],['Rapidly','35 to 45 kn',35,45],['Very rapidly','more than 45 kn',45,60]];
+const tendName = (i, up) => `${up?'Rising':'Falling'}${TEND[i][0] ? ' '+TEND[i][0] : ''}`;
+function genBaro(i, up){
+  const lo = TEND[i][1] + .2, hi = TEND[i][2] - .2, ch = Math.round((lo + Math.random()*(hi-lo))*10)/10;
+  const now = rnd(170,330)*30, pN = Math.round((rnd(995,1022) + Math.random())*10)/10, sgn = up ? 1 : -1;
+  const pts = [], slope0 = sgn*ch/3*(.2 + Math.random()*.6);
+  for (let k = 0; k <= 48; k++) { const h = -12 + k*.25; // quarter-hour samples
+    pts.push(h >= -3 ? pN + sgn*ch*(h/3) : pN - sgn*ch + slope0*(h+3) + (Math.random()-.5)*.08); }
+  pts[48] = pN; pts[36] = Math.round((pN - sgn*ch)*10)/10;
+  return { now, pts, ch, pN, pA:pts[36], i, up };
+}
+B.baro = () => {
+  if (Math.random() < .16) return conceptQ('baro');
+  const v = rnd(0,3);
+  if (v <= 1) {
+    const i = rnd(0,3), up = Math.random() < .35, Bo = genBaro(i, up), fig = { k:'baro', B:Bo };
+    if (v === 0) return { qtype:'Read the barograph', prompt:`How much has the pressure changed in the last three hours?`, givens:[['At '+hhmm(Bo.now-180), Bo.pA.toFixed(1)+' mb'],['At '+hhmm(Bo.now), Bo.pN.toFixed(1)+' mb', true]],
+      ansType:'mb', target:Bo.ch, tol:.15, unit:'mb', fig, steps:[[Bo.pA.toFixed(1)+' mb', `${up?'to':'down to'} ${Bo.pN.toFixed(1)} mb`, `${up?'rise':'fall'} of ${Bo.ch.toFixed(1)} mb in 3 h`]],
+      rule:'Always the last three hours. Write the size and the sign — a fall is the one that matters at sea.' };
+    return { qtype:'Name the tendency', prompt:`At ${hhmm(Bo.now-180)} the barometer read ${Bo.pA.toFixed(1)} mb. Now, at ${hhmm(Bo.now)}, it reads ${Bo.pN.toFixed(1)} mb. What is the tendency?`, givens:[],
+      ansType:'choice', choices:[0,1,2,3].map(k => tendName(k, up)), target:i, fig,
+      steps:[[`${Bo.ch.toFixed(1)} mb`, `in 3 h, inside ${TEND[i][1]}–${i===3?'∞':TEND[i][2]} mb`, tendName(i, up).toLowerCase()]],
+      rule:'Slowly up to 1.5 mb, plain up to 3.5, quickly up to 6.0, very rapidly beyond. A fall of 6 mb in 3 h means a blow is close.' };
+  }
+  if (v === 2) { const i = rnd(0,4), m = MOVE[i];
+    if (Math.random() < .5) return { qtype:'Speed of systems', prompt:`The synopsis says a low is moving “${m[0].toLowerCase()}”. How fast is that?`, givens:[], ansType:'choice',
+      choices:MOVE.map(x => x[1]), target:i, steps:[[m[0], m[1], '']], rule:'Slowly under 15 kn, steadily 15–25, rather quickly 25–35, rapidly 35–45, very rapidly beyond.' };
+    const kn = rnd(m[2]+2, m[3]-2);
+    return { qtype:'Speed of systems', prompt:`A low is moving at ${kn} kn. Which word will the synopsis use?`, givens:[], ansType:'choice',
+      choices:MOVE.map(x => x[0]), target:i, steps:[[kn+' kn', m[1], m[0].toLowerCase()]], rule:'Slowly under 15 kn, steadily 15–25, rather quickly 25–35, rapidly 35–45, very rapidly beyond.' }; }
+  const i = rnd(1,3), m = MOVE[i], h = rnd(6,16), D = m[3]*h;
+  return { qtype:'How long have I got?', prompt:`A low ${D} nm to the west is moving east “${m[0].toLowerCase()}”. At the top of that speed, how many hours until it reaches you?`, givens:[['Distance', D+' nm'],['Moving', m[0].toLowerCase(), true]],
+    ansType:'h', target:h, tol:.3, unit:'h', steps:[[m[0], m[1], `top speed ${m[3]} kn`],[D+' nm', `÷ ${m[3]} kn`, h+' h']],
+    rule:'Plan on the fast end of the word. Lows rarely arrive late on purpose.' };
+};
+
+B.syn = () => {
+  if (Math.random() < .12) return conceptQ('syn');
+  const v = rnd(0,4);
+  if (v === 0) { // wind at a point
+    for (let t = 0; t < 200; t++) {
+      const S = genSyn(), k = 1.4 + Math.random()*2.2, th = Math.random()*6.283, [x,y] = ptAt(S, k, th);
+      if (!onChart([x,y])) continue;
+      const w = windFrom(S, x, y), off = Math.abs(norm(w + 22.5) % 45 - 22.5); if (off > 13) continue;
+      const d = ptOf(w); S.pts = [{ n:'A', x, y, wind:true }];
+      return { qtype:'Wind from the chart', prompt:`Where is the wind at A coming from?`, givens:[], ansType:'choice',
+        choices:[d, pt(d+4), pt(d+2), pt(d-2)].map(i => cap(WORD[i])), target:0, fig:{ k:'syn', S },
+        steps:[[S.low ? 'Low' : 'High', S.low ? 'anticlockwise round it' : 'clockwise round it', 'along the isobar at A'],['about 15°', S.low ? 'in towards the low' : 'out from the high', `from the ${WORD[d]} (${b3(Math.round(w/5)*5)})`]],
+        rule:'Northern hemisphere: anticlockwise round a low, clockwise round a high, a little in towards the low. Then name it for where it comes from.' };
+    }
+  }
+  if (v === 1) { // Buys Ballot
+    const d = rnd(0,7), low = Math.random() < .7, ans = pt(d + (low ? 2 : -2));
+    return { qtype:'Buys Ballot', prompt:`The wind is from the ${WORD[d]}. You stand with your back to it. In which direction is the ${low?'low':'high'}?`, givens:[['Wind from', PTS[d], true]],
+      ansType:'choice', choices:[ans, pt(ans+4), d, pt(d+4)].map(i => cap(WORD[i])), target:0, fig:{ k:'rose', from:d*45, low:pt(d+2)*45, lab0:'wind' },
+      steps:[['back to the '+PTS[d], `facing ${PTS[pt(d+4)]}`, `low on your left: ${PTS[pt(d+2)]}, high on your right: ${PTS[pt(d-2)]}`]],
+      rule:'Back to the wind, low on your left — northern hemisphere. Slightly ahead of your left hand, because the wind is angled in.' };
+  }
+  if (v === 2) { // pressure at a point
+    for (let t = 0; t < 200; t++) {
+      const S = genSyn(), k = rnd(2,6)/2, th = Math.random()*6.283, [x,y] = ptAt(S, k, th);
+      if (!onChart([x,y])) continue;
+      S.pts = [{ n:'A', x, y }];
+      const p = S.p0 + (S.low ? 4 : -4)*k;
+      return { qtype:'Read the isobars', prompt:`What is the pressure at A?`, givens:[], ansType:'mb', target:p, tol:1, unit:'mb', fig:{ k:'syn', S },
+        steps:[[k % 1 ? 'between two isobars' : 'on an isobar', k % 1 ? `${p-2} and ${p+2}, halfway` : 'read its label', `${p} mb`]],
+        rule:'Isobars every 4 mb. Halfway between two lines is 2 mb off each.' };
+    }
+  }
+  if (v === 3) { // stronger wind
+    for (let t = 0; t < 200; t++) {
+      const S = genSyn(26), k = 2.5, pT = ptAt(S, k, S.phi + Math.PI), pL = ptAt(S, k, S.phi);
+      if (!onChart(pT) || !onChart(pL)) continue;
+      const aTight = Math.random() < .5;
+      S.pts = [{ n:'A', x:(aTight?pT:pL)[0], y:(aTight?pT:pL)[1] }, { n:'B', x:(aTight?pL:pT)[0], y:(aTight?pL:pT)[1] }];
+      return { qtype:'Where is it windier?', prompt:`Where is the wind stronger, A or B?`, givens:[], ansType:'choice',
+        choices:['A','B','The same at both'], target:aTight ? 0 : 1, fig:{ k:'syn', S },
+        steps:[[aTight?'A':'B', 'the isobars are closer together', 'steeper pressure gradient, stronger wind']], rule:'Tight isobars, strong wind. The gradient, not the pressure, makes the wind.' };
+    }
+  }
+  // low or high, centre hidden
+  const S = genSyn(); S.hide = true; S.pts = [];
+  return { qtype:'Low or high?', prompt:`The centre is hidden. What is it, and how does the wind go round it?`, givens:[], ansType:'choice',
+    choices:['A low: anticlockwise, angled in','A low: clockwise, angled out','A high: clockwise, angled out','A high: anticlockwise, angled in'], target:S.low ? 0 : 2, fig:{ k:'syn', S },
+    steps:[['isobar labels', S.low ? 'rise as you go outwards' : 'fall as you go outwards', S.low ? `a low, ${S.p0} mb` : `a high, ${S.p0} mb`]],
+    rule:'Read the numbers outwards. Lows wind anticlockwise and in, highs clockwise and out — northern hemisphere.' };
+};
+
+const ZONES = {
+  A:{ name:'ahead of the warm front', sky:'Cirrus thickening to cirrostratus, then altostratus', wind:'Backs and freshens', glass:'Falls steadily', vis:'Good, getting worse as rain starts' },
+  B:{ name:'at the warm front', sky:'Low, thick nimbostratus', wind:'Veers, typically into the southwest', glass:'The fall slows and stops', vis:'Poor in continuous rain' },
+  C:{ name:'in the warm sector', sky:'Low stratus, overcast, drizzle', wind:'Steady southwesterly', glass:'Roughly steady', vis:'Moderate or poor, mist or fog' },
+  D:{ name:'at the cold front', sky:'Towering cumulonimbus, heavy rain', wind:'Veers sharply, west or northwest, squally', glass:'Rises sharply', vis:'Poor in the downpour, then clearing fast' },
+  E:{ name:'behind the cold front', sky:'Cumulus and blue sky, scattered showers', wind:'Northwesterly, fresh and gusty', glass:'Keeps rising, more slowly', vis:'Very good outside the showers' },
+};
+const ATTR = { sky:'the sky', wind:'the wind', glass:'the barometer', vis:'the visibility' };
+B.front = () => {
+  if (Math.random() < .2) return conceptQ('front');
+  const keys = 'ABCDE'.split(''), pos = pick(keys), z = ZONES[pos], attr = pick(Object.keys(ATTR));
+  const others = keys.filter(k => k !== pos).sort(() => Math.random() - .5).slice(0,3);
+  if (Math.random() < .55) return { qtype:'Read the depression', prompt:`You are at ${pos}, ${z.name}. What does ${ATTR[attr]} do or look like?`, givens:[], ansType:'choice',
+    choices:[pos, ...others].map(k => ZONES[k][attr]), target:0, fig:{ k:'front', pos },
+    steps:[[pos, z.name, z[attr].toLowerCase()]], rule:CONCEPT_RULE.front };
+  return { qtype:'Where are you?', prompt:`${ATTR[attr][0].toUpperCase()+ATTR[attr].slice(1)}: “${z[attr].toLowerCase()}”. Where are you in the depression?`, givens:[], ansType:'choice',
+    choices:[pos, ...others].map(k => `${k} — ${ZONES[k].name}`), target:0, fig:{ k:'front', pos, ask:true },
+    steps:[[z[attr], 'belongs to', `${pos}, ${z.name}`]], rule:CONCEPT_RULE.front };
+};
+
+// stage 7 drills the pool hard, so make it look less like a flashcard deck
+B.local = (() => { let last = -1; return () => { let i; do { i = rnd(0, CQ.local.length-1); } while (i === last); last = i;
+  const [p, c, why] = CQ.local[i];
+  return { qtype:'Coast and fog', prompt:p, givens:[], ansType:'choice', choices:c.slice(), target:0, steps:[[c[0].split(' — ')[0], why, '']], rule:CONCEPT_RULE.local }; }; })();
+
+// ---- the passage: Havenport to Fernwick, St Maddern as the bolt hole
+const SPEED = 5, LIMIT = 5, MARGIN = 60;
+function startPassage(){
+  let P = null;
+  for (let t = 0; t < 500 && !P; t++) {
+    const I = pick([300,330,360]), tw = pick(['soon','soon','later']), W = I + (tw === 'soon' ? 360 : 720);
+    const out = pick(['go','alt','stay']);
+    const dep = tw === 'soon' ? I + rnd(2,5)*30 : I + rnd(6,14)*30;
+    const avail = W - MARGIN - dep;
+    let D, D2;
+    if (out === 'go') { D = Math.floor(avail/12) - rnd(1,4); D2 = Math.round(D*.45); }
+    else if (out === 'alt') { D = Math.ceil(avail/12) + rnd(3,8); D2 = Math.floor(avail/12) - rnd(1,3); }
+    else { D2 = Math.ceil(avail/12) + rnd(2,5); D = D2 + rnd(6,14); }
+    if (D < 10 || D > 40 || D2 < 5 || D2 > D - 4) continue;
+    const d0 = rnd(0,7), rot = pick([2,-2,1,-1]), d1 = pt(d0 + rot), f0 = pick([3,4]), f1 = pick([6,7,8]);
+    const ti = rnd(0,2), Bo = genBaro(ti, false); Bo.now = dep - 30;
+    P = { I, tw, W, out, dep, D, D2, d0, rot, d1, f0, f1, Bo, ti };
+  }
+  pas = { p:P, leg:0, strikes:0, errors:0, results:[], done:false, chosen:null };
+  genPassageQ();
+}
+function forecastText(P){
+  const shift = `${P.rot>0?'veering':'backing'} ${WORD[P.d1]} ${P.f1===8?'7 to gale 8':(P.f1-1)+' to '+P.f1} ${P.tw}`;
+  const sea = P.f1 >= 8 ? 'rough or very rough' : P.f1 === 7 ? 'moderate, becoming rough' : 'slight or moderate, becoming moderate';
+  return (P.f1 === 8 ? `<b>Gale warning issued ${hhmm(P.I)}</b>\n` : '') +
+    `Inshore waters forecast, issued ${hhmm(P.I)}\nHavenport to Fernwick\n\n` +
+    `Wind        <b>${cap(WORD[P.d0])} ${P.f0} or ${P.f0+1}, ${shift}.</b>\nSea state   ${cap(sea)}.\nWeather     Fair, then rain.\nVisibility  Good, becoming moderate or poor.`;
+}
+function genPassageQ(){
+  const P = pas.p, L = pas.leg, arr = P.dep + P.D*12, arr2 = P.dep + P.D2*12;
+  if (L === 0) q = { leg:L, qtype:'Leg 1 · the force', prompt:`The wind is forecast to rise to Force ${P.f1}. What is the top of that mean wind, in knots?`,
+    givens:[['Forecast', `Force ${P.f1}`, true],['Crew limit', `Force ${LIMIT}`]], ansType:'kn', target:BF[P.f1].hi, tol:0, unit:'kn',
+    steps:[[`Force ${P.f1}`, BF[P.f1].name.toLowerCase(), knR(P.f1)],[`${BF[P.f1].hi} kn`, `against Force ${LIMIT}, ${knR(LIMIT)}`, 'well above what this crew handles']],
+    rule:'Turn the force into knots, then into a picture. Then add the gusts.' };
+  else if (L === 1) { const off = P.tw === 'soon' ? 6 : 12;
+    q = { leg:L, qtype:'Leg 2 · the timing', prompt:`Issued at ${hhmm(P.I)}, the change is forecast “${P.tw}”. From what time can it arrive?`,
+    givens:[['Issued', hhmm(P.I)],['Word', P.tw, true]], ansType:'time', target:P.W % 1440, tol:0,
+    steps:[[P.tw, P.tw === 'soon' ? '6 to 12 h after issue' : 'more than 12 h after issue', ''],[hhmm(P.I), `+ ${off} h`, `${hhmm(P.W)} at the earliest`]],
+    rule:'The window opens at the near end of the word. Plan to be in before it opens, not before it closes.' }; }
+  else if (L === 2) { const steps = P.rot, path = [P.d0]; for (let i = 1; i <= Math.abs(steps); i++) path.push(pt(P.d0 + Math.sign(steps)*i));
+    const lng = [P.d0]; for (let i = 1; i <= 8 - Math.abs(steps); i++) lng.push(pt(P.d0 - Math.sign(steps)*i));
+    q = { leg:L, qtype:'Leg 3 · the shift', prompt:`“${cap(WORD[P.d0])}, ${steps>0?'veering':'backing'} ${WORD[P.d1]}.” Which way does the wind go round?`, givens:[],
+    ansType:'choice', choices:[`${steps>0?'Clockwise':'Anticlockwise'}: ${path.map(i=>PTS[i]).join(' → ')}`, `${steps>0?'Anticlockwise':'Clockwise'}: ${lng.map(i=>PTS[i]).join(' → ')}`, `It ends up blowing from the ${WORD[pt(P.d1+4)]}`], target:0,
+    steps:[[steps>0?'veering':'backing', steps>0?'clockwise':'anticlockwise', path.map(i=>PTS[i]).join(' → ')]],
+    rule:'Veer clockwise, back anticlockwise; the new wind is named for where it comes from.' }; }
+  else if (L === 3) { const Bo = P.Bo;
+    q = { leg:L, qtype:'Leg 4 · the glass', prompt:`At ${hhmm(Bo.now-180)} the barometer read ${Bo.pA.toFixed(1)} mb. At ${hhmm(Bo.now)} it reads ${Bo.pN.toFixed(1)} mb. What is the tendency?`, givens:[],
+    ansType:'choice', choices:[0,1,2,3].map(k => tendName(k, false)), target:P.ti,
+    steps:[[`${Bo.ch.toFixed(1)} mb`, 'fall in 3 h', tendName(P.ti, false).toLowerCase()],['the glass', P.ti >= 2 ? 'short notice — the change may come at the early end' : 'a steady fall — the forecast is on its way', '']],
+    rule:'The glass agrees with the forecast or it does not. When it falls faster than you expected, believe the early end of the window.' }; }
+  else q = { leg:L, qtype:'Leg 5 · the call', prompt:`You can slip at ${hhmm(P.dep)} and make ${SPEED} kn. Your rule: in harbour an hour before the change can arrive. What do you do?`,
+    givens:[['Fernwick', P.D+' nm'],['St Maddern', P.D2+' nm'],['Slip', hhmm(P.dep)],['Change from', hhmm(P.W), true]], ansType:'choice',
+    choices:['Go for Fernwick — in with an hour in hand','Go, but stop at St Maddern — only the nearer port beats it','Stay in harbour — neither port is safely in reach'], target:{go:0,alt:1,stay:2}[P.out],
+    steps:[[`Fernwick ${P.D} nm`, `× 12 min a mile at 5 kn = ${dur(P.D*12)}`, `in at ${hhmm(arr)}`],[`St Maddern ${P.D2} nm`, `= ${dur(P.D2*12)}`, `in at ${hhmm(arr2)}`],[hhmm(P.W), '− 1 h in hand', `be in by ${hhmm(P.W-MARGIN)}`]],
+    rule:'Work the arrival, compare it with the near end of the window, keep an hour in hand. A bolt hole you can reach is a plan; one you cannot is a hope.' };
+  q.m = 'passage'; q.fig = { k:'time' };
+  shuf(q); render();
+}
+function drawTimeline(show){
+  const P = pas.p, x0 = 84, x1 = 586, t0 = 240, t1 = 1320, X = t => x0 + (t - t0)/(t1 - t0)*(x1 - x0);
+  const fy = f => 132 - f*12, g = [`<rect x="0" y="0" width="600" height="250" fill="var(--paper)"/>`];
+  for (let t = 300; t <= 1320; t += 120) { g.push(`<line x1="${X(t)}" y1="20" x2="${X(t)}" y2="224" stroke="var(--rule)" stroke-width=".6"/>`, T(X(t), 240, hhmm(t), 'font-size="10" fill="var(--ink-3)" text-anchor="middle" font-family="IBM Plex Mono,monospace"')); }
+  for (let f = 0; f <= 8; f += 2) g.push(T(x0-8, fy(f)+3, 'F'+f, 'font-size="9" fill="var(--ink-3)" text-anchor="end" font-family="IBM Plex Mono,monospace"'));
+  g.push(`<line x1="${x0}" y1="${fy(LIMIT)}" x2="${x1}" y2="${fy(LIMIT)}" stroke="var(--ink-3)" stroke-dasharray="5 4"/>` + T(x1, fy(LIMIT)-4, `crew limit F${LIMIT}`, 'font-size="10" fill="var(--ink-3)" text-anchor="end"'));
+  const reveal = pas.leg > 1 || (pas.leg === 1 && show);
+  // the wind as forecast: steady now, then a window in which the change can come
+  g.push(`<rect x="${X(t0)}" y="${fy(P.f0+1)}" width="${(reveal ? X(P.W) : X(t1)) - X(t0)}" height="${fy(0)-fy(P.f0+1)}" fill="var(--shallow)"/>`);
+  if (reveal) {
+    const wEnd = P.tw === 'soon' ? P.W + 360 : t1;
+    g.push(`<defs><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="var(--bad)" stroke-width="2.5" opacity=".45"/></pattern></defs>`);
+    g.push(`<rect x="${X(P.W)}" y="${fy(P.f1)}" width="${X(wEnd)-X(P.W)}" height="${fy(0)-fy(P.f1)}" fill="url(#hatch)"/>`);
+    if (wEnd < t1) g.push(`<rect x="${X(wEnd)}" y="${fy(P.f1)}" width="${X(t1)-X(wEnd)}" height="${fy(0)-fy(P.f1)}" fill="var(--bad-soft)"/>`);
+    g.push(`<line x1="${X(P.W)}" y1="18" x2="${X(P.W)}" y2="224" stroke="var(--bad)" stroke-width="1.5"/>` + T(X(P.W)+4, 16, `F${P.f1} from ${hhmm(P.W)}`, 'font-size="11" font-weight="600" fill="var(--bad)"'));
+  }
+  g.push(`<line x1="${x0}" y1="${fy(0)}" x2="${x1}" y2="${fy(0)}" stroke="var(--ink-2)"/>`);
+  // the plan: two passages from the same slip time
+  const rows = [['Fernwick', P.D, 170], ['St Maddern', P.D2, 204]];
+  for (const [name, D, y] of rows) {
+    const a = P.dep + D*12, picked = pas.chosen === name, late = a > P.W - MARGIN;
+    g.push(T(x0-8, y+4, name, 'font-size="10" fill="var(--ink-2)" text-anchor="end"'));
+    g.push(`<rect x="${X(P.dep)}" y="${y-7}" width="${X(a)-X(P.dep)}" height="14" fill="${picked && late ? 'var(--bad-soft)' : 'var(--deep)'}" stroke="${picked ? (late ? 'var(--bad)' : 'var(--good)') : 'var(--ink-3)'}" stroke-width="${picked?2:1}"/>`);
+    g.push(T(X(a)+5, y+4, `${D} nm · in ${hhmm(a)}`, 'font-size="10" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace"'));
+    if (picked && a > P.W && reveal) { const left = Math.round((a - P.W)/12); g.push(`<circle cx="${X(P.W)}" cy="${y}" r="7" fill="var(--bad)"/>` + T(X(P.W), y-11, `${left} nm to go`, 'font-size="10" font-weight="700" fill="var(--bad)" text-anchor="middle"')); }
+  }
+  setFig('0 0 600 250', g.join(''), `<span class="lim">wind now, F${P.f0}–${P.f0+1}</span>` + (reveal ? `<span class="wf">window for F${P.f1}</span>` : ''), `Slip ${hhmm(P.dep)} from Havenport at ${SPEED} kn.`);
+}
+function passageOver(made){
+  const fb = $('fb'), right = pas.results.filter(Boolean).length, P = pas.p;
+  const dest = ['Fernwick','St Maddern','Havenport (stayed in)'][{go:0,alt:1,stay:2}[P.out]];
+  if (made) {
+    fanfare();
+    store.log.unshift({ when:new Date().toISOString().slice(0,10), dest, right, f:P.f1, clean:pas.errors === 0 });
+    fb.className = 'feedback show ok';
+    fb.innerHTML = `<h3>${P.out === 'stay' ? 'A day ashore, and the right one.' : `Lines ashore at ${dest} before the Force ${P.f1}.`}</h3><p>${right} of 5 right${pas.errors === 0 ? '. Every word of that forecast read as a number. That is a skipper’s call.' : `, ${pas.errors} corrected on the way. Logged.`}</p>`;
+    if (pas.errors <= 1) completeStage();
+  } else {
+    caught();
+    store.log.unshift({ when:new Date().toISOString().slice(0,10), dest:'at sea', right, f:P.f1, clean:false, caught:true });
+    fb.className = 'feedback show no';
+    fb.innerHTML = `<h3>Caught out.</h3><p>Three misreads and the boat meets Force ${P.f1} at sea, reefing late on a lee shore with a tired crew. Force, timing, shift, glass, then the sum — in that order, every time.</p>`;
+  }
+  $('check').textContent = 'New forecast ›';
+  pas.done = true; save(); renderStatus(); renderLog();
+}
+function consequence(a){
+  const P = pas.p;
+  if (q.leg === 0) return `<p>Force ${P.f1} is up to ${BF[P.f1].hi} kn of mean wind, with gusts beyond. Planning for less means the reefs go in late, on a heeling deck.</p>`;
+  if (q.leg === 1) { const late = a !== null && (a - P.W % 1440 + 1440) % 1440 < 720;
+    return late ? `<p>You would sail believing you had until ${hhmm(a)}. The forecast only promises the wind holds until ${hhmm(P.W)}.</p>` : `<p>Too cautious costs a sailing day; too generous costs far more. The word sets the time exactly.</p>`; }
+  if (q.leg === 2) return `<p>Plan for the wrong swing and the shore you thought would be a lee becomes a lee shore — exactly where you meant to shelter.</p>`;
+  if (q.leg === 3) return `<p>The glass is the only forecast on board. Misread it and you lose the earliest warning you get.</p>`;
+  const ch = q.choices[a] || '';
+  if (/^Stay/.test(ch)) return `<p>Safe, but the sum said you could go. A skipper who never sails on a workable forecast never learns the boat.</p>`;
+  return `<p>Look at the plan: the boat is still at sea when the window opens. That is the hour you meet Force ${P.f1}, with no margin left to reef or turn back.</p>`;
+}
+
+// ---- state and routing
+let stage = null, q = null, answered = false, watch = null, pas = null;
+const ss = () => store.stages[stage.id];
+const idx = () => STAGES.indexOf(stage);
+const MODES = ['beaufort','words','veer','baro','syn','front','local'];
+function genQ(){
+  const mode = stage.kind === 'watch' ? pick(MODES) : stage.mode;
+  q = shuf(B[mode]()); q.mode = mode;
+  render();
+}
+function drawFig(show){
+  const F = q.fig;
+  $('figbox').hidden = !F;
+  if (!F) return;
+  if (F.k === 'sea') drawSea(F.f, F.seed, show);
+  else if (F.k === 'rose') drawRose(F, show);
+  else if (F.k === 'baro') drawBaro(F.B, show);
+  else if (F.k === 'syn') drawSyn(F.S, show);
+  else if (F.k === 'front') drawFront(F, show);
+  else if (F.k === 'time') drawTimeline(show);
+}
+const PH = { force:'F', kn:'00', h:'0', mb:'0.0', brg:'000', time:'hhmm' };
+const UNIT = { force:'', kn:'kn', h:'h', mb:'mb', brg:'°T', time:'' };
+function render(){
+  answered = false;
+  const isChoice = q.ansType === 'choice';
+  $('ans').hidden = isChoice; $('unit').hidden = isChoice; $('choices').hidden = !isChoice;
+  if (isChoice) $('choices').innerHTML = q.choices.map((c,i) => `<button type="button" data-c="${i}"><span class="kb">${i+1}</span>${c}</button>`).join('');
+  else {
+    $('ans').value = ''; $('ans').disabled = false;
+    $('ans').placeholder = PH[q.ansType]; $('ans').inputMode = q.ansType === 'mb' || q.ansType === 'h' ? 'decimal' : q.ansType === 'force' ? 'text' : 'numeric';
+    $('unit').textContent = UNIT[q.ansType];
+    $('ans').focus({ preventScroll:true });
+  }
+  $('qtype').textContent = q.qtype;
+  $('prompt').textContent = q.prompt;
+  $('givens').innerHTML = q.givens.map(([k,v,hi]) => `<div class="given ${hi?'hi':''}"><div class="k">${k}</div><div class="v mono">${v}</div></div>`).join('');
+  $('fb').className = 'feedback'; $('fb').innerHTML = '';
+  $('check').textContent = 'Check'; $('check').hidden = isChoice;
+  $('fcast').hidden = q.m !== 'passage';
+  if (q.m === 'passage') {
+    $('fcast').innerHTML = forecastText(pas.p);
+    $('legs').innerHTML = [0,1,2,3,4].map(i => `<span class="leg ${i < pas.leg ? (pas.results[i] ? 'done' : 'bad') : i === pas.leg ? 'now' : ''}"></span>`).join('') +
+      `<span class="strikes">strikes <b>${'✕'.repeat(pas.strikes)}${'·'.repeat(Math.max(0,3-pas.strikes))}</b></span>`;
+  } else $('legs').innerHTML = '';
+  drawFig(false);
+}
+
+// ---- checking
+function parseAns(raw){
+  const t = q.ansType;
+  if (t === 'force') { const m = raw.match(/^f?\s*(\d{1,2})$/i); return m && +m[1] <= 12 ? +m[1] : null; }
+  if (t === 'kn' || t === 'h' || t === 'mb') return /^\d{1,4}(\.\d{1,2})?$/.test(raw) ? parseFloat(raw) : null;
+  if (t === 'brg') { const s = raw.replace(/[°tT\s]/g,''); if (!/^\d{1,3}$/.test(s) || +s >= 360) return null; return { v:+s, short:s.length < 3 }; }
+  const d = raw.replace(/[^\d]/g,'');
+  if (d.length < 3 || d.length > 4) return null;
+  const s = d.padStart(4,'0'), hh = +s.slice(0,2), mm = +s.slice(2);
+  if (mm > 59 || hh > 23) return null;
+  return hh*60 + mm;
+}
+function fmtTarget(x){
+  const t = q.ansType;
+  return t === 'force' ? `Force ${x}` : t === 'kn' ? `${x} kn` : t === 'h' ? `${x} h` : t === 'mb' ? `${x.toFixed(1)} mb` : t === 'brg' ? b3(x) : hhmm(x);
+}
+function offBy(a){
+  let d = Math.abs(a - q.target);
+  if (q.ansType === 'time') d = Math.min(d, 1440 - d);
+  if (q.ansType === 'brg') d = Math.min(d, 360 - d);
+  return d;
+}
+let shortForm = false;
+function check(){
+  const a = parseAns($('ans').value.trim());
+  if (a === null) { $('ans').focus(); return; }
+  shortForm = false;
+  if (q.ansType === 'brg') { shortForm = a.short; return finish(a.v, false); }
+  finish(a, false);
+}
+function finish(a, revealed){
+  answered = true;
+  const isChoice = q.ansType === 'choice';
+  const ok = !revealed && (isChoice ? a === q.target : offBy(a) <= (q.tol || 0));
+  const fb = $('fb');
+  fb.className = 'feedback show ' + (revealed ? '' : ok ? 'ok' : 'no');
+  const tgt = isChoice ? q.choices[q.target] : fmtTarget(q.target);
+  const title = revealed ? (watch && watch.timedOut ? `Time. The answer is ${tgt}.` : `Worked answer: ${tgt}`)
+    : ok ? pick(['Spot on.','Read like a forecaster.','Clean.','That would pass.','Aye.','Good call.']) + (shortForm ? ' Write it as three figures next time.' : '')
+    : isChoice ? `Not that one. It is “${tgt}”.` : `Not quite. It is ${tgt}.`;
+  const extra = q.m === 'passage' && !ok && !revealed ? consequence(a) : '';
+  fb.innerHTML = `<h3>${title}</h3><ul class="steps">` +
+    q.steps.map(s => `<li><span class="mono s">${s[0]}</span><span>${s[1]}${s[2] ? ' → <span class="mono s">'+s[2]+'</span>' : ''}</span></li>`).join('') +
+    `</ul>${extra}<div class="rule">${q.rule}</div>`;
+  if (isChoice) for (const b of $('choices').querySelectorAll('button')) {
+    b.disabled = true;
+    if (+b.dataset.c === q.target) b.classList.add('right');
+    if (+b.dataset.c === a) b.classList.add('picked');
+  }
+  if (q.m === 'passage' && q.leg === 4 && isChoice && a !== null) {
+    const ch = q.choices[a]; pas.chosen = /^Go for/.test(ch) ? 'Fernwick' : /St Maddern/.test(ch) ? 'St Maddern' : null;
+  }
+  if (q.m === 'passage' && q.leg === 4 && (revealed || ok)) pas.chosen = ['Fernwick','St Maddern',null][{go:0,alt:1,stay:2}[pas.p.out]];
+  drawFig(true);
+  $('check').hidden = false; $('check').textContent = 'Next ›';
+
+  const credit = ok;
+  if (credit) { store.streak++; store.best = Math.max(store.best, store.streak); if (watch) watch.score++; }
+  else { store.streak = 0; if (watch) watch.miss++; }
+  if (watch) { clearTimeout(watch.t); watch.used += WATCH_SECS - watch.left; watch.left = 0; watchTimer(); }
+  if (credit && store.streak % 10 === 0) pop(`${store.streak} in a row`);
+  if (credit) bell(); else thud();
+
+  if (q.m === 'passage') {
+    pas.results[q.leg] = credit;
+    if (!credit) { pas.strikes++; pas.errors++; }
+    if (pas.strikes >= 3) setTimeout(passageOver, 800, false);
+    else if (q.leg === 4) setTimeout(passageOver, 900, true);
+  } else if (stage.kind === 'drill') recordStage(credit);
+  save(); renderStatus();
+}
+function pop(t){ const p = $('pop'); p.textContent = t; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 2000); }
+
+// ---- watch
+function startWatch(){ watch = { asked:0, left:0, used:0, score:0, miss:0, timedOut:false, t:null }; }
+function armWatch(){
+  watch.asked++; watch.left = WATCH_SECS; watch.timedOut = false;
+  const tick = () => { watchTimer(); if (watch.left <= 0) { watch.timedOut = true; finish(null, true); } else { watch.left--; watch.t = setTimeout(tick, 1000); } };
+  tick();
+}
+function watchTimer(){ $('timer').textContent = `${watch.asked}/${WATCH_N} · ${watch.left}s · ${watch.score} right · ${watch.miss} wrong`; }
+const mmss = s => `${Math.floor(s/60)}m ${String(s%60).padStart(2,'0')}s`;
+function endWatch(){
+  clearTimeout(watch.t); const w = watch; watch = null; $('timer').textContent = '';
+  const passed = w.asked >= WATCH_N && w.miss <= 1;
+  const fb = $('fb'); fb.className = 'feedback show ' + (passed ? 'ok' : '');
+  fb.innerHTML = `<h3>Watch over.</h3><p>${w.score} of ${w.asked} right in ${mmss(w.used)}. ${passed ? 'That is exam pace.' : w.score >= 8 ? 'Solid. Accuracy comes with reps.' : 'Go back to the stage that tripped you, then come again.'}</p>`;
+  if (passed && stage.kind === 'watch') completeStage();
+  save(); renderStatus();
+  answered = true; $('check').hidden = false; $('check').textContent = 'Again ›';
+}
+
+// ---- stages
+function unlocked(i){ return i < STAGES.length && (i === 0 || DEV || store.stages[STAGES[i-1].id].done); }
+function recordStage(ok){
+  const s = ss(); s.recent.push(ok); if (s.recent.length > 8) s.recent.shift();
+  if (!s.done && s.recent.length >= 8 && s.recent.filter(Boolean).length >= 6) completeStage();
+}
+function completeStage(){
+  const s = ss(); if (s.done) return; s.done = true; save(); fanfare();
+  const nxt = STAGES[idx()+1];
+  pop(nxt ? `Stage cleared · next: ${nxt.title}` : 'Ladder complete');
+  renderStatus();
+}
+function renderStatus(){
+  $('streak').textContent = store.streak; $('best').textContent = store.best;
+  $('mute').textContent = store.muted ? 'Sound off' : 'Sound on'; $('mute').setAttribute('aria-pressed', String(store.muted));
+  const i = idx(), s = ss();
+  $('stepper').innerHTML = `<div class="dots">` + STAGES.map((st,k) => { const lock = !unlocked(k), d = store.stages[st.id].done;
+      return `<button class="dot ${d?'done':''} ${k===i?'now':''} ${lock?'locked':''}" data-i="${k}" title="${k+1}. ${st.title}${lock?' (locked)':''}" aria-label="Stage ${k+1}: ${st.title}${d?', cleared':''}${lock?', locked':''}" ${lock?'disabled':''}></button>`; }).join('') + `</div>` +
+    `<span class="name"><small>Stage ${i+1} of ${STAGES.length}</small>${stage.title}</span>` +
+    `<span class="nav"><button type="button" data-step="-1" ${i===0?'disabled':''} aria-label="Previous stage">‹</button><button type="button" data-step="1" ${!unlocked(i+1)?'disabled':''} aria-label="Next stage">›</button></span>`;
+  const last = stage.kind === 'drill' ? s.recent : [];
+  $('progress').innerHTML = (stage.kind === 'drill' ? `<span class="last" aria-label="Last 8 answers: ${last.filter(Boolean).length} right">${Array.from({length:8}, (_,k) => `<i class="${last[k]===true?'y':last[k]===false?'n':''}"></i>`).join('')}</span>` : '') +
+    `<span>${s.done ? '<span class="cleared">Cleared.</span> Keep drilling or move on.' : `Clear this stage: ${GATE[stage.kind]}.`}</span>`;
+}
+function renderConcept(){
+  $('conceptBody').innerHTML = `<p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p>`;
+  $('concept').open = !store.seenConcept[stage.id];
+  store.seenConcept[stage.id] = true; save();
+}
+function setStage(i){
+  if (i < 0 || i >= STAGES.length || !unlocked(i)) return;
+  if (watch) { clearTimeout(watch.t); watch = null; $('timer').textContent = ''; }
+  stage = STAGES[i];
+  renderConcept();
+  if (stage.kind === 'passage') startPassage();
+  else { if (stage.kind === 'watch') startWatch(); genQ(); if (watch) armWatch(); }
+  renderStatus(); renderLog();
+}
+function renderLog(){
+  const box = $('logbox'), b = $('logbody');
+  box.hidden = !store.log.length && stage.kind !== 'passage';
+  if (!store.log.length) { b.innerHTML = `<p class="empty">No passages yet. The forecast is waiting.</p>`; return; }
+  b.innerHTML = `<table><thead><tr><th>Date</th><th>Made</th><th>Reads</th><th>Remarks</th></tr></thead><tbody>` +
+    store.log.slice(0,12).map(e => `<tr><td class="mono">${e.when}</td><td>${e.dest}</td><td class="mono">${e.right}/5</td><td>${e.caught ? `Caught out in Force ${e.f}.` : e.clean ? `Clean call ahead of Force ${e.f}.` : `Safe, with corrections.`}</td></tr>`).join('') + `</tbody></table>`;
+}
+
+// ---- wiring
+function next(){
+  if (stage.kind === 'passage') { if (!pas || pas.done) startPassage(); else if (pas.strikes < 3 && pas.leg < 4) { pas.leg++; genPassageQ(); } }
+  else if (stage.kind === 'watch') { if (watch && watch.asked >= WATCH_N) return endWatch(); if (!watch) startWatch(); genQ(); armWatch(); }
+  else genQ();
+}
+$('stepper').addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) return setStage(+d.dataset.i); const n = e.target.closest('[data-step]'); if (n) setStage(idx() + +n.dataset.step); });
+$('form').addEventListener('submit', e => { e.preventDefault(); if (answered) next(); else if (q.ansType !== 'choice') check(); });
+$('choices').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b && !answered) finish(+b.dataset.c, false); });
+$('skip').addEventListener('click', () => { if (!answered) finish(null, true); });
+$('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) bell(); });
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); return setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); }
+  if (!answered && q && q.ansType === 'choice' && /^[1-4]$/.test(e.key) && !e.ctrlKey && !e.metaKey) { const i = +e.key - 1; if (i < q.choices.length) { e.preventDefault(); finish(i, false); } }
+  if (answered && e.key === 'Enter' && document.activeElement !== $('ans') && !(document.activeElement && document.activeElement.tagName === 'BUTTON')) { e.preventDefault(); next(); }
+});
+$('ans').addEventListener('input', e => {
+  const re = q.ansType === 'force' ? /[^\dfF\s]/g : q.ansType === 'brg' ? /[^\d°tT]/g : q.ansType === 'time' ? /[^\d:]/g : /[^\d.]/g;
+  e.target.value = e.target.value.replace(re, '').slice(0, 6);
+});
+
+const want = +(QS.get('stage') || 0) - 1;
+setStage(DEV && want >= 0 ? want : Math.max(0, STAGES.findIndex(st => !store.stages[st.id].done)));
+})();
+</script>
+</body>
+</html>
