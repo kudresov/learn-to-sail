@@ -74,7 +74,8 @@
 .choices button.right::after{content:" ✓";color:var(--good);font-weight:700}
 .btn{font:600 15px "Source Sans 3",sans-serif;padding:0 18px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;border-radius:2px;min-height:44px}
 .btn.ghost{background:transparent;color:var(--ink)}
-button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.btn:disabled{opacity:.35;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible,.modes button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .feedback{margin-top:18px;padding:14px 16px;border-left:4px solid var(--rule);background:var(--paper);display:none}
 .feedback.show{display:block}
 .feedback.ok{border-color:var(--good);background:var(--good-soft)}
@@ -102,6 +103,32 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
 .more table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
 .more td,.more th{padding:5px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
 .more th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.modes{display:flex;gap:0;margin-top:10px}
+.modes[hidden]{display:none}
+.modes button{font:600 12px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--ink-2);background:transparent;color:var(--ink-2);padding:6px 14px;cursor:pointer;min-height:34px}
+.modes button+button{border-left:0}
+.modes button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lesson{margin-top:18px}
+.lesson[hidden],.lnav[hidden]{display:none}
+.lhead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ldots{display:flex;gap:5px}
+.ldots i{width:18px;height:5px;border-radius:2px;background:var(--rule);display:block}
+.ldots i.done{background:var(--ink-3)}.ldots i.now{background:var(--magenta)}
+.lesson h2{font:400 clamp(22px,3vw,27px)/1.25 "Libre Caslon Text",Georgia,serif;margin:8px 0 12px;text-wrap:balance}
+.lbody{font-size:16px}
+.lbody p{margin:0 0 10px;max-width:42em}
+.lbody ul,.lbody ol{margin:0 0 10px;padding-left:22px;max-width:42em}
+.lbody li{margin:3px 0}
+.lbody table{border-collapse:collapse;width:100%;font-size:14.5px;margin:4px 0 12px;background:var(--paper);border:1px solid var(--rule)}
+.lbody th{font:600 11px "Source Sans 3",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule);background:var(--ground)}
+.lbody td{padding:6px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+.lbody .fcast{margin:4px 0 12px}
+.key{border-left:4px solid var(--magenta);background:var(--magenta-soft);padding:9px 13px;font-weight:600;max-width:none!important}
+.lnav{margin-top:14px}
+.lctl label{display:block;font:600 11px "Source Sans 3",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.lctl input{width:100%;accent-color:var(--magenta)}
+.lread{margin-top:8px;padding:10px 13px;background:var(--paper);border:1px solid var(--rule);font-size:15px;min-height:2.6em}
+.lbtns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 .empty{font-style:italic;color:var(--ink-3);font-family:"Libre Caslon Text",serif}
 kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:var(--ground)}
 .pop{position:fixed;left:50%;top:18px;transform:translate(-50%,-8px);font-family:"Libre Caslon Text",serif;font-style:italic;color:var(--paper);background:var(--magenta);font-size:15px;opacity:0;transition:all .4s;pointer-events:none;padding:6px 14px;border-radius:2px;z-index:9}
@@ -121,6 +148,7 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
 </header>
 
 <div class="stepper" id="stepper"></div>
+<div class="modes" id="modes" role="tablist" aria-label="Lesson or drill"><button type="button" role="tab" id="mLearn">Lesson</button><button type="button" role="tab" id="mDrill">Drill</button></div>
 
 <details class="concept" id="concept">
   <summary>The idea</summary>
@@ -129,6 +157,12 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
 
 <pre class="fcast" id="fcast" hidden></pre>
 
+<section class="lesson" id="lesson" aria-label="Lesson" hidden>
+  <div class="lhead"><span class="qtype" id="lstep"></span><span class="ldots" id="ldots"></span></div>
+  <h2 id="ltitle"></h2>
+  <div class="lbody" id="lbody"></div>
+</section>
+
 <section class="figbox" id="figbox" hidden>
   <svg id="fig" viewBox="0 0 600 300" role="img" aria-label="Weather diagram"></svg>
   <div class="legend" id="legend"></div>
@@ -136,7 +170,12 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
   <div class="legs" id="legs"></div>
 </section>
 
-<section class="q" aria-label="Question">
+<div class="lnav" id="lnav" hidden>
+  <div class="lctl" id="lctl"></div>
+  <div class="lbtns"><button class="btn ghost" type="button" id="lprev">‹ Back</button><button class="btn" type="button" id="lnext">Next ›</button><button class="btn ghost" type="button" id="lskip">Skip to the drill</button></div>
+</div>
+
+<section class="q" id="qsec" aria-label="Question">
   <div class="qhead"><span class="qtype" id="qtype"></span><span class="timer" id="timer"></span></div>
   <p class="prompt" id="prompt"></p>
   <div class="givens" id="givens"></div>
@@ -159,6 +198,8 @@ kbd{font:500 12px "IBM Plex Mono",monospace;border:1px solid var(--rule);border-
 <details class="more">
   <summary>The rules, in one breath</summary>
   <div class="body">
+    <h4>Where the forecast comes from</h4>
+    <p><b>Inshore waters forecast</b>: out to 12 nm, four times a day, strong wind warnings at Force 6+. <b>Shipping forecast</b>: sea areas, gale warnings at Force 8+. Coastguard <b>VHF</b>: announced on Ch 16, read on 62/63/64/10, every 3 h. <b>Navtex</b>: 518 kHz international (gales, shipping forecast), 490 kHz national (inshore, SWW). <b>BBC Radio 4 FM</b>: 0048 and 0534, plus 1754 at weekends.</p>
     <h4>Beaufort</h4>
     <table>
       <tr><th>F</th><th>Knots</th><th>Name</th><th>At sea</th></tr>
@@ -230,12 +271,15 @@ const BF = [
 const knR = f => f === 0 ? 'under 1 kn' : f === 12 ? '64 kn or more' : `${BF[f].lo}–${BF[f].hi} kn`;
 
 // ---- persistence
-const KEY = 'lts:weather:v1';
-let store = { streak:0, best:0, stages:{}, log:[], muted:false, seenConcept:{} };
+const KEY = 'lts:weather:v2';
+let store = { streak:0, best:0, stages:{}, log:[], muted:false, seenConcept:{}, lessonSeen:{} };
 try { store = Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} };
 
 const STAGES = [
+  { id:'w0', kind:'drill', title:'Where the forecast comes from', mode:'sources',
+    intro:'Before you can read a forecast you have to get one. The Met Office writes them; the Coastguard, Navtex and the BBC carry them to you. Know which forecast covers your passage, when it is broadcast and on what.',
+    ex:'coastal day passage → inshore waters forecast, out to 12 nm\nCh 16 announcement → forecast on 62, 63, 64 or 10\nNavtex 490 kHz → inshore forecast and strong wind warnings' },
   { id:'w1', kind:'drill', title:'Beaufort', mode:'beaufort',
     intro:'Every forecast speaks in Beaufort forces, and every force has a number of knots and a look on the water. Learn the middle of the scale cold — Force 3 to 8 is where a Day Skipper decides to go, reef, or stay in.',
     ex:'14 kn mean → Force 4, moderate, fairly frequent white horses\n“westerly 6” → 22–27 kn mean, and the gusts above that' },
@@ -245,15 +289,15 @@ const STAGES = [
   { id:'w3', kind:'drill', title:'Veering and backing', mode:'veer',
     intro:'A wind is named for where it comes from. When it shifts clockwise it veers, anticlockwise it backs. Forecasts say which, and that one word tells you whether the new wind will free you or head you.',
     ex:'SW → W → NW: veering, clockwise\n230°T veers 50° → 280°T. Three figures, always' },
-  { id:'w4', kind:'drill', title:'The barometer', mode:'baro',
-    intro:'The glass is the only forecast you carry aboard. What matters is the change over three hours, and the forecast has a word for each band. The faster it moves, the sooner and harder the weather.',
-    ex:'1013.2 → 1008.8 mb in 3 h = 4.4 mb fall → falling quickly\nLong foretold, long last; short notice, soon past' },
-  { id:'w5', kind:'drill', title:'Isobars and Buys Ballot', mode:'syn',
+  { id:'w5', kind:'drill', title:'Highs, lows and isobars', mode:'syn',
     intro:'On a synoptic chart the wind runs along the isobars: anticlockwise round a low, clockwise round a high, angled about 15° in towards the low over the sea. The closer the lines, the harder it blows. On deck, put your back to the wind and the low is on your left.',
     ex:'east side of a low → wind from about south-southeast\nwind from SW, back to it → the low lies to the NW' },
   { id:'w6', kind:'drill', title:'A depression passes', mode:'front',
     intro:'The classic UK depression drags a warm front, a warm sector and a cold front over you, west to east. Each part has its own sky, wind and glass, in a fixed order. Know the order and the sky tells you what is next.',
     ex:'cirrus → halo → rain, glass falling → warm front coming\nsquall, wind veers hard, glass jumps → cold front through' },
+  { id:'w4', kind:'drill', title:'The barometer', mode:'baro',
+    intro:'The glass is the only forecast you carry aboard. What matters is the change over three hours, and the forecast has a word for each band. The faster it moves, the sooner and harder the weather.',
+    ex:'1013.2 → 1008.8 mb in 3 h = 4.4 mb fall → falling quickly\nLong foretold, long last; short notice, soon past' },
   { id:'w7', kind:'drill', title:'Fog, breezes and the coast', mode:'local',
     intro:'The forecast covers a whole sea area. The coast adds its own weather: fog that a breeze will not shift, a sea breeze that arrives every sunny afternoon, seas that stand up where wind meets tide.',
     ex:'warm moist air over a cold sea → advection fog, stays in a breeze\nclear calm night → radiation fog off the river at dawn, gone by mid-morning' },
@@ -473,6 +517,20 @@ function shuf(q){
   return q;
 }
 const CQ = {
+  sources: [
+    ['You are planning a day passage a few miles off the coast. Which forecast do you plan on?', ['The inshore waters forecast','The shipping forecast','The high seas forecast','The extended outlook'], 'inshore waters: out to 12 nm, in short stretches of coast'],
+    ['How far offshore does the inshore waters forecast reach?', ['12 nautical miles','3 nautical miles','30 nautical miles','300 nautical miles'], 'coastal waters, up to 12 nm offshore'],
+    ['How does the Coastguard begin a Maritime Safety Information broadcast on VHF?', ['An announcement on Ch 16, then the broadcast on a working channel','The whole forecast read on Ch 16','A DSC call on Ch 70 carrying the forecast','It does not broadcast weather on VHF'], 'Ch 16 is for calling and distress; the forecast goes on 62, 63, 64 or 10'],
+    ['How often does the Coastguard broadcast the inshore waters forecast on VHF?', ['Every 3 hours','Once a day','Every 12 hours','Only when a gale is forecast'], 'every 3 hours, with a fuller broadcast every 12'],
+    ['A gale warning is issued at 1340. When does the Coastguard broadcast it?', ['As soon as possible after it is received','At the next 12-hourly broadcast','Only at the next shipping forecast','Only on Navtex'], 'gale and strong wind warnings go out on receipt'],
+    ['Which Navtex frequency carries the inshore waters forecast and strong wind warnings?', ['490 kHz, the national frequency','518 kHz, the international frequency','2182 kHz','Ch 16'], '490 national: inshore; 518 international: shipping forecast and gales'],
+    ['Which Navtex frequency carries gale warnings and the shipping forecast?', ['518 kHz, the international frequency','490 kHz, the national frequency','Ch 70','2182 kHz'], '518 international, in English'],
+    ['What brings a strong wind warning for inshore waters?', ['Force 6 or more forecast in an area, not in the previous forecast','Force 8 or more anywhere at sea','Any gust over 30 kn','Any change of wind direction'], 'strong wind warning: Force 6, 22 kn or more'],
+    ['Where do you hear the shipping forecast on BBC Radio 4 today?', ['On FM — long wave closed in March 2024','On long wave only','On VHF Ch 16','Only on the BBC website'], 'FM at 0048 and 0534, plus 1754 at weekends'],
+    ['About how far does each Coastguard VHF forecast broadcast reach?', ['About 30 nm','About 3 nm','About 300 nm','Worldwide'], 'VHF is line of sight; Navtex reaches about 300 nm'],
+    ['What does Navtex give you that a VHF voice broadcast does not?', ['A stored or printed copy to read when you are ready','Forecasts on demand by voice','A radar picture','Tidal predictions'], 'text, received automatically, kept for later'],
+    ['Which forecast tells you where the lows are and where they are heading?', ['The general synopsis in the shipping forecast','The strong wind warning','The Navtex navigation warnings','The marina notice board tide table'], 'the synopsis is the big picture behind every area forecast'],
+  ],
   beaufort: [
     ['A forecast of “Force 6” describes which wind?', ['The mean wind; gusts will be stronger','The strongest gust expected','The wind in the lulls','The wind at the masthead only'], 'forecast forces are mean winds — expect gusts well above'],
     ['In a UK forecast, what does “hurricane force” mean?', ['Force 12, 64 kn or more — not a tropical hurricane','A tropical cyclone has reached British waters','Any wind above Force 10','Gusts of 50 kn or more'], 'the Met Office says hurricane force; a hurricane is a tropical cyclone'],
@@ -485,6 +543,7 @@ const CQ = {
     ['In a forecast, what does “imminent” mean?', ['Within 6 hours of the time of issue','Within the hour','6 to 12 hours from the time of issue','Already blowing'], 'imminent < 6 h, soon 6–12 h, later > 12 h'],
     ['“Becoming cyclonic” in a sea-area forecast means what?', ['The wind will change direction a lot as a depression crosses the area','A tropical cyclone is approaching','The wind will rise to hurricane force','The wind will blow clockwise'], 'a low crossing the area: the direction depends on where you are in it'],
     ['What does an inshore waters forecast give you for each stretch of coast?', ['Wind, sea state, weather and visibility','Wind and visibility only','Tidal heights and streams','Pressure readings from coastal stations'], 'wind, sea state, weather, visibility'],
+    ['What is a strong wind warning in the inshore waters forecast?', ['Force 6 or more expected in that stretch of coast','Force 8 or more','Gusts of 50 kn','Fog expected'], 'SWW: Force 6, 22 kn or more, inshore'],
     ['Gusts reach 45 kn though the mean wind is Force 7. Is a gale warning issued?', ['Yes — gusts of 43–51 kn count as a gale','No — only the mean wind counts','No — a warning needs Force 9','Only if the visibility is poor'], 'gale: Force 8, or gusts reaching 43–51 kn'],
   ],
   veer: [
@@ -532,6 +591,7 @@ const CONCEPT_RULE = {
   baro:'Tendency is the change over three hours. The faster the change, the sooner and the harder.',
   syn:'Northern hemisphere: back to the wind, low on your left. Anticlockwise round a low, about 15° in over the sea.',
   front:'Warm front: rain, wind veers. Warm sector: drizzle, murk. Cold front: squalls, veers hard, glass jumps. Behind: showers and sunshine.',
+  sources:'Inshore waters forecast for the plan, shipping forecast for the big picture. VHF: Ch 16 announcement, working channel, every 3 h. Navtex: 518 international, 490 national.',
   local:'Advection fog stays in a breeze; radiation fog burns off. Sea breeze by day onshore, land breeze by night offshore.',
 };
 function conceptQ(mode){
@@ -564,7 +624,7 @@ B.beaufort = () => {
     rule:'White horses scattered at 3, fairly frequent at 4, many at 5. Streaks of foam mean 7 or more.' };
   return { qtype:'Top of the force', prompt:`The forecast says “${pick(['westerly','southwest','northerly','easterly'])} ${f}”. What is the top of that mean wind, in knots?`, givens:[['Forecast', `Force ${f}`, true]],
     ansType:'kn', target:b.hi, tol:0, fig, steps:[[`Force ${f}`, knR(f), `plan for ${b.hi} kn, gusts more`]],
-    rule:'Plan for the top of the forecast force, then expect gusts of about half as much again in squally air.' };
+    rule:'Plan for the top of the forecast force, then add the gusts — in showers and squalls they run well above the mean.' };
 };
 
 const VIS = [['Good','more than 5 nm',()=>pick(['6 nm','8 nm','10 nm'])],['Moderate','2 to 5 nm',()=>pick(['3 nm','4 nm','2.5 nm'])],['Poor','1000 m to 2 nm',()=>pick(['1.5 nm','1 nm','1500 m'])],['Very poor','less than 1000 m',()=>pick(['400 m','200 m','800 m'])]];
@@ -742,10 +802,236 @@ B.front = () => {
     steps:[[z[attr], 'belongs to', `${pos}, ${z.name}`]], rule:CONCEPT_RULE.front };
 };
 
-// stage 7 drills the pool hard, so make it look less like a flashcard deck
-B.local = (() => { let last = -1; return () => { let i; do { i = rnd(0, CQ.local.length-1); } while (i === last); last = i;
-  const [p, c, why] = CQ.local[i];
-  return { qtype:'Coast and fog', prompt:p, givens:[], ansType:'choice', choices:c.slice(), target:0, steps:[[c[0].split(' — ')[0], why, '']], rule:CONCEPT_RULE.local }; }; })();
+// these two stages are all pool, so never ask the same question twice running
+const poolQ = (mode, qtype) => { let last = -1; return () => { let i; do { i = rnd(0, CQ[mode].length-1); } while (i === last); last = i;
+  const [p, c, why] = CQ[mode][i];
+  return { qtype, prompt:p, givens:[], ansType:'choice', choices:c.slice(), target:0, steps:[[c[0].split(' — ')[0], why, '']], rule:CONCEPT_RULE[mode] }; }; };
+B.local = poolQ('local', 'Coast and fog');
+B.sources = poolQ('sources', 'Forecast sources');
+
+// ---- lessons: the theory, page by page, before each drill
+function drawSources(h){
+  const g = [`<rect x="0" y="0" width="600" height="250" fill="var(--paper)"/>`];
+  const box = (x, y, w, t1, t2, hot) => `<rect x="${x}" y="${y}" width="${w}" height="44" rx="3" fill="${hot?'var(--magenta-soft)':'var(--ground)'}" stroke="${hot?'var(--magenta)':'var(--ink-3)'}" stroke-width="${hot?2:1}"/>` +
+    T(x+10, y+19, t1, `font-size="13" font-weight="600" fill="${hot?'var(--magenta)':'var(--ink)'}"`) + T(x+10, y+35, t2, 'font-size="10.5" fill="var(--ink-2)" font-family="IBM Plex Mono,monospace"');
+  const ch = [['HM Coastguard · VHF','Ch 16 → 62·63·64·10 · every 3 h'],['Navtex','518 kHz intl · 490 kHz national'],['BBC Radio 4 · FM','shipping forecast · 0048 · 0534'],['Websites and apps','Met Office · before you sail']];
+  g.push(box(14, 103, 120, 'Met Office', 'writes them', h === 0));
+  ch.forEach(([a,b],i) => { const y = 14 + i*58, hot = h === i+1 || (h === 3 && i === 3);
+    g.push(`<path d="M134 125 C 170 125, 170 ${y+22}, 204 ${y+22}" fill="none" stroke="var(--ink-3)" stroke-width="1.2"/>`);
+    g.push(`<path d="M444 ${y+22} C 474 ${y+22}, 474 125, 492 125" fill="none" stroke="var(--ink-3)" stroke-width="1.2"/>`);
+    g.push(box(204, y, 240, a, b, hot)); });
+  g.push(box(492, 103, 104, 'Your boat', 'and the glass', false));
+  setFig('0 0 600 250', g.join(''), '', 'The Met Office writes the marine forecasts; the Coastguard and the BBC broadcast them.');
+}
+function drawTiming(){
+  const I = 300, X = h => 40 + h*(520/24), g = [`<rect x="0" y="0" width="600" height="190" fill="var(--paper)"/>`];
+  const seg = (a, b, fill, lab, sub) => `<rect x="${X(a)}" y="58" width="${X(b)-X(a)}" height="46" fill="${fill}" stroke="var(--ink-3)"/>` +
+    T((X(a)+X(b))/2, 78, lab, 'font-size="14" font-weight="600" fill="var(--ink)" text-anchor="middle"') + T((X(a)+X(b))/2, 95, sub, 'font-size="11" fill="var(--ink-2)" text-anchor="middle"');
+  g.push(seg(0, 6, 'var(--magenta-soft)', 'imminent', 'within 6 h'), seg(6, 12, 'var(--brass-soft)', 'soon', '6 to 12 h'), seg(12, 24, 'var(--shallow)', 'later', 'more than 12 h'));
+  for (let h = 0; h <= 24; h += 3) g.push(`<line x1="${X(h)}" y1="104" x2="${X(h)}" y2="112" stroke="var(--ink-3)"/>`, T(X(h), 126, hhmm(I + h*60), 'font-size="10" fill="var(--ink-3)" text-anchor="middle" font-family="IBM Plex Mono,monospace"'));
+  g.push(`<line x1="${X(0)}" y1="30" x2="${X(0)}" y2="58" stroke="var(--ink)" stroke-width="2"/>` + T(X(0), 24, 'issued 0500', 'font-size="11" font-weight="600" fill="var(--ink)"'));
+  g.push(`<line x1="${X(7)}" y1="138" x2="${X(7)}" y2="104" stroke="var(--bad)" stroke-width="2" stroke-dasharray="4 3"/>` + T(X(7), 154, 'you hear it at 1200', 'font-size="11" font-weight="600" fill="var(--bad)" text-anchor="middle"') + T(X(7), 170, '“soon” is already running', 'font-size="11" fill="var(--bad)" text-anchor="middle"'));
+  setFig('0 0 600 190', g.join(''), '', 'Every timing word counts from the time of issue.');
+}
+function drawBreeze(day){
+  const g = [`<rect x="0" y="0" width="600" height="260" fill="var(--paper)"/>`];
+  g.push(`<rect x="0" y="196" width="300" height="64" fill="var(--deep)"/>`, `<path d="M300 196 L330 180 L600 170 L600 260 L300 260 Z" fill="var(--land)"/>`);
+  g.push(T(150, 230, 'sea', 'font-size="12" fill="var(--ink-2)" text-anchor="middle"'), T(470, 225, 'land', 'font-size="12" fill="var(--ink-2)" text-anchor="middle"'));
+  if (day) g.push(`<circle cx="530" cy="42" r="16" fill="var(--brass)"/>`);
+  else g.push(`<circle cx="530" cy="42" r="15" fill="var(--ink-2)"/><circle cx="538" cy="36" r="13" fill="var(--paper)"/>`);
+  const c = day ? 'var(--magenta)' : 'var(--focus)', w = day ? 3 : 2, dash = day ? '' : 'stroke-dasharray="7 5"';
+  const arr = (x1,y1,x2,y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" ${dash}/>` + arrowHead(x2, y2, Math.atan2(y2-y1, x2-x1), c, 11);
+  const loop = day ? [[70,170,400,158],[440,140,440,64],[400,46,110,46],[80,64,80,150]] : [[400,158,90,170],[60,150,60,64],[100,46,390,46],[430,64,430,140]];
+  for (const l of loop) g.push(arr(...l));
+  g.push(T(day ? 235 : 245, day ? 152 : 188, day ? 'sea breeze — onshore' : 'land breeze — offshore', `font-size="13" font-weight="600" fill="${c}" text-anchor="middle"`));
+  g.push(T(day ? 452 : 72, 104, day ? 'warm air rises' : 'air rises over the warmer sea', `font-size="11" fill="${c}"`));
+  g.push(T(250, 34, 'return flow aloft', `font-size="11" fill="${c}" text-anchor="middle"`));
+  setFig('0 0 600 260', g.join(''), '', day ? 'Sunny afternoon: the land heats faster than the sea.' : 'Clear night: the land cools faster than the sea. Weaker than the sea breeze.');
+}
+const withWind = (S, k, n) => { S.pts = Array.from({length:n}, (_,i) => { const [x,y] = ptAt(S, k, i*2*Math.PI/n + .3); return { n:'', x, y, wind:true }; }); return S; };
+const L_LOW = withWind({ low:true, cx:300, cy:170, s:40, e:.18, phi:.6, p0:988 }, 2.3, 6);
+const L_HIGH = withWind({ low:false, cx:300, cy:170, s:56, e:.12, phi:2.4, p0:1032 }, 1.9, 6);
+const L_GRAD = (() => { const S = { low:true, cx:300, cy:165, s:38, e:.32, phi:0, p0:992 }; const a = ptAt(S, 2.5, Math.PI), b = ptAt(S, 2.5, 0);
+  S.pts = [{ n:'A', x:a[0], y:a[1], wind:true }, { n:'B', x:b[0], y:b[1], wind:true }]; return S; })();
+let L_BARO = null;
+const zoneRead = k => { const z = ZONES[k]; return `<b>${k} — ${z.name}</b><br>Sky: ${z.sky}. Wind: ${z.wind.toLowerCase()}. Glass: ${z.glass.toLowerCase()}. Visibility: ${z.vis.toLowerCase()}.`; };
+const LESSONS = {
+  w0: [
+    { h:'Two forecasts, two scales', fig:() => drawSources(0), body:`<p>The <b>Met Office</b> writes the UK’s marine forecasts; <b>HM Coastguard</b> and the <b>BBC</b> broadcast them. A Day Skipper uses two of them.</p>
+<table><tr><th></th><th>Shipping forecast</th><th>Inshore waters forecast</th></tr>
+<tr><td>Covers</td><td>Sea areas around the British Isles, hundreds of miles across</td><td>Stretches of coast, out to <b>12 nm</b> offshore</td></tr>
+<tr><td>Issued</td><td>Four times a day</td><td>Four times a day, for 24 h, with an outlook</td></tr>
+<tr><td>Warnings</td><td><b>Gale warnings</b>, Force 8 and over</td><td><b>Strong wind warnings</b> (SWW), Force 6 and over</td></tr>
+<tr><td>Use it for</td><td>The big picture: where the lows are, where they are going</td><td>The plan for a coastal passage</td></tr></table>
+<p class="key">Plan on the inshore waters forecast. Read the shipping forecast’s general synopsis to see what is coming next.</p>` },
+    { h:'On VHF, from the Coastguard', fig:() => drawSources(1), body:`<p>The Coastguard broadcasts <b>Maritime Safety Information</b> (MSI). It first makes an <b>announcement on Ch 16</b>, then reads the broadcast on a <b>working channel</b> — 62, 63, 64 or 10. Ch 16 is for calling and distress, never for a long forecast.</p>
+<ul><li><b>Every 3 hours</b>: the inshore waters forecast and outlook, gale warnings, new navigation warnings.</li>
+<li><b>Every 12 hours</b>, morning and evening: the full set, including the shipping forecast.</li>
+<li><b>Gale warnings</b> and <b>strong wind warnings</b> go out as soon as they are received.</li></ul>
+<p>Each station reaches about <b>30 nm</b>. The times are in the almanac; write them into your passage plan.</p>` },
+    { h:'Navtex: the forecast in writing', fig:() => drawSources(2), body:`<p>A Navtex receiver prints or stores MSI automatically, so you can read it when you are ready. Its stations reach about <b>300 nm</b>.</p>
+<table><tr><th>Frequency</th><th>Carries, in English</th></tr>
+<tr><td class="mono">518 kHz</td><td><b>International</b>: gale warnings, the shipping forecast, navigation warnings</td></tr>
+<tr><td class="mono">490 kHz</td><td><b>National</b>: the inshore waters forecast, strong wind warnings, coastal observations</td></tr></table>
+<p>Choose your station and the message types you want, or you will drown in paper.</p>` },
+    { h:'BBC Radio 4, and everything else', fig:() => drawSources(3), body:`<p>The <b>shipping forecast</b> is read on BBC Radio 4 <b>FM</b> at 0048 and 0534 every day, and at 1754 at weekends. Long wave closed in March 2024. The two night-time broadcasts also carry the inshore waters forecast and reports from coastal stations.</p>
+<p>Ashore: the Met Office website and apps, the harbour office or marina notice board. Afloat: your <b>barometer</b>, the sky and the sea — they are the only forecast that updates every minute.</p>
+<p class="key">Always note the <b>time of issue</b>. Every timing word in a forecast counts from it, not from when you heard it.</p>` },
+  ],
+  w1: [
+    { h:'A force is a picture and a number', ctl:{ label:'Force', min:0, max:12, value:4, draw:v => drawSea(v, 777, true), read:v => `<b>Force ${v} · ${BF[v].name}</b> · ${knR(v)}<br>${BF[v].sea}` },
+      body:`<p>Admiral Beaufort’s scale began as what a sailor could see. Today each force has a band of <b>mean wind speed in knots</b>, averaged over ten minutes. The forecast gives the mean; the <b>gusts</b> will be stronger, much stronger in showers and squalls.</p><p>Drag through the scale and watch the water change.</p>` },
+    { h:'The six numbers to learn', fig:null, body:`<table><tr><th>Force</th><th>Knots</th><th>Name</th><th>What you see</th></tr>
+${[3,4,5,6,7,8].map(f => `<tr><td class="mono">${f}</td><td class="mono">${knR(f)}</td><td>${BF[f].name}</td><td>${BF[f].sea}</td></tr>`).join('')}</table>
+<p class="key">7, 11, 17, 22, 28, 34. Each is the first knot of Forces 3 to 8; the top of a force is one less than the next. Below 3 it is light; above 8 it is a gale and worse.</p>` },
+    { h:'What it means aboard a small yacht', fig:() => drawSea(6, 99, true), body:`<p>The push of the wind on the sails grows with the <b>square</b> of its speed: double the wind, four times the load. Force 6 is not “a bit more” than Force 4 — it is about three times the push.</p>
+<table><tr><th>Force</th><th>For a cruising yacht</th></tr>
+<tr><td class="mono">3–4</td><td>Good sailing, full sail for most boats.</td></tr>
+<tr><td class="mono">5</td><td>Reef early. A sensible limit for a new crew.</td></tr>
+<tr><td class="mono">6</td><td>The “yachtsman’s gale”: a strong wind warning inshore, two reefs, steep seas against the tide.</td></tr>
+<tr><td class="mono">7+</td><td>A Day Skipper with a family crew stays in harbour.</td></tr></table>
+<p class="key">Decide your crew’s limit before you read the forecast, not after.</p>` },
+    { h:'The sea lags the wind', fig:null, body:`<p>Waves need time and distance — <b>fetch</b> — to build. The same Force 5 blowing off the land gives a flat sea under the shore and a rough one ten miles out. After a blow the swell runs on for hours.</p>
+<p>Where <b>wind blows against the tide</b>, the waves shorten and steepen: the sea looks and feels a force worse. Off a headland it can break into a race.</p>` },
+  ],
+  w2: [
+    { h:'Timing words count from the issue time', fig:drawTiming, body:`<table><tr><th>Word</th><th>Means, from the time of issue</th></tr>
+<tr><td><b>Imminent</b></td><td>within 6 hours</td></tr><tr><td><b>Soon</b></td><td>6 to 12 hours</td></tr><tr><td><b>Later</b></td><td>more than 12 hours</td></tr></table>
+<p class="key">Issued 0500, heard at noon: “soon” means 1100 to 1700 — and it has already started.</p>` },
+    { h:'Warnings', fig:null, body:`<table><tr><th>Warning</th><th>Mean wind</th><th>or gusts of</th></tr>
+<tr><td><b>Strong wind</b> (inshore)</td><td>Force 6, 22 kn or more</td><td>—</td></tr>
+<tr><td><b>Gale</b></td><td>Force 8, 34–40 kn</td><td>43–51 kn</td></tr>
+<tr><td><b>Severe gale</b></td><td>Force 9, 41–47 kn</td><td>52–60 kn</td></tr>
+<tr><td><b>Storm</b></td><td>Force 10, 48–55 kn</td><td>61–68 kn</td></tr>
+<tr><td><b>Violent storm</b></td><td>Force 11, 56–63 kn</td><td>69 kn or more</td></tr>
+<tr><td><b>Hurricane force</b></td><td>Force 12, 64 kn or more</td><td>—</td></tr></table>
+<p>A gale warning is valid for 24 hours unless it is cancelled or renewed. “Hurricane force” is a wind strength; a hurricane is a tropical storm that does not reach British waters.</p>` },
+    { h:'Visibility and sea state', fig:null, body:`<table><tr><th>Visibility</th><th>Distance</th></tr>
+<tr><td>Good</td><td>more than 5 nm</td></tr><tr><td>Moderate</td><td>2 to 5 nm</td></tr><tr><td>Poor</td><td>1000 m to 2 nm</td></tr><tr><td>Very poor</td><td>less than 1000 m</td></tr></table>
+<table><tr><th>Sea state</th><th>Wave height</th></tr>
+${SEA.map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join('')}<tr><td>Very high / phenomenal</td><td>9 to 14 m / over 14 m</td></tr></table>` },
+    { h:'Reading a forecast, line by line', fig:null, body:`<p>An inshore waters forecast always runs <b>wind, sea state, weather, visibility</b>.</p>
+<pre class="fcast">Southwest 4 or 5, veering west 5 or 6 later.
+Slight or moderate.
+Rain later.
+Good, occasionally poor later.</pre>
+<ul><li><b>Wind</b>: 11–21 kn from the southwest now; more than 12 h after issue it swings clockwise to the west and rises to 17–27 kn.</li>
+<li><b>Sea</b>: waves between 0.5 and 2.5 m.</li>
+<li><b>Weather</b>: dry for now, rain beyond 12 h.</li>
+<li><b>Visibility</b>: over 5 nm, dropping at times to between 1000 m and 2 nm in the rain.</li></ul>
+<p>“<b>Becoming cyclonic</b>” means a low is crossing the area and the wind direction will change a lot depending on where you are in it.</p>` },
+  ],
+  w3: [
+    { h:'From, not to', ctl:{ label:'Wind direction', min:0, max:7, value:5, draw:v => drawRose({ from:v*45, lab0:ADJ[v] }, false), read:v => `A <b>${ADJ[v]}</b> wind blows <b>from the ${WORD[v]}</b>, towards the ${WORD[pt(v+4)]}.` },
+      body:`<p>A wind is always named for <b>where it comes from</b>. A northerly blows from the north and feels cold; a southwesterly blows from the southwest and brings the Atlantic with it. Forecast directions are <b>true</b>, not magnetic.</p>` },
+    { h:'Veer and back', ctl:{ label:'Shift', min:-3, max:3, value:2, draw:v => drawRose({ from:225, to:225+v*45, showTo:true, lab0:'was', lab1:'now' }, true),
+      read:v => v === 0 ? 'No shift.' : `From southwest to ${WORD[pt(5+v)]}: <b>${v>0?'veered':'backed'} ${Math.abs(v)*45}°</b>, ${v>0?'clockwise':'anticlockwise'}.` },
+      body:`<p>When the wind shifts <b>clockwise</b> it <b>veers</b> (SW → W → NW). When it shifts <b>anticlockwise</b> it <b>backs</b> (SW → S → SE). The words say nothing about strength, only direction.</p><p class="key">Veer goes with the clock. Back goes back against it.</p>` },
+    { h:'In degrees', fig:() => drawRose({ from:20, to:340 }, true), body:`<p>In degrees, <b>veer adds</b> and <b>back subtracts</b>, wrapping through 360.</p>
+<pre class="fcast">230°T veers 50°  →  230 + 50 = 280°T
+020°T backs 40°  →  020 − 40 = −20 + 360 = 340°T</pre>
+<p class="key">Three figures, always, and the T: 020°T, never 20.</p>` },
+    { h:'Why the shift matters', fig:() => drawRose({ from:225, to:315, lab0:'now', lab1:'after the front' }, true), body:`<ul>
+<li><b>Fronts</b>: in the northern hemisphere the wind <b>veers</b> as each front goes through — typically southwest to northwest at a cold front.</li>
+<li><b>Anchorages</b>: a bay sheltered from the southwest is wide open once the wind veers northwest. Check the forecast shift against every overnight stop.</li>
+<li><b>Sailing</b>: a veer frees a boat on starboard tack and heads a boat on port tack. Know which tack the shift will favour before you choose a side of the course.</li></ul>` },
+  ],
+  w5: [
+    { h:'Why the wind blows', fig:() => drawSyn(L_LOW, true), body:`<p>Air flows from high pressure towards low. The Earth’s rotation turns it to the <b>right</b> in the northern hemisphere, until it blows <b>along the isobars</b> rather than across them. Near the surface, friction slows it and turns it back about <b>15° in towards the low</b> over the sea (about 30° over land).</p>
+<p class="key">Northern hemisphere: anticlockwise and in round a low, clockwise and out round a high.</p>` },
+    { h:'Depressions (lows)', fig:() => drawSyn(L_LOW, true), body:`<ul><li>Pressure lowest in the middle; air spirals in <b>anticlockwise</b> and rises.</li>
+<li>Rising air cools, so: <b>cloud, rain, wind</b>, and usually <b>fronts</b>.</li>
+<li>They move, often fast, roughly <b>west to east</b> across the UK, usually tracking northeast.</li>
+<li>Isobars usually close together: strong winds, changing direction as the low passes.</li>
+<li>A <b>trough</b> is a tongue of low pressure: a band of unsettled weather.</li></ul>` },
+    { h:'Anticyclones (highs)', fig:() => drawSyn(L_HIGH, true), body:`<ul><li>Pressure highest in the middle; air spirals out <b>clockwise</b> and sinks.</li>
+<li>Sinking air warms and dries: <b>settled</b> weather, light winds, little cloud.</li>
+<li>Slow-moving and persistent; a big high can block depressions for days.</li>
+<li>Watch for <b>haze or fog</b> and, in summer, sea breezes taking over from the light gradient wind.</li>
+<li>A <b>ridge</b> is a tongue of high pressure: a short fine spell between lows.</li></ul>` },
+    { h:'The spacing is the wind', fig:() => drawSyn(L_GRAD, true), body:`<p><b>Isobars</b> join places of equal pressure, drawn every <b>4 mb</b> on UK charts. The wind depends on how close they are, not on the number written on them.</p>
+<p>At <b>A</b> the isobars are tight: strong wind. At <b>B</b> they are spread out: lighter wind, though both points sit on the same isobar.</p>
+<p class="key">Tight isobars, strong wind. Wide isobars, light wind.</p>` },
+    { h:'Buys Ballot’s law', ctl:{ label:'Wind from', min:0, max:7, value:5, draw:v => drawRose({ from:v*45, low:pt(v+2)*45, lab0:'wind' }, true),
+      read:v => `Wind from the ${WORD[v]}. Back to it, facing ${WORD[pt(v+4)]}: <b>low to the ${WORD[pt(v+2)]}</b>, high to the ${WORD[pt(v-2)]}.` },
+      body:`<p>No chart aboard? Stand with your <b>back to the true wind</b>. In the northern hemisphere the <b>low is on your left</b>, a little ahead of you because the wind angles in; the high is on your right.</p><p>Watch it over a few hours: if the low is moving towards you, the glass falls and the wind backs or veers as it comes.</p>` },
+  ],
+  w6: [
+    { h:'Where depressions come from', fig:() => drawFront({}, true), body:`<p>Over the Atlantic, cold polar air meets warm, moist tropical air along the <b>polar front</b>. A wave forms on it and deepens into a low. Ahead of the low, warm air rides up over the cold: the <b>warm front</b>. Behind, cold air undercuts the warm: the <b>cold front</b>. Between them lies the <b>warm sector</b>.</p>
+<p>Warm fronts are drawn with <b>semicircles</b>, cold fronts with <b>triangles</b>, on the side the front is moving towards.</p>` },
+    { h:'The warm front', fig:() => drawFront({ pos:'B' }, true), body:`<p>The warm air climbs a long, shallow slope, so the cloud arrives hundreds of miles ahead of the front at the surface.</p>
+<ul><li><b>Sky</b>: cirrus, then cirrostratus with a <b>halo</b>, altostratus (a watery sun), then low <b>nimbostratus</b>.</li>
+<li><b>Before it</b>: glass falling steadily, wind <b>backing and freshening</b>, rain starting light and becoming continuous.</li>
+<li><b>As it passes</b>: wind <b>veers</b>, the rain eases to drizzle, the fall of the glass slows and stops, it gets milder.</li></ul>` },
+    { h:'The cold front', fig:() => drawFront({ pos:'D' }, true), body:`<p>The cold air pushes in like a wedge, steeper and faster, so the weather is short and violent.</p>
+<ul><li><b>Sky</b>: towering <b>cumulonimbus</b>; heavy rain, perhaps hail and thunder.</li>
+<li><b>Wind</b>: <b>veers sharply</b>, often to west or northwest, in <b>squalls</b>.</li>
+<li><b>Glass</b>: rises sharply. Temperature drops.</li>
+<li><b>Behind</b>: clear, cold air, very good visibility, cumulus and showers, a fresh gusty northwesterly.</li></ul>` },
+    { h:'Walk it through', ctl:{ label:'Position', min:0, max:4, value:0, draw:v => drawFront({ pos:'ABCDE'[v] }, true), read:v => zoneRead('ABCDE'[v]) },
+      body:`<p>Drag from A to E: that is the order the depression passes over a boat south of its centre, west to east. Learn the four columns — sky, wind, glass, visibility — for each position.</p>` },
+    { h:'Occlusions, and passing to the south', fig:null, body:`<p>The cold front moves faster than the warm one. Where it catches up, the warm sector is lifted off the surface: an <b>occlusion</b>, drawn with triangles and semicircles together. The weather is a mix of both fronts, and the wind still veers as it passes.</p>
+<p>If the centre of the low passes to the <b>south</b> of you, you are on the cold side and miss the fronts. The wind <b>backs</b> steadily, for example from east through northeast to north, with cloud and rain but no warm sector.</p>` },
+    { h:'Clouds that talk', fig:null, body:`<table><tr><th>Cloud</th><th>Looks like</th><th>Tells you</th></tr>
+<tr><td>Cirrus</td><td>High wisps, “mares’ tails”</td><td>A depression may be on its way</td></tr>
+<tr><td>Cirrostratus</td><td>Milky sheet, halo round sun or moon</td><td>Warm front approaching</td></tr>
+<tr><td>Altostratus</td><td>Grey sheet, watery sun</td><td>Rain within hours</td></tr>
+<tr><td>Nimbostratus</td><td>Low, dark, shapeless</td><td>Continuous rain: at the warm front</td></tr>
+<tr><td>Stratus</td><td>Low grey layer</td><td>Drizzle, poor visibility: warm sector</td></tr>
+<tr><td>Cumulonimbus</td><td>Towering, anvil top</td><td>Squalls, heavy showers: cold front</td></tr>
+<tr><td>Cumulus</td><td>Fluffy, flat-based</td><td>Fair weather, or showers behind a cold front</td></tr></table>
+<p class="key">“Mares’ tails and mackerel scales make tall ships carry low sails.”</p>` },
+  ],
+  w4: [
+    { h:'The trend, not the number', fig:null, body:`<p>The barometer measures air pressure in <b>millibars</b> (the same as hectopascals). Average sea-level pressure is about <b>1013 mb</b>; a deep low might be under 970, a strong high over 1035.</p>
+<p>The reading on its own tells you little. What matters is how fast it is <b>changing</b>, over the last <b>three hours</b>. Read it and write it in the log every hour on passage, so you can see the trend.</p>` },
+    { h:'Tendency words', fig:() => { L_BARO ??= Object.assign(genBaro(2, false), { now:900 }); drawBaro(L_BARO, true); }, body:`<table><tr><th>Change in 3 h</th><th>Word</th></tr>
+<tr><td class="mono">0.1–1.5 mb</td><td>Rising / falling <b>slowly</b></td></tr>
+<tr><td class="mono">1.6–3.5 mb</td><td>Rising / falling</td></tr>
+<tr><td class="mono">3.6–6.0 mb</td><td>Rising / falling <b>quickly</b></td></tr>
+<tr><td class="mono">more than 6.0 mb</td><td>Rising / falling <b>very rapidly</b></td></tr></table>
+<p>“<b>Now falling</b>” means it was rising or steady and has just turned. A fall of 6 mb or more in three hours means strong wind is close.</p>` },
+    { h:'How fast is it coming?', fig:null, body:`<p>The general synopsis says how fast each low is moving:</p>
+<table><tr><th>Word</th><th>Speed</th></tr>${MOVE.map(m => `<tr><td>${m[0]}</td><td>${m[1]}</td></tr>`).join('')}</table>
+<pre class="fcast">Low 300 nm west, moving east “rapidly” (35–45 kn)
+300 ÷ 45 = 6 h 40 m at the fastest</pre>
+<p class="key">Plan on the fast end of the word.</p>` },
+    { h:'What sailors say', fig:null, body:`<ul><li>“<b>Long foretold, long last; short notice, soon past.</b>” A slow, steady fall brings weather that lasts; a sudden fall brings a short, sharp blow.</li>
+<li>“<b>First rise after low foretells a stronger blow.</b>” The glass jumps as the cold front passes, and the squalls come with it.</li>
+<li>A high, steady glass: settled weather, light winds, perhaps fog.</li>
+<li>When the glass and the forecast disagree, believe the glass and listen to the next forecast.</li></ul>` },
+  ],
+  w7: [
+    { h:'How fog forms', fig:null, body:`<p>Air holds water vapour. Cool it to its <b>dew point</b> and the vapour condenses into tiny droplets: cloud at sea level. Fog is reported when visibility falls <b>below 1000 m</b> — the forecast calls it “very poor”.</p>
+<p>At sea two kinds matter: fog made by the <b>sea</b> cooling the air from below, and fog made over the <b>land</b> at night that drifts out.</p>` },
+    { h:'Advection fog — sea fog', fig:null, body:`<ul><li><b>Warm, moist air</b> blows over a <b>colder sea</b> and is cooled to its dew point.</li>
+<li>Most common in <b>spring and early summer</b>, when the sea is still cold — typically a southwesterly in the Channel and the Southwest.</li>
+<li>Wind does <b>not</b> clear it: it can persist in a moderate breeze, and it does not burn off.</li>
+<li>It clears only when the air changes — a new airstream, often after a front.</li></ul>
+<p class="key">The one that catches yachts at sea. Radar, a fog plan and sound signals.</p>` },
+    { h:'Radiation fog — land fog', fig:null, body:`<ul><li><b>Clear skies and light winds</b> at night let the land lose heat; the air above it cools to its dew point.</li>
+<li>Most common in <b>autumn and winter</b>, with long nights.</li>
+<li>Forms over land and in valleys, then <b>drifts down rivers into harbours and estuaries</b> at dawn.</li>
+<li>Usually <b>burns off</b> by late morning as the sun warms the land; rarely reaches far offshore.</li></ul>` },
+    { h:'Sea breeze and land breeze', ctl:{ label:'Time of day', min:0, max:1, value:0, draw:v => drawBreeze(v === 0), read:v => v === 0 ? '<b>Day</b>: onshore sea breeze, typically Force 3–4, from late morning to early evening.' : '<b>Night</b>: offshore land breeze, lighter, near the coast only.' },
+      body:`<p>On a <b>sunny day</b> the land heats faster than the sea. Air rises over the land and cooler sea air flows in underneath: an onshore <b>sea breeze</b>. It starts in the late morning, peaks mid-afternoon, often reaches <b>Force 3–4</b>, and dies around sunset. It is strongest with a light gradient wind; a strong offshore gradient can stop it altogether, leaving a calm patch offshore.</p>
+<p>At <b>night</b> the land cools faster than the sea and a lighter <b>land breeze</b> blows offshore. Down steep slopes, cold air can pour off the hills as a gusty <b>katabatic</b> wind.</p>` },
+    { h:'The coast changes the wind', fig:null, body:`<ul><li><b>Headlands</b>: the wind accelerates round them and the sea is rougher off them. Expect a force more than forecast.</li>
+<li><b>Gaps and channels</b>: the wind funnels through and speeds up.</li>
+<li><b>Under cliffs</b>: in an offshore wind, gusty and shifting in the lee.</li>
+<li><b>Wind against tide</b>: short, steep, breaking seas; over shoals and off headlands, <b>overfalls and races</b>. Time headlands for slack water or a fair tide.</li></ul>` },
+  ],
+  w8: [
+    { h:'From forecast to plan', fig:null, body:`<p>The passage stage asks you to turn a forecast into a decision, in this order:</p>
+<ol><li><b>Force</b>: turn the forecast force into knots and compare it with your crew’s limit.</li>
+<li><b>Timing</b>: from the issue time, when can the change arrive? Plan on the <b>near end</b> of the window.</li>
+<li><b>Shift</b>: which way does the wind go round, and what does that do to your route and your shelter?</li>
+<li><b>Glass</b>: does the barometer agree? A fast fall means the early end of the window.</li>
+<li><b>The sum</b>: distance ÷ speed gives your arrival. Be in harbour with an <b>hour in hand</b> — or choose the nearer bolt hole, or stay in.</li></ol>
+<p class="key">A bolt hole you can reach is a plan; one you cannot reach is a hope.</p>` },
+  ],
+};
+
 
 // ---- the passage: Havenport to Fernwick, St Maddern as the bolt hole
 const SPEED = 5, LIMIT = 5, MARGIN = 60;
@@ -867,7 +1153,7 @@ function consequence(a){
 let stage = null, q = null, answered = false, watch = null, pas = null;
 const ss = () => store.stages[stage.id];
 const idx = () => STAGES.indexOf(stage);
-const MODES = ['beaufort','words','veer','baro','syn','front','local'];
+const MODES = ['sources','beaufort','words','veer','syn','front','baro','local'];
 function genQ(){
   const mode = stage.kind === 'watch' ? pick(MODES) : stage.mode;
   q = shuf(B[mode]()); q.mode = mode;
@@ -1032,14 +1318,54 @@ function renderConcept(){
   $('concept').open = !store.seenConcept[stage.id];
   store.seenConcept[stage.id] = true; save();
 }
-function setStage(i){
-  if (i < 0 || i >= STAGES.length || !unlocked(i)) return;
-  if (watch) { clearTimeout(watch.t); watch = null; $('timer').textContent = ''; }
-  stage = STAGES[i];
-  renderConcept();
+let mode = 'drill', card = 0;
+function stopWatch(){ if (watch) { clearTimeout(watch.t); watch = null; $('timer').textContent = ''; } }
+function startDrill(){
   if (stage.kind === 'passage') startPassage();
   else { if (stage.kind === 'watch') startWatch(); genQ(); if (watch) armWatch(); }
+}
+function setMode(m){
+  const L = LESSONS[stage.id];
+  if (m === 'learn' && !L) m = 'drill';
+  mode = m;
+  $('modes').hidden = !L;
+  $('mLearn').setAttribute('aria-selected', String(m === 'learn')); $('mDrill').setAttribute('aria-selected', String(m === 'drill'));
+  for (const id of ['lesson','lnav']) $(id).hidden = m !== 'learn';
+  for (const id of ['qsec','concept']) $(id).hidden = m === 'learn';
+  if (m === 'learn') { stopWatch(); $('fcast').hidden = true; $('legs').innerHTML = ''; renderCard(); }
+  else { store.lessonSeen[stage.id] = true; save(); startDrill(); }
+}
+function renderCard(){
+  const L = LESSONS[stage.id], c = L[card];
+  $('lstep').textContent = `Lesson · ${card+1} of ${L.length}`;
+  $('ldots').innerHTML = L.map((_,i) => `<i class="${i === card ? 'now' : i < card ? 'done' : ''}"></i>`).join('');
+  $('ltitle').textContent = c.h; $('lbody').innerHTML = c.body;
+  if (c.ctl) {
+    const k = c.ctl;
+    $('lctl').innerHTML = `<label for="lrange">${k.label}</label><input type="range" id="lrange" min="${k.min}" max="${k.max}" step="1" value="${k.value}"><div class="lread" id="lread" aria-live="polite"></div>`;
+    const upd = () => { const v = +$('lrange').value; k.draw(v); $('lread').innerHTML = k.read(v); };
+    $('lrange').addEventListener('input', upd); $('figbox').hidden = false; upd();
+  } else {
+    $('lctl').innerHTML = '';
+    $('figbox').hidden = !c.fig; if (c.fig) c.fig();
+  }
+  $('lprev').disabled = card === 0;
+  $('lnext').textContent = card === L.length - 1 ? 'Start the drill ›' : 'Next ›';
+  $('lskip').hidden = card === L.length - 1;
+}
+function stepCard(d){
+  const L = LESSONS[stage.id];
+  if (card + d >= L.length) return setMode('drill');
+  card = Math.max(0, card + d); renderCard(); $('lnext').focus({ preventScroll:true });
+  $('lesson').scrollIntoView({ block:'nearest' });
+}
+function setStage(i){
+  if (i < 0 || i >= STAGES.length || !unlocked(i)) return;
+  stopWatch();
+  stage = STAGES[i]; card = 0;
+  renderConcept();
   renderStatus(); renderLog();
+  setMode(LESSONS[stage.id] && !store.lessonSeen[stage.id] ? 'learn' : 'drill');
 }
 function renderLog(){
   const box = $('logbox'), b = $('logbody');
@@ -1059,9 +1385,21 @@ $('stepper').addEventListener('click', e => { const d = e.target.closest('.dot')
 $('form').addEventListener('submit', e => { e.preventDefault(); if (answered) next(); else if (q.ansType !== 'choice') check(); });
 $('choices').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b && !answered) finish(+b.dataset.c, false); });
 $('skip').addEventListener('click', () => { if (!answered) finish(null, true); });
+$('mLearn').addEventListener('click', () => { if (mode !== 'learn') { card = 0; setMode('learn'); } });
+$('mDrill').addEventListener('click', () => { if (mode !== 'drill') setMode('drill'); });
+$('lprev').addEventListener('click', () => stepCard(-1));
+$('lnext').addEventListener('click', () => stepCard(1));
+$('lskip').addEventListener('click', () => setMode('drill'));
 $('mute').addEventListener('click', () => { store.muted = !store.muted; save(); renderStatus(); if (!store.muted) bell(); });
 document.addEventListener('keydown', e => {
   if (e.altKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { e.preventDefault(); return setStage(idx() + (e.key === 'ArrowRight' ? 1 : -1)); }
+  if (mode === 'learn') {
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || (tag === 'BUTTON' && e.key === 'Enter')) return;
+    if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); stepCard(1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); stepCard(-1); }
+    return;
+  }
   if (!answered && q && q.ansType === 'choice' && /^[1-4]$/.test(e.key) && !e.ctrlKey && !e.metaKey) { const i = +e.key - 1; if (i < q.choices.length) { e.preventDefault(); finish(i, false); } }
   if (answered && e.key === 'Enter' && document.activeElement !== $('ans') && !(document.activeElement && document.activeElement.tagName === 'BUTTON')) { e.preventDefault(); next(); }
 });

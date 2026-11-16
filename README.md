@@ -32,7 +32,7 @@ tutorials/<slug>/       one self-contained tutorial per folder (index.html)
 | 05 | Rules of the Road (Rules 12–18, lights, shapes, sound signals, night encounters) | live |
 | 06 | Night Watch (WebGL: lights and arcs in 3D, buoys by night, who gives way, day shapes, fog signals, timed watch) | live |
 | 07 | Night Sim (real-time conn under sail: helm and tack, steady bearing, port tack gives way) | prototype |
-| 08 | Weather (Beaufort, forecast vocabulary, veer and back, barometer, isobars and Buys Ballot, fronts, fog and sea breezes, go/no-go passage) | live |
+| 08 | Weather (forecast sources, Beaufort, forecast vocabulary, veer and back, barometer, isobars and Buys Ballot, fronts, fog and sea breezes, go/no-go passage) | live |
 
 ## Reference
 
