@@ -38,7 +38,10 @@
 .concept .ex{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.6;color:var(--ink-2);white-space:pre-line}
 .concept .gate{font-size:13px;color:var(--ink-3);font-style:italic;font-family:"Libre Caslon Text",serif}
 .concept svg{width:100%;height:auto;display:block}
-.concept .fig text{font-family:"Source Sans 3",sans-serif}
+.concept .fig text,.fbchart text{font-family:"Source Sans 3",sans-serif}
+.concept .fig.wide{max-width:none;margin-top:2px}
+.fbchart{margin-top:10px}
+.fbchart svg{width:100%;max-width:480px;height:auto;display:block;border:1px solid var(--rule)}
 .q{margin-top:22px}
 .qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
 .qtype{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);font-weight:600}
@@ -277,8 +280,8 @@ const STAGES = [
   { id:'out', kind:'drill', title:'Which way is in?', gen: genOut, fig:'out',
     intro:'The rule is tied to the direction of buoyage, not to you. It runs from seaward into harbour, up a river or estuary, and clockwise round a landmass; where that is not obvious, the chart shows it with a magenta arrow. Going the other way (leaving harbour, heading downriver, against the arrow) everything flips.',
     ex:'Entering, red can → leave it to port\nLeaving, red can → leave it to starboard\nAgainst the chart arrow → flip' },
-  { id:'pref', kind:'drill', title:'The channel divides', gen: genPref, fig:'pref',
-    intro:'Where a channel divides, a modified lateral mark shows which branch is the main one. It has the shape and main colour of the side you treat it as, with one broad band of the other colour. Red with a green band is a port-hand mark for the main channel, which therefore lies to starboard of it. By night it flashes two, then one: Fl(2+1).',
+  { id:'pref', kind:'drill', title:'The channel divides', gen: genPref, fig:'river', figWide:true,
+    intro:'Where a channel divides, a modified lateral mark sits on the point between the two branches and shows which one is the main channel. It has the shape and main colour of the side you treat it as, with one broad band of the other colour. Red with a green band is a port-hand mark for the main channel, which therefore lies to starboard of it. By night it flashes two, then one: Fl(2+1). The chart below follows a river that divides twice; the dashed line is the main channel.',
     ex:'Red can, green band → preferred channel to starboard → leave it to port entering\nGreen cone, red band → preferred channel to port → leave it to starboard' },
   { id:'card', kind:'drill', title:'Cardinals by day', gen: genCardDay, fig:'card',
     intro:'A cardinal mark sits on one side of a danger and is named for the side the safe water is on. Pass north of a north cardinal. Read the two black cones: they point to where the black is on the body. Both up: north. Both down: south. Base to base, like an egg: east. Point to point, like a wine glass: west.',
@@ -389,6 +392,34 @@ function timeline(str, w = 320){
   return s + '</svg>';
 }
 
+// ---- a river that divides twice: every lateral type where it really sits. hi rings one type.
+function riverChart(hi){
+  const F1 = [200,175], F2 = [280,125];
+  const main = [[200,272], F1, F2, [255,60], [250,-2]], s1 = [F1, [120,135], [72,40], [66,-2]], s2 = [F2, [350,100], [402,94]];
+  const P = pts => pts.map(p => p.join(',')).join(' ');
+  const line = (pts, w, col, dash = '') => `<polyline points="${P(pts)}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linejoin="round" ${dash}/>`;
+  const T = (x, y, t, a = 'middle', st = '') => `<text x="${x}" y="${y}" font-size="8" text-anchor="${a}" fill="var(--ink-2)" ${st}>${t}</text>`;
+  const marks = [];
+  // port marks on the left of the direction of buoyage, starboard on the right, on the channel edge
+  const pair = (a, b, t, half) => { const dx = b[0]-a[0], dy = b[1]-a[1], L = Math.hypot(dx, dy), p = [a[0] + dx*t, a[1] + dy*t], l = [dy/L, -dx/L];
+    marks.push(['port', [p[0] + l[0]*(half+1), p[1] + l[1]*(half+1)]], ['stbd', [p[0] - l[0]*(half+1), p[1] - l[1]*(half+1)]]); };
+  pair(main[0], F1, .42, 13); pair(F1, F2, .55, 13); pair(F2, main[3], .55, 13); pair(s1[0], s1[1], .62, 8); pair(F2, s2[1], .62, 8);
+  marks.push(['prefS', [199,159]], ['prefP', [288,108]]);
+  let s = `<svg viewBox="0 0 400 270" role="img" aria-label="Chart of a river that divides twice, with lateral and preferred-channel marks"><rect width="400" height="270" fill="var(--land)"/><rect y="246" width="400" height="24" fill="var(--deep)"/>`;
+  s += line(main, 46, 'var(--shallow)') + line(s1, 30, 'var(--shallow)') + line(s2, 30, 'var(--shallow)');
+  s += line(main, 26, 'var(--deep)') + line(s1, 16, 'var(--deep)') + line(s2, 16, 'var(--deep)');
+  s += line(main, 1.1, 'var(--ink)', 'stroke-dasharray="4 3"');
+  s += `<path d="M160,262 V218" stroke="var(--magenta)" stroke-width="1.6"/><path d="M155,226 L160,214 L165,226 Z" fill="var(--magenta)"/>` + T(154, 236, 'direction', 'end') + T(154, 245, 'of buoyage', 'end');
+  s += T(228, 232, 'main channel', 'start', 'font-style="italic"') + T(208, 263, 'from seaward', 'start') + T(84, 12, 'to marina', 'start', 'font-style="italic"') + T(262, 12, 'Town quay', 'start', 'font-style="italic"') + T(396, 124, 'to boatyard', 'end', 'font-style="italic"');
+  s += `<path d="M200,131 L199,143 M312,76 L294,96" stroke="var(--ink-3)" stroke-width=".7"/>`;
+  s += T(200, 117, 'Fl(2+1) R', 'middle', 'fill="var(--magenta)" font-style="italic"') + T(200, 127, 'main channel ▸ stbd') + T(325, 62, 'Fl(2+1) G', 'middle', 'fill="var(--magenta)" font-style="italic"') + T(325, 72, 'main channel ◂ port');
+  for (const [id, [x, y]] of marks) {
+    s += `<g transform="translate(${f1(x)},${f1(y)}) scale(.16)">${drawBuoy(id, { body: id === 'port' || id === 'prefS' ? 'can' : 'cone' })}</g><circle cx="${f1(x)}" cy="${f1(y)}" r="1.3" fill="var(--ink)"/>`;
+    if (id === hi) s += `<circle cx="${f1(x)}" cy="${f1(y - 8)}" r="14" fill="none" stroke="var(--magenta)" stroke-width="1.8"/>`;
+  }
+  return s + '</svg>';
+}
+
 // ---- concept figures
 function fig(kind){
   const B = (id, x, y, sc, o = {}) => `<g transform="translate(${x},${y}) scale(${sc})">${drawBuoy(id, o)}</g>`;
@@ -398,6 +429,7 @@ function fig(kind){
     for (const y of [55, 120]) s += B('port', 38, y, .36, {body:'can'}) + B('stbd', 142, y, .36, {body:'cone'});
     return s + `<path d="M90,150 V30" stroke="var(--magenta)" stroke-width="2"/><path d="M83,40 L90,26 L97,40 Z" fill="var(--magenta)"/>${T(90,18,'direction of buoyage','middle',9)}${T(90,164,'in from seaward','middle',9)}</svg>`; }
   if (kind === 'pref') return `<svg viewBox="0 0 180 130" aria-hidden="true">${B('prefS',52,104,.8,{body:'can'})}${B('prefP',128,104,.8,{body:'cone'})}<rect y="104" width="180" height="26" fill="var(--deep)"/>${T(52,121,'main channel ▸ stbd',undefined,8.5)}${T(128,121,'main channel ◂ port',undefined,8.5)}</svg>`;
+  if (kind === 'river') return riverChart();
   if (kind === 'card') return `<svg viewBox="-100 -100 200 200" aria-hidden="true"><rect x="-100" y="-100" width="200" height="200" fill="var(--deep)"/><circle cy="8" r="13" fill="var(--shallow)" stroke="var(--ink-2)" stroke-dasharray="2 2"/><path d="M-5,8H5M0,3V13" stroke="var(--ink)" stroke-width="1.4"/>` +
     B('N',0,-36,.4) + B('S',0,96,.4) + B('E',66,52,.4) + B('W',-66,52,.4) + T(0,-90,'N · pass north',undefined,9) + T(66,66,'E',undefined,9) + T(-66,66,'W',undefined,9) + T(30,92,'S',undefined,9) + '</svg>';
   if (kind === 'light') return ['Fl(2) R 6s','Q','Oc 6s','LFl 10s'].map(s => `<div class="tlrow"><span class="mono">${s}</span>${timeline(s, 260)}</div>`).join('');
@@ -425,12 +457,13 @@ function genOut(){
     explain:`${id === 'port' ? 'Red, can-shaped' : 'Green, cone-shaped'}: a ${id === 'port' ? 'port' : 'starboard'}-hand mark. ${withB ? 'You are going with the direction of buoyage, so it means what it says' : 'You are going against the direction of buoyage, so the rule flips'}: leave it to ${toPort ? 'port' : 'starboard'}.`, rule: RULE.out };
 }
 const LATIDS = ['port','stbd','prefS','prefP'], LATNAMES = LATIDS.map(x => MARKS[x].name);
-function genPref(){
+function genPref(){ const q = genPrefQ(); q.chart = riverChart(q.id); return q; }
+function genPrefQ(){
   const id = pick(['prefS','prefP','prefS','prefP','port','stbd']), m = MARKS[id], sc = dayScene(id, { body: pick(m.bodies) }), pref = id.startsWith('pref');
   const t = pick(pref ? ['name','side','branch'] : ['name','side']), portish = id === 'port' || id === 'prefS';
-  if (t === 'name') return { label:'Modified lateral · name it', prompt:'What is this mark?', scene: sc, choices: LATNAMES, answer: LATIDS.indexOf(id), explain: m.tell, rule: RULE.pref };
-  if (t === 'side') return { label:'Modified lateral · which side', prompt:'Entering harbour on the main channel. Which side do you leave it?', scene: sc, choices: SIDES, answer: portish ? 0 : 1, explain: m.tell, rule: RULE.pref };
-  return { label:'The channel divides', prompt:'Entering harbour, the channel divides at this mark. Which way does the main channel go?', scene: sc, choices:['To starboard of the mark','To port of the mark'], answer: id === 'prefS' ? 0 : 1, explain: m.tell, rule: RULE.pref };
+  if (t === 'name') return { id, label:'Modified lateral · name it', prompt:'What is this mark?', scene: sc, choices: LATNAMES, answer: LATIDS.indexOf(id), explain: m.tell, rule: RULE.pref };
+  if (t === 'side') return { id, label:'Modified lateral · which side', prompt:'Entering harbour on the main channel. Which side do you leave it?', scene: sc, choices: SIDES, answer: portish ? 0 : 1, explain: m.tell, rule: RULE.pref };
+  return { id, label:'The channel divides', prompt:'Entering harbour, the channel divides at this mark. Which way does the main channel go?', scene: sc, choices:['To starboard of the mark','To port of the mark'], answer: id === 'prefS' ? 0 : 1, explain: m.tell, rule: RULE.pref };
 }
 const TOPDESC = { N:'Both cones point up', E:'Base to base', S:'Both cones point down', W:'Point to point' };
 function genCardDay(){
@@ -647,7 +680,7 @@ function finish(i, revealed){
     : ok ? pick(['Aye.','Correct.','Clean.','That would pass.','Steady as she goes.','Good lookout.']) : `Not quite. ${q.choices[q.answer]}.`;
   let extra = '';
   if (q.m === 'passage' && !ok && !revealed) extra = `<p>${passConsequence(q.g, i)}</p>`;
-  fb.innerHTML = `<h3>${title}</h3><p>${q.explain}</p>${extra}${q.tl ? `<div class="tlrow"><span class="mono">${disp(q.tl)}</span>${timeline(q.tl)}</div>` : ''}<div class="rule">${q.rule}</div>`;
+  fb.innerHTML = `<h3>${title}</h3><p>${q.explain}</p>${extra}${q.chart ? `<div class="fbchart">${q.chart}</div>` : ''}${q.tl ? `<div class="tlrow"><span class="mono">${disp(q.tl)}</span>${timeline(q.tl)}</div>` : ''}<div class="rule">${q.rule}</div>`;
   if (q.after) { $('scene').hidden = false; $('scene').innerHTML = q.after; startLights(); }
   $('next').hidden = false; $('skip').hidden = true;
   $('next').textContent = 'Next ›';
@@ -741,8 +774,8 @@ function renderStatus(){
 }
 function renderConcept(){
   const f = stage.fig ? fig(stage.fig) : '';
-  $('conceptBody').className = 'body' + (f ? '' : ' nofig');
-  $('conceptBody').innerHTML = `<div><p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p></div>${f ? `<div class="fig">${f}</div>` : ''}`;
+  $('conceptBody').className = 'body' + (f && !stage.figWide ? '' : ' nofig');
+  $('conceptBody').innerHTML = `<div><p>${stage.intro}</p>${stage.ex ? `<div class="ex">${stage.ex}</div>` : ''}<p class="gate">Clear it: ${GATE[stage.kind]}.</p></div>${f ? `<div class="fig${stage.figWide ? ' wide' : ''}">${f}</div>` : ''}`;
   $('concept').open = !store.seenConcept[stage.id];
   store.seenConcept[stage.id] = true; save();
 }
